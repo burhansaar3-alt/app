@@ -362,7 +362,7 @@ async def add_to_cart(item: CartItem, current_user: dict = Depends(get_current_u
         doc['updated_at'] = doc['updated_at'].isoformat()
         await db.carts.insert_one(doc)
     
-    items = cart.get('items', []) if cart else []
+    items = cart.get('items', []) if isinstance(cart, dict) else []
     existing_item = next((i for i in items if i['product_id'] == item.product_id), None)
     
     if existing_item:
