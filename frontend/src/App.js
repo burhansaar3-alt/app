@@ -1,50 +1,88 @@
-import { useEffect } from "react";
-import "@/App.css";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import axios from "axios";
+import { useState, useEffect } from 'react';
+import '@/App.css';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import axios from 'axios';
+import HomePage from './pages/HomePage';
+import AuthPage from './pages/AuthPage';
+import ProductDetails from './pages/ProductDetails';
+import CartPage from './pages/CartPage';
+import CheckoutPage from './pages/CheckoutPage';
+import AdminDashboard from './pages/AdminDashboard';
+import StoreDashboard from './pages/StoreDashboard';
+import MyOrders from './pages/MyOrders';
+import StoreView from './pages/StoreView';
+import { Toaster } from './components/ui/sonner';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
-const Home = () => {
-  const helloWorldApi = async () => {
-    try {
-      const response = await axios.get(`${API}/`);
-      console.log(response.data.message);
-    } catch (e) {
-      console.error(e, `errored out requesting / api`);
-    }
-  };
+export const api = axios.create({
+  baseURL: API,
+});
 
-  useEffect(() => {
-    helloWorldApi();
-  }, []);
-
-  return (
-    <div>
-      <header className="App-header">
-        <a
-          className="App-link"
-          href="https://emergent.sh"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <img src="https://avatars.githubusercontent.com/in/1201222?s=120&u=2686cf91179bbafbc7a71bfbc43004cf9ae1acea&v=4" />
-        </a>
-        <p className="mt-5">Building something incredible ~!</p>
-      </header>
-    </div>
-  );
-};
+// Add auth token to requests
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
 
 function App() {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      api.get('/auth/me')
+        .then(res => {
+          setUser(res.data);
+          setLoading(false);
+        })
+        .catch(() => {
+          localStorage.removeItem('token');
+          setLoading(false);
+        });
+    } else {
+      setLoading(false);
+    }
+  }, []);
+
+  const logout = () => {
+    localStorage.removeItem('token');
+    setUser(null);
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-50">
+        <div className="text-xl font-medium text-gray-600">جاري التحميل...</div>
+      </div>
+    );
+  }
+
   return (
-    <div className="App">
+    <div className="App" dir="rtl">
+      <Toaster position="top-center" />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Home />}>
-            <Route index element={<Home />} />
-          </Route>
+          <Route path="/" element={<HomePage user={user} logout={logout} />} />
+          <Route path="/auth" element={user ? <Navigate to="/" /> : <AuthPage setUser={setUser} />} />
+          <Route path="/product/:id" element={<ProductDetails user={user} logout={logout} />} />
+          <Route path="/cart" element={user ? <CartPage user={user} logout={logout} /> : <Navigate to="/auth" />} />
+          <Route path="/checkout" element={user ? <CheckoutPage user={user} logout={logout} /> : <Navigate to="/auth" />} />
+          <Route path="/orders" element={user ? <MyOrders user={user} logout={logout} /> : <Navigate to="/auth" />} />
+          <Route path="/store/:id" element={<StoreView user={user} logout={logout} />} />
+          <Route 
+            path="/admin" 
+            element={user?.role === 'admin' ? <AdminDashboard user={user} logout={logout} /> : <Navigate to="/" />} 
+          />
+          <Route 
+            path="/store-dashboard" 
+            element={user?.role === 'store_owner' ? <StoreDashboard user={user} logout={logout} /> : <Navigate to="/" />} 
+          />
         </Routes>
       </BrowserRouter>
     </div>
