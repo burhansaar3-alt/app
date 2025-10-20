@@ -1,0 +1,124 @@
+{
+  "summary": {
+    "total_tests": 19,
+    "passed_tests": 16,
+    "success_rate": 84.21052631578947,
+    "timestamp": "2025-10-20T01:07:58.327169"
+  },
+  "detailed_results": [
+    {
+      "test": "API Health Check",
+      "status": "PASS",
+      "details": "Status: 200",
+      "timestamp": "2025-10-20T01:07:56.961294"
+    },
+    {
+      "test": "Get Categories",
+      "status": "PASS",
+      "details": "Status: 200",
+      "timestamp": "2025-10-20T01:07:57.002870"
+    },
+    {
+      "test": "Get Products",
+      "status": "PASS",
+      "details": "Status: 200",
+      "timestamp": "2025-10-20T01:07:57.041796"
+    },
+    {
+      "test": "Register Admin",
+      "status": "FAIL",
+      "details": "Status: 400 (Expected: 200) - Email already registered",
+      "timestamp": "2025-10-20T01:07:57.077867"
+    },
+    {
+      "test": "Register Store Owner",
+      "status": "PASS",
+      "details": "Status: 200",
+      "timestamp": "2025-10-20T01:07:57.338553"
+    },
+    {
+      "test": "Register Customer",
+      "status": "PASS",
+      "details": "Status: 200",
+      "timestamp": "2025-10-20T01:07:57.596150"
+    },
+    {
+      "test": "Admin Login",
+      "status": "PASS",
+      "details": "Status: 200",
+      "timestamp": "2025-10-20T01:07:57.854648"
+    },
+    {
+      "test": "Create Store",
+      "status": "PASS",
+      "details": "Status: 200",
+      "timestamp": "2025-10-20T01:07:57.897693"
+    },
+    {
+      "test": "Get Stores",
+      "status": "PASS",
+      "details": "Status: 200",
+      "timestamp": "2025-10-20T01:07:57.936341"
+    },
+    {
+      "test": "Get Stores for Approval",
+      "status": "PASS",
+      "details": "Status: 200",
+      "timestamp": "2025-10-20T01:07:57.989249"
+    },
+    {
+      "test": "Approve Store",
+      "status": "PASS",
+      "details": "Status: 200",
+      "timestamp": "2025-10-20T01:07:58.025900"
+    },
+    {
+      "test": "Get Categories for Product",
+      "status": "PASS",
+      "details": "Status: 200",
+      "timestamp": "2025-10-20T01:07:58.059968"
+    },
+    {
+      "test": "Add Product",
+      "status": "PASS",
+      "details": "Status: 200",
+      "timestamp": "2025-10-20T01:07:58.094174"
+    },
+    {
+      "test": "Get Empty Cart",
+      "status": "PASS",
+      "details": "Status: 200",
+      "timestamp": "2025-10-20T01:07:58.131124"
+    },
+    {
+      "test": "Get Products for Cart",
+      "status": "PASS",
+      "details": "Status: 200",
+      "timestamp": "2025-10-20T01:07:58.170951"
+    },
+    {
+      "test": "Add to Cart",
+      "status": "FAIL",
+      "details": "Status: 500 (Expected: 200) - Internal Server Error",
+      "timestamp": "2025-10-20T01:07:58.219236"
+    },
+    {
+      "test": "Create Order",
+      "status": "FAIL",
+      "details": "Status: 400 (Expected: 200) - Cart is empty",
+      "timestamp": "2025-10-20T01:07:58.255146"
+    },
+    {
+      "test": "Get Customer Orders",
+      "status": "PASS",
+      "details": "Status: 200",
+      "timestamp": "2025-10-20T01:07:58.290533"
+    },
+    {
+      "test": "Get All Orders (Admin)",
+      "status": "PASS",
+      "details": "Status: 200",
+      "timestamp": "2025-10-20T01:07:58.326205"
+    }
+  ]
+}
