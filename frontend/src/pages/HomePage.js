@@ -318,8 +318,15 @@ const HomePage = ({ user, logout }) => {
             </div>
             <div>
               <h3 className="text-lg font-semibold mb-4">تواصل معنا</h3>
-              <p className="text-gray-400">البريد: info@syriamarket.com</p>
-              <p className="text-gray-400 mt-2">الهاتف: +963 xxx xxx xxx</p>
+              <p className="text-gray-400">
+                <span className="font-semibold text-white">البريد:</span> info@syriamarket.com
+              </p>
+              <p className="text-gray-400 mt-2">
+                <span className="font-semibold text-white">الهاتف:</span> +963 933 333 333
+              </p>
+              <p className="text-sm text-gray-500 mt-4">
+                للاستفسارات وطلبات الشراكة والتعاون
+              </p>
             </div>
           </div>
           <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
