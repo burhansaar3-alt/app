@@ -50,13 +50,12 @@ async def create_info_account():
             "store_name": "متجر Info للإلكترونيات",
             "description": "متجر Info الرسمي - أحدث الإلكترونيات والأجهزة الذكية",
             "status": "approved",
-            "logo": "https://images.unsplash.com/photo-1468495244123-6c6c332eeece?w=200",
             "created_at": "2025-01-20T00:00:00+00:00"
         }
         await db.stores.insert_one(info_store)
         print("✓ تم إنشاء متجر Info (معتمد)")
         
-        # Add Info products (Electronics)
+        # Add Info products
         electronics_cat = await db.categories.find_one({"slug": "electronics"})
         if electronics_cat:
             info_products = [
@@ -83,43 +82,17 @@ async def create_info_account():
                     "stock": 20,
                     "status": "active",
                     "created_at": "2025-01-20T00:00:00+00:00"
-                },
-                {
-                    "id": str(uuid.uuid4()),
-                    "store_id": info_store['id'],
-                    "category_id": electronics_cat['id'],
-                    "name": "شاحن لاسلكي سريع",
-                    "description": "شاحن لاسلكي بقوة 15W لجميع الأجهزة",
-                    "price": 85000,
-                    "images": ["https://images.unsplash.com/photo-1591290619762-c588f0f1b9b7?w=500"],
-                    "stock": 100,
-                    "status": "active",
-                    "created_at": "2025-01-20T00:00:00+00:00"
-                },
-                {
-                    "id": str(uuid.uuid4()),
-                    "store_id": info_store['id'],
-                    "category_id": electronics_cat['id'],
-                    "name": "ماوس لاسلكي احترافي",
-                    "description": "ماوس لاسلكي بتصميم مريح ودقة عالية",
-                    "price": 65000,
-                    "images": ["https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=500"],
-                    "stock": 75,
-                    "status": "active",
-                    "created_at": "2025-01-20T00:00:00+00:00"
                 }
             ]
             await db.products.insert_many(info_products)
             print(f"✓ تمت إضافة {len(info_products)} منتج لمتجر Info")
     
     client.close()
-    
     print("\n" + "=" * 50)
     print("✅ اكتمل بنجاح!")
     print("=" * 50)
-    print("\n📝 بيانات الدخول:")
-    print(f"   📧 البريد: {info_email}")
-    print(f"   🔑 كلمة المرور: {info_password}")
+    print(f"\n📧 البريد: {info_email}")
+    print(f"🔑 كلمة المرور: {info_password}")
     print("=" * 50)
 
 if __name__ == "__main__":
