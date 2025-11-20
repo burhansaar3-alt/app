@@ -418,7 +418,8 @@ async def create_order(order_data: OrderCreate, current_user: dict = Depends(get
         items=order_items,
         total_amount=total,
         shipping_address=order_data.shipping_address,
-        phone=order_data.phone
+        phone=order_data.phone,
+        payment_method=order_data.payment_method
     )
     
     doc = order.model_dump()
