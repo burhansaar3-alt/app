@@ -117,12 +117,13 @@ class Order(BaseModel):
     status: str = "pending"  # pending, confirmed, shipped, delivered, cancelled
     shipping_address: str
     phone: str
-    payment_method: str = "cash_on_delivery"
+    payment_method: str = "cash_on_delivery"  # cash_on_delivery, visa, cash
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class OrderCreate(BaseModel):
     shipping_address: str
     phone: str
+    payment_method: str = "cash_on_delivery"
 
 # ============= Auth Functions =============
 def hash_password(password: str) -> str:
