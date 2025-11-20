@@ -147,9 +147,12 @@ const MyOrders = ({ user, logout }) => {
                       </div>
                     </div>
                   </div>
-                  <div className="mt-4 flex items-center gap-2 bg-green-50 border border-green-200 rounded-lg p-3">
+                  <div className="mt-4 flex items-center gap-2 bg-blue-50 border border-blue-200 rounded-lg p-3">
                     <p className="text-sm text-gray-700">
-                      <span className="font-semibold">طريقة الدفع:</span> الدفع عند الاستلام
+                      <span className="font-semibold">طريقة الدفع:</span>{' '}
+                      {order.payment_method === 'cash_on_delivery' && 'الدفع عند الاستلام'}
+                      {order.payment_method === 'cash' && 'الدفع باليد (نقداً) 💵'}
+                      {order.payment_method === 'visa' && 'الدفع بالفيزا 💳'}
                     </p>
                   </div>
                 </div>
