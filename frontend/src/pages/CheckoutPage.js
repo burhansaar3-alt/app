@@ -13,7 +13,8 @@ const CheckoutPage = ({ user, logout }) => {
   const [cart, setCart] = useState({ items: [] });
   const [formData, setFormData] = useState({
     shipping_address: '',
-    phone: user?.phone || ''
+    phone: user?.phone || '',
+    payment_method: 'cash_on_delivery'
   });
   const [loading, setLoading] = useState(false);
 
