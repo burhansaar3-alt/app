@@ -139,13 +139,79 @@ const CheckoutPage = ({ user, logout }) => {
 
           {/* Payment Method */}
           <div className="bg-white rounded-xl shadow-lg p-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">طريقة الدفع</h2>
-            <div className="flex items-center gap-3 bg-green-50 border border-green-200 rounded-lg p-4">
-              <CheckCircle2 className="w-6 h-6 text-green-600" />
-              <div>
-                <p className="font-semibold text-gray-900">الدفع عند الاستلام</p>
-                <p className="text-sm text-gray-600">ادفع عند استلام طلبك</p>
-              </div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">طريقة الدفع</h2>
+            <div className="space-y-4">
+              {/* Cash on Delivery */}
+              <label
+                className={`flex items-center gap-4 p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                  formData.payment_method === 'cash_on_delivery'
+                    ? 'border-green-500 bg-green-50'
+                    : 'border-gray-200 hover:border-green-300'
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="payment_method"
+                  value="cash_on_delivery"
+                  checked={formData.payment_method === 'cash_on_delivery'}
+                  onChange={(e) => setFormData({ ...formData, payment_method: e.target.value })}
+                  className="w-5 h-5"
+                  data-testid="payment-cash-delivery"
+                />
+                <div className="flex-1">
+                  <p className="font-semibold text-gray-900">الدفع عند الاستلام</p>
+                  <p className="text-sm text-gray-600">ادفع عند استلام طلبك</p>
+                </div>
+                <CheckCircle2 className="w-6 h-6 text-green-600" />
+              </label>
+
+              {/* Cash Payment */}
+              <label
+                className={`flex items-center gap-4 p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                  formData.payment_method === 'cash'
+                    ? 'border-blue-500 bg-blue-50'
+                    : 'border-gray-200 hover:border-blue-300'
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="payment_method"
+                  value="cash"
+                  checked={formData.payment_method === 'cash'}
+                  onChange={(e) => setFormData({ ...formData, payment_method: e.target.value })}
+                  className="w-5 h-5"
+                  data-testid="payment-cash"
+                />
+                <div className="flex-1">
+                  <p className="font-semibold text-gray-900">الدفع باليد (نقداً)</p>
+                  <p className="text-sm text-gray-600">الدفع نقداً مباشرة</p>
+                </div>
+                <span className="text-2xl">💵</span>
+              </label>
+
+              {/* Visa Payment */}
+              <label
+                className={`flex items-center gap-4 p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                  formData.payment_method === 'visa'
+                    ? 'border-purple-500 bg-purple-50'
+                    : 'border-gray-200 hover:border-purple-300'
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="payment_method"
+                  value="visa"
+                  checked={formData.payment_method === 'visa'}
+                  onChange={(e) => setFormData({ ...formData, payment_method: e.target.value })}
+                  className="w-5 h-5"
+                  data-testid="payment-visa"
+                />
+                <div className="flex-1">
+                  <p className="font-semibold text-gray-900">الدفع بالفيزا</p>
+                  <p className="text-sm text-gray-600">الدفع ببطاقة الفيزا أو الماستركارد</p>
+                </div>
+                <span className="text-2xl">💳</span>
+              </label>
             </div>
           </div>
 
