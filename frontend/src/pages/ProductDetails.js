@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { api } from '../App';
 import { Button } from '../components/ui/button';
-import { ArrowRight, ShoppingCart, Store, Plus, Minus } from 'lucide-react';
+import { Textarea } from '../components/ui/textarea';
+import { ArrowRight, ShoppingCart, Store, Plus, Minus, Star } from 'lucide-react';
 import { toast } from 'sonner';
 
 const ProductDetails = ({ user, logout }) => {
@@ -12,6 +13,11 @@ const ProductDetails = ({ user, logout }) => {
   const [storeInfo, setStoreInfo] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [reviews, setReviews] = useState([]);
+  const [averageRating, setAverageRating] = useState(0);
+  const [totalReviews, setTotalReviews] = useState(0);
+  const [newReview, setNewReview] = useState({ rating: 5, comment: '' });
+  const [showReviewForm, setShowReviewForm] = useState(false);
 
   useEffect(() => {
     fetchProduct();
