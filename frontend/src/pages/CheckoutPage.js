@@ -38,7 +38,24 @@ const CheckoutPage = ({ user, logout }) => {
   };
 
   const calculateTotal = () => {
-    return cart.items.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
+    const total = cart.items.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
+    return total - couponDiscount;
+  };
+
+  const validateCoupon = async () => {
+    if (!formData.coupon_code) return;
+    
+    try {
+      const total = cart.items.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
+      const res = await api.get(`/coupons/validate/${formData.coupon_code}?total=${total}`);
+      setCouponDiscount(res.data.discount);
+      setCouponApplied(true);
+      toast.success(`تم تطبيق الكوبون! خصم: ${res.data.discount.toLocaleString()} ل.س`);
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'كوبون غير صالح');
+      setCouponDiscount(0);
+      setCouponApplied(false);
+    }
   };
 
   const handleSubmit = async (e) => {
