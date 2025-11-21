@@ -148,7 +148,53 @@ const CheckoutPage = ({ user, logout }) => {
                   </p>
                 </div>
               ))}
+              
+              {/* Coupon Code */}
+              <div className="pt-4 border-t border-gray-200">
+                <Label htmlFor="coupon">كوبون الخصم (اختياري)</Label>
+                <div className="flex gap-2 mt-2">
+                  <Input
+                    id="coupon"
+                    data-testid="coupon-input"
+                    type="text"
+                    placeholder="أدخل كود الكوبون"
+                    value={formData.coupon_code}
+                    onChange={(e) => {
+                      setFormData({ ...formData, coupon_code: e.target.value.toUpperCase() });
+                      setCouponApplied(false);
+                      setCouponDiscount(0);
+                    }}
+                    disabled={couponApplied}
+                  />
+                  <Button
+                    type="button"
+                    onClick={validateCoupon}
+                    disabled={!formData.coupon_code || couponApplied}
+                    data-testid="apply-coupon"
+                  >
+                    تطبيق
+                  </Button>
+                </div>
+                {couponApplied && (
+                  <p className="text-green-600 text-sm mt-2">
+                    ✓ تم تطبيق الكوبون! خصم: {couponDiscount.toLocaleString()} ل.س
+                  </p>
+                )}
+              </div>
+              
               <div className="border-t border-gray-200 pt-4 mt-4">
+                {couponDiscount > 0 && (
+                  <div className="flex justify-between items-center text-gray-600 mb-2">
+                    <span>الإجمالي قبل الخصم</span>
+                    <span>{(calculateTotal() + couponDiscount).toLocaleString()} ل.س</span>
+                  </div>
+                )}
+                {couponDiscount > 0 && (
+                  <div className="flex justify-between items-center text-green-600 mb-2">
+                    <span>الخصم</span>
+                    <span>- {couponDiscount.toLocaleString()} ل.س</span>
+                  </div>
+                )}
                 <div className="flex justify-between items-center text-xl font-bold text-gray-900">
                   <span>المجموع الكلي</span>
                   <span data-testid="total-amount">{calculateTotal().toLocaleString()} ل.س</span>
