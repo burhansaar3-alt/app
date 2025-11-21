@@ -124,6 +124,49 @@ class OrderCreate(BaseModel):
     shipping_address: str
     phone: str
     payment_method: str = "cash_on_delivery"
+    coupon_code: Optional[str] = None
+
+class Wishlist(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    user_id: str
+    product_ids: List[str] = []
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class Review(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    product_id: str
+    user_id: str
+    rating: int  # 1-5
+    comment: Optional[str] = None
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class ReviewCreate(BaseModel):
+    product_id: str
+    rating: int
+    comment: Optional[str] = None
+
+class Coupon(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    code: str
+    discount_type: str  # percentage or fixed
+    discount_value: float
+    min_purchase: float = 0
+    max_uses: int = 0
+    used_count: int = 0
+    expires_at: Optional[datetime] = None
+    active: bool = True
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class CouponCreate(BaseModel):
+    code: str
+    discount_type: str
+    discount_value: float
+    min_purchase: float = 0
+    max_uses: int = 0
+    expires_at: Optional[str] = None
 
 # ============= Auth Functions =============
 def hash_password(password: str) -> str:
