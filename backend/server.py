@@ -511,6 +511,173 @@ async def update_order_status(order_id: str, status: str, current_user: dict = D
     
     return {"message": "Order status updated"}
 
+# ============= Wishlist Routes =============
+@api_router.get("/wishlist")
+async def get_wishlist(current_user: dict = Depends(get_current_user)):
+    wishlist = await db.wishlists.find_one({"user_id": current_user['id']}, {"_id": 0})
+    if not wishlist:
+        return {"products": []}
+    
+    # Fetch product details
+    products = []
+    for product_id in wishlist.get('product_ids', []):
+        product = await db.products.find_one({"id": product_id}, {"_id": 0})
+        if product:
+            products.append(product)
+    
+    return {"products": products}
+
+@api_router.post("/wishlist/add/{product_id}")
+async def add_to_wishlist(product_id: str, current_user: dict = Depends(get_current_user)):
+    wishlist = await db.wishlists.find_one({"user_id": current_user['id']}, {"_id": 0})
+    
+    if not wishlist:
+        wishlist = Wishlist(user_id=current_user['id'], product_ids=[product_id])
+        doc = wishlist.model_dump()
+        doc['updated_at'] = doc['updated_at'].isoformat()
+        await db.wishlists.insert_one(doc)
+    else:
+        product_ids = wishlist.get('product_ids', [])
+        if product_id not in product_ids:
+            product_ids.append(product_id)
+            await db.wishlists.update_one(
+                {"user_id": current_user['id']},
+                {"$set": {"product_ids": product_ids, "updated_at": datetime.now(timezone.utc).isoformat()}}
+            )
+    
+    return {"message": "Product added to wishlist"}
+
+@api_router.delete("/wishlist/remove/{product_id}")
+async def remove_from_wishlist(product_id: str, current_user: dict = Depends(get_current_user)):
+    wishlist = await db.wishlists.find_one({"user_id": current_user['id']}, {"_id": 0})
+    if not wishlist:
+        raise HTTPException(status_code=404, detail="Wishlist not found")
+    
+    product_ids = [pid for pid in wishlist.get('product_ids', []) if pid != product_id]
+    await db.wishlists.update_one(
+        {"user_id": current_user['id']},
+        {"$set": {"product_ids": product_ids, "updated_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    
+    return {"message": "Product removed from wishlist"}
+
+# ============= Reviews Routes =============
+@api_router.get("/products/{product_id}/reviews")
+async def get_product_reviews(product_id: str):
+    reviews = await db.reviews.find({"product_id": product_id}, {"_id": 0}).to_list(100)
+    
+    # Enrich with user names
+    enriched_reviews = []
+    for review in reviews:
+        user = await db.users.find_one({"id": review['user_id']}, {"_id": 0, "name": 1})
+        review_data = review.copy()
+        review_data['user_name'] = user.get('name', 'مستخدم') if user else 'مستخدم'
+        if isinstance(review_data.get('created_at'), str):
+            review_data['created_at'] = datetime.fromisoformat(review_data['created_at'])
+        enriched_reviews.append(review_data)
+    
+    # Calculate average rating
+    avg_rating = sum(r['rating'] for r in reviews) / len(reviews) if reviews else 0
+    
+    return {
+        "reviews": enriched_reviews,
+        "average_rating": round(avg_rating, 1),
+        "total_reviews": len(reviews)
+    }
+
+@api_router.post("/reviews")
+async def create_review(review_data: ReviewCreate, current_user: dict = Depends(get_current_user)):
+    # Check if user already reviewed this product
+    existing = await db.reviews.find_one({
+        "product_id": review_data.product_id,
+        "user_id": current_user['id']
+    })
+    
+    if existing:
+        raise HTTPException(status_code=400, detail="You already reviewed this product")
+    
+    review = Review(
+        product_id=review_data.product_id,
+        user_id=current_user['id'],
+        rating=review_data.rating,
+        comment=review_data.comment
+    )
+    
+    doc = review.model_dump()
+    doc['created_at'] = doc['created_at'].isoformat()
+    await db.reviews.insert_one(doc)
+    
+    return review
+
+# ============= Coupons Routes =============
+@api_router.post("/coupons")
+async def create_coupon(coupon_data: CouponCreate, current_user: dict = Depends(get_current_user)):
+    if current_user['role'] != 'admin':
+        raise HTTPException(status_code=403, detail="Only admins can create coupons")
+    
+    # Check if code exists
+    existing = await db.coupons.find_one({"code": coupon_data.code.upper()})
+    if existing:
+        raise HTTPException(status_code=400, detail="Coupon code already exists")
+    
+    coupon = Coupon(
+        code=coupon_data.code.upper(),
+        discount_type=coupon_data.discount_type,
+        discount_value=coupon_data.discount_value,
+        min_purchase=coupon_data.min_purchase,
+        max_uses=coupon_data.max_uses,
+        expires_at=datetime.fromisoformat(coupon_data.expires_at) if coupon_data.expires_at else None
+    )
+    
+    doc = coupon.model_dump()
+    doc['created_at'] = doc['created_at'].isoformat()
+    if doc.get('expires_at'):
+        doc['expires_at'] = doc['expires_at'].isoformat()
+    
+    await db.coupons.insert_one(doc)
+    return coupon
+
+@api_router.get("/coupons/validate/{code}")
+async def validate_coupon(code: str, total: float):
+    coupon = await db.coupons.find_one({"code": code.upper(), "active": True}, {"_id": 0})
+    
+    if not coupon:
+        raise HTTPException(status_code=404, detail="Coupon not found")
+    
+    # Check expiry
+    if coupon.get('expires_at'):
+        expires = datetime.fromisoformat(coupon['expires_at']) if isinstance(coupon['expires_at'], str) else coupon['expires_at']
+        if expires < datetime.now(timezone.utc):
+            raise HTTPException(status_code=400, detail="Coupon expired")
+    
+    # Check max uses
+    if coupon['max_uses'] > 0 and coupon['used_count'] >= coupon['max_uses']:
+        raise HTTPException(status_code=400, detail="Coupon limit reached")
+    
+    # Check minimum purchase
+    if total < coupon['min_purchase']:
+        raise HTTPException(status_code=400, detail=f"Minimum purchase of {coupon['min_purchase']} required")
+    
+    # Calculate discount
+    if coupon['discount_type'] == 'percentage':
+        discount = total * (coupon['discount_value'] / 100)
+    else:
+        discount = coupon['discount_value']
+    
+    return {
+        "valid": True,
+        "discount": discount,
+        "final_total": max(0, total - discount)
+    }
+
+@api_router.get("/coupons")
+async def get_coupons(current_user: dict = Depends(get_current_user)):
+    if current_user['role'] != 'admin':
+        raise HTTPException(status_code=403, detail="Only admins can view all coupons")
+    
+    coupons = await db.coupons.find({}, {"_id": 0}).to_list(100)
+    return coupons
+
 # Health check
 @api_router.get("/")
 async def root():
