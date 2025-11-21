@@ -329,17 +329,53 @@ async def create_product(product_data: ProductCreate, current_user: dict = Depen
     return product
 
 @api_router.get("/products")
-async def get_products(category_id: Optional[str] = None, store_id: Optional[str] = None):
+async def get_products(
+    category_id: Optional[str] = None,
+    store_id: Optional[str] = None,
+    min_price: Optional[float] = None,
+    max_price: Optional[float] = None,
+    search: Optional[str] = None,
+    sort_by: Optional[str] = None  # newest, price_low, price_high, rating
+):
     query = {"status": "active"}
     if category_id:
         query['category_id'] = category_id
     if store_id:
         query['store_id'] = store_id
+    if min_price is not None:
+        query['price'] = query.get('price', {})
+        query['price']['$gte'] = min_price
+    if max_price is not None:
+        query['price'] = query.get('price', {})
+        query['price']['$lte'] = max_price
+    if search:
+        query['$or'] = [
+            {'name': {'$regex': search, '$options': 'i'}},
+            {'description': {'$regex': search, '$options': 'i'}}
+        ]
     
     products = await db.products.find(query, {"_id": 0}).to_list(1000)
+    
+    # Get reviews for rating sort
+    if sort_by == 'rating':
+        for product in products:
+            reviews = await db.reviews.find({"product_id": product['id']}).to_list(100)
+            product['avg_rating'] = sum(r['rating'] for r in reviews) / len(reviews) if reviews else 0
+    
+    # Sort products
+    if sort_by == 'newest':
+        products.sort(key=lambda x: x.get('created_at', ''), reverse=True)
+    elif sort_by == 'price_low':
+        products.sort(key=lambda x: x.get('price', 0))
+    elif sort_by == 'price_high':
+        products.sort(key=lambda x: x.get('price', 0), reverse=True)
+    elif sort_by == 'rating':
+        products.sort(key=lambda x: x.get('avg_rating', 0), reverse=True)
+    
     for product in products:
         if isinstance(product.get('created_at'), str):
             product['created_at'] = datetime.fromisoformat(product['created_at'])
+    
     return products
 
 @api_router.get("/products/{product_id}")
