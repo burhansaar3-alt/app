@@ -12,6 +12,9 @@ const HomePage = ({ user, logout }) => {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [cartCount, setCartCount] = useState(0);
+  const [sortBy, setSortBy] = useState('');
+  const [maxPrice, setMaxPrice] = useState('');
+  const [wishlistIds, setWishlistIds] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
