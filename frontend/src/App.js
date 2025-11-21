@@ -11,6 +11,7 @@ import AdminDashboard from './pages/AdminDashboard';
 import StoreDashboard from './pages/StoreDashboard';
 import MyOrders from './pages/MyOrders';
 import StoreView from './pages/StoreView';
+import WishlistPage from './pages/WishlistPage';
 import { Toaster } from './components/ui/sonner';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
