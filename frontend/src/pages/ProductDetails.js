@@ -247,6 +247,138 @@ const ProductDetails = ({ user, logout }) => {
             )}
           </div>
         </div>
+
+        {/* Reviews Section */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 mt-8">
+          <div className="bg-white rounded-3xl shadow-lg p-8">
+            <div className="flex items-center justify-between mb-8">
+              <div>
+                <h2 className="text-3xl font-bold text-gray-900 mb-2">التقييمات والمراجعات</h2>
+                {totalReviews > 0 && (
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-1">
+                      {renderStars(Math.round(averageRating))}
+                    </div>
+                    <span className="text-2xl font-bold text-gray-900">{averageRating.toFixed(1)}</span>
+                    <span className="text-gray-600">({totalReviews} تقييم)</span>
+                  </div>
+                )}
+              </div>
+              {user && !showReviewForm && (
+                <Button
+                  onClick={() => setShowReviewForm(true)}
+                  className="bg-blue-600 hover:bg-blue-700"
+                  data-testid="add-review-button"
+                >
+                  <Plus className="w-5 h-5 ml-2" />
+                  إضافة تقييم
+                </Button>
+              )}
+            </div>
+
+            {/* Add Review Form */}
+            {showReviewForm && (
+              <form onSubmit={submitReview} className="bg-blue-50 rounded-xl p-6 mb-8">
+                <h3 className="text-xl font-bold text-gray-900 mb-4">إضافة تقييمك</h3>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">التقييم</label>
+                    <div className="flex gap-2">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <button
+                          key={star}
+                          type="button"
+                          onClick={() => setNewReview({ ...newReview, rating: star })}
+                          className="transition-transform hover:scale-110"
+                          data-testid={`rating-star-${star}`}
+                        >
+                          <Star
+                            className={`w-8 h-8 ${star <= newReview.rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`}
+                          />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">التعليق (اختياري)</label>
+                    <Textarea
+                      value={newReview.comment}
+                      onChange={(e) => setNewReview({ ...newReview, comment: e.target.value })}
+                      placeholder="شاركنا رأيك في المنتج..."
+                      rows={4}
+                      data-testid="review-comment"
+                    />
+                  </div>
+                  <div className="flex gap-3">
+                    <Button
+                      type="submit"
+                      className="bg-blue-600 hover:bg-blue-700"
+                      data-testid="submit-review"
+                    >
+                      إرسال التقييم
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => {
+                        setShowReviewForm(false);
+                        setNewReview({ rating: 5, comment: '' });
+                      }}
+                      data-testid="cancel-review"
+                    >
+                      إلغاء
+                    </Button>
+                  </div>
+                </div>
+              </form>
+            )}
+
+            {/* Reviews List */}
+            {reviews.length === 0 ? (
+              <div className="text-center py-12">
+                <Star className="w-16 h-16 mx-auto text-gray-300 mb-4" />
+                <p className="text-gray-500 text-lg">لا توجد تقييمات بعد</p>
+                <p className="text-gray-400 mt-2">كن أول من يقيّم هذا المنتج</p>
+              </div>
+            ) : (
+              <div className="space-y-6">
+                {reviews.map((review) => (
+                  <div
+                    key={review.id}
+                    className="border-b border-gray-200 pb-6 last:border-0"
+                    data-testid={`review-${review.id}`}
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                          <span className="text-blue-600 font-bold text-lg">
+                            {review.user_name?.charAt(0) || 'ز'}
+                          </span>
+                        </div>
+                        <div>
+                          <p className="font-semibold text-gray-900">{review.user_name || 'زبون'}</p>
+                          <div className="flex items-center gap-1">
+                            {renderStars(review.rating, 'w-4 h-4')}
+                          </div>
+                        </div>
+                      </div>
+                      <span className="text-sm text-gray-500">
+                        {new Date(review.created_at).toLocaleDateString('ar-SY', {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric'
+                        })}
+                      </span>
+                    </div>
+                    {review.comment && (
+                      <p className="text-gray-700 leading-relaxed">{review.comment}</p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
