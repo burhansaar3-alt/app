@@ -39,13 +39,48 @@ const HomePage = ({ user, logout }) => {
     }
   };
 
-  const fetchProducts = async (categoryId = null) => {
+  const fetchProducts = async () => {
     try {
-      const params = categoryId ? { category_id: categoryId } : {};
+      const params = {};
+      if (selectedCategory) params.category_id = selectedCategory;
+      if (sortBy) params.sort_by = sortBy;
+      if (maxPrice) params.max_price = parseFloat(maxPrice);
       const res = await api.get('/products', { params });
       setProducts(res.data);
     } catch (error) {
       console.error('Error fetching products:', error);
+    }
+  };
+
+  const fetchWishlist = async () => {
+    try {
+      const res = await api.get('/wishlist');
+      const ids = res.data.products.map(p => p.id);
+      setWishlistIds(ids);
+    } catch (error) {
+      console.error('Error fetching wishlist:', error);
+    }
+  };
+
+  const toggleWishlist = async (productId) => {
+    if (!user) {
+      toast.error('يرجى تسجيل الدخول أولاً');
+      navigate('/auth');
+      return;
+    }
+
+    try {
+      if (wishlistIds.includes(productId)) {
+        await api.delete(`/wishlist/remove/${productId}`);
+        setWishlistIds(wishlistIds.filter(id => id !== productId));
+        toast.success('تم الحذف من المفضلات');
+      } else {
+        await api.post(`/wishlist/add/${productId}`);
+        setWishlistIds([...wishlistIds, productId]);
+        toast.success('تم الإضافة إلى المفضلات');
+      }
+    } catch (error) {
+      toast.error('حدث خطأ');
     }
   };
 
