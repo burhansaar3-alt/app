@@ -21,6 +21,7 @@ const ProductDetails = ({ user, logout }) => {
 
   useEffect(() => {
     fetchProduct();
+    fetchReviews();
   }, [id]);
 
   const fetchProduct = async () => {
@@ -38,6 +39,49 @@ const ProductDetails = ({ user, logout }) => {
       toast.error('حدث خطأ في تحميل المنتج');
       setLoading(false);
     }
+  };
+
+  const fetchReviews = async () => {
+    try {
+      const res = await api.get(`/products/${id}/reviews`);
+      setReviews(res.data.reviews || []);
+      setAverageRating(res.data.average_rating || 0);
+      setTotalReviews(res.data.total_reviews || 0);
+    } catch (error) {
+      console.error('Error fetching reviews:', error);
+    }
+  };
+
+  const submitReview = async (e) => {
+    e.preventDefault();
+    if (!user) {
+      toast.error('يرجى تسجيل الدخول لإضافة تقييم');
+      navigate('/auth');
+      return;
+    }
+
+    try {
+      await api.post('/reviews', {
+        product_id: id,
+        rating: newReview.rating,
+        comment: newReview.comment
+      });
+      toast.success('تم إضافة التقييم بنجاح');
+      setNewReview({ rating: 5, comment: '' });
+      setShowReviewForm(false);
+      fetchReviews();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'حدث خطأ في إضافة التقييم');
+    }
+  };
+
+  const renderStars = (rating, size = 'w-5 h-5') => {
+    return [...Array(5)].map((_, index) => (
+      <Star
+        key={index}
+        className={`${size} ${index < rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`}
+      />
+    ));
   };
 
   const addToCart = async () => {
