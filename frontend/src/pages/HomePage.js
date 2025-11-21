@@ -20,16 +20,15 @@ const HomePage = ({ user, logout }) => {
   useEffect(() => {
     fetchCategories();
     fetchProducts();
-    if (user) fetchCart();
+    if (user) {
+      fetchCart();
+      fetchWishlist();
+    }
   }, [user]);
 
   useEffect(() => {
-    if (selectedCategory) {
-      fetchProducts(selectedCategory);
-    } else {
-      fetchProducts();
-    }
-  }, [selectedCategory]);
+    fetchProducts();
+  }, [selectedCategory, sortBy, maxPrice]);
 
   const fetchCategories = async () => {
     try {
