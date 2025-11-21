@@ -492,10 +492,37 @@ async def create_order(order_data: OrderCreate, current_user: dict = Depends(get
                 "quantity": item['quantity']
             })
     
+    # Apply coupon if provided
+    discount = 0
+    coupon_code = None
+    if order_data.coupon_code:
+        coupon = await db.coupons.find_one({"code": order_data.coupon_code.upper(), "active": True}, {"_id": 0})
+        if coupon:
+            # Check validity
+            if coupon.get('expires_at'):
+                expires = datetime.fromisoformat(coupon['expires_at']) if isinstance(coupon['expires_at'], str) else coupon['expires_at']
+                if expires >= datetime.now(timezone.utc):
+                    if coupon['max_uses'] == 0 or coupon['used_count'] < coupon['max_uses']:
+                        if total >= coupon['min_purchase']:
+                            # Apply discount
+                            if coupon['discount_type'] == 'percentage':
+                                discount = total * (coupon['discount_value'] / 100)
+                            else:
+                                discount = coupon['discount_value']
+                            
+                            coupon_code = coupon['code']
+                            # Increment usage
+                            await db.coupons.update_one(
+                                {"code": coupon['code']},
+                                {"$inc": {"used_count": 1}}
+                            )
+    
+    final_total = max(0, total - discount)
+    
     order = Order(
         customer_id=current_user['id'],
         items=order_items,
-        total_amount=total,
+        total_amount=final_total,
         shipping_address=order_data.shipping_address,
         phone=order_data.phone,
         payment_method=order_data.payment_method
@@ -503,6 +530,9 @@ async def create_order(order_data: OrderCreate, current_user: dict = Depends(get
     
     doc = order.model_dump()
     doc['created_at'] = doc['created_at'].isoformat()
+    doc['original_total'] = total
+    doc['discount'] = discount
+    doc['coupon_code'] = coupon_code
     await db.orders.insert_one(doc)
     
     # Clear cart
