@@ -288,6 +288,47 @@ const HomePage = ({ user, logout }) => {
           <p className="text-gray-600">{filteredProducts.length} منتج</p>
         </div>
 
+        {/* Filters */}
+        <div className="bg-white rounded-xl shadow-md p-6 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">الترتيب</label>
+              <select
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                data-testid="sort-select"
+              >
+                <option value="">افتراضي</option>
+                <option value="newest">الأحدث</option>
+                <option value="price_low">الأرخص</option>
+                <option value="price_high">الأغلى</option>
+                <option value="rating">الأعلى تقييماً</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">السعر الأقصى</label>
+              <Input
+                type="number"
+                placeholder="مثال: 100000"
+                value={maxPrice}
+                onChange={(e) => setMaxPrice(e.target.value)}
+                data-testid="max-price-input"
+              />
+            </div>
+            <div className="flex items-end">
+              <Button
+                onClick={() => { setSortBy(''); setMaxPrice(''); }}
+                variant="outline"
+                className="w-full"
+                data-testid="clear-filters"
+              >
+                مسح الفلاتر
+              </Button>
+            </div>
+          </div>
+        </div>
+
         {filteredProducts.length === 0 ? (
           <div className="text-center py-20">
             <p className="text-gray-500 text-lg">لا توجد منتجات حالياً</p>
