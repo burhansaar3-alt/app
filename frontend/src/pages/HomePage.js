@@ -360,6 +360,20 @@ const HomePage = ({ user, logout }) => {
                       نفذت الكمية
                     </div>
                   )}
+                  <Button
+                    data-testid={`wishlist-${product.id}`}
+                    variant="ghost"
+                    size="icon"
+                    className="absolute top-2 right-2 bg-white/80 hover:bg-white rounded-full w-8 h-8"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleWishlist(product.id);
+                    }}
+                  >
+                    <Heart 
+                      className={`w-4 h-4 ${wishlistIds.includes(product.id) ? 'fill-red-500 text-red-500' : 'text-gray-600'}`}
+                    />
+                  </Button>
                 </div>
                 <div className="p-4">
                   <h3 className="text-lg font-semibold text-gray-900 mb-2 truncate">
