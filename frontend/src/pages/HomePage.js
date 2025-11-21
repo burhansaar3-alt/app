@@ -145,6 +145,21 @@ const HomePage = ({ user, logout }) => {
               {user ? (
                 <>
                   <Button
+                    data-testid="wishlist-button"
+                    variant="ghost"
+                    size="icon"
+                    className="relative"
+                    onClick={() => navigate('/wishlist')}
+                  >
+                    <Heart className="w-5 h-5" />
+                    {wishlistIds.length > 0 && (
+                      <span className="absolute -top-1 -left-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                        {wishlistIds.length}
+                      </span>
+                    )}
+                  </Button>
+                  
+                  <Button
                     data-testid="cart-button"
                     variant="ghost"
                     size="icon"
