@@ -14,9 +14,12 @@ const CheckoutPage = ({ user, logout }) => {
   const [formData, setFormData] = useState({
     shipping_address: '',
     phone: user?.phone || '',
-    payment_method: 'cash_on_delivery'
+    payment_method: 'cash_on_delivery',
+    coupon_code: ''
   });
   const [loading, setLoading] = useState(false);
+  const [couponDiscount, setCouponDiscount] = useState(0);
+  const [couponApplied, setCouponApplied] = useState(false);
 
   useEffect(() => {
     fetchCart();
