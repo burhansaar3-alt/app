@@ -343,6 +343,7 @@ const ProductDetails = ({ user, logout }) => {
                   <ShoppingCart className="w-5 h-5 ml-2" />
                   إضافة إلى السلة
                 </Button>
+              </div>
               </>
             )}
           </div>
