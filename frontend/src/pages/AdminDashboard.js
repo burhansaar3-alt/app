@@ -4,7 +4,7 @@ import { api } from '../App';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
-import { ArrowRight, Package, Store, Check, X } from 'lucide-react';
+import { ArrowRight, Package, Store, Trash2, Check, X } from 'lucide-react';
 import { toast } from 'sonner';
 
 const AdminDashboard = ({ user, logout }) => {
