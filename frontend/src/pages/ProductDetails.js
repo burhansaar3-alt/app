@@ -23,21 +23,6 @@ const ProductDetails = ({ user, logout }) => {
   const [selectedShoeSize, setSelectedShoeSize] = useState('');
   const [similarProducts, setSimilarProducts] = useState([]);
 
-  useEffect(() => {
-    fetchProduct();
-    fetchReviews();
-    fetchSimilarProducts();
-  }, [id]);
-
-  const fetchSimilarProducts = async () => {
-    try {
-      const res = await api.get(`/products/${id}/similar`);
-      setSimilarProducts(res.data);
-    } catch (error) {
-      console.error('Error fetching similar products:', error);
-    }
-  };
-
   const fetchProduct = async () => {
     try {
       const res = await api.get(`/products/${id}`);
@@ -65,6 +50,21 @@ const ProductDetails = ({ user, logout }) => {
       console.error('Error fetching reviews:', error);
     }
   };
+
+  const fetchSimilarProducts = async () => {
+    try {
+      const res = await api.get(`/products/${id}/similar`);
+      setSimilarProducts(res.data);
+    } catch (error) {
+      console.error('Error fetching similar products:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchProduct();
+    fetchReviews();
+    fetchSimilarProducts();
+  }, [id]);
 
   const submitReview = async (e) => {
     e.preventDefault();
