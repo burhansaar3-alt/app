@@ -425,12 +425,26 @@ const HomePage = ({ user, logout }) => {
             </div>
             <div>
               <h3 className="text-lg font-semibold mb-4">تواصل معنا</h3>
-              <p className="text-gray-400">
-                <span className="font-semibold text-white">البريد:</span> info@syriamarket.com
-              </p>
-              <p className="text-gray-400 mt-2">
-                <span className="font-semibold text-white">الهاتف:</span> +963 933 333 333
-              </p>
+              <div className="space-y-2">
+                <p className="text-gray-400 flex items-center gap-2">
+                  <span className="font-semibold text-white">📧 البريد:</span>
+                  <a href="mailto:info@syriamarket.com" className="hover:text-blue-400">
+                    info@syriamarket.com
+                  </a>
+                </p>
+                <p className="text-gray-400 flex items-center gap-2">
+                  <span className="font-semibold text-white">📱 الهاتف:</span>
+                  <a href="tel:+963933333333" className="hover:text-blue-400">
+                    +963 933 333 333
+                  </a>
+                </p>
+                <p className="text-gray-400 flex items-center gap-2">
+                  <span className="font-semibold text-white">📷 انستغرام:</span>
+                  <a href="https://instagram.com/syriamarket" target="_blank" rel="noopener noreferrer" className="hover:text-blue-400">
+                    @syriamarket
+                  </a>
+                </p>
+              </div>
               <p className="text-sm text-gray-500 mt-4">
                 للاستفسارات وطلبات الشراكة والتعاون
               </p>
