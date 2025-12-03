@@ -1,124 +1,184 @@
 {
   "summary": {
-    "total_tests": 19,
-    "passed_tests": 16,
-    "success_rate": 84.21052631578947,
-    "timestamp": "2025-10-20T01:07:58.327169"
+    "total_tests": 29,
+    "passed_tests": 27,
+    "success_rate": 93.10344827586206,
+    "timestamp": "2025-12-03T07:10:51.583106"
   },
   "detailed_results": [
     {
       "test": "API Health Check",
       "status": "PASS",
       "details": "Status: 200",
-      "timestamp": "2025-10-20T01:07:56.961294"
+      "timestamp": "2025-12-03T07:10:49.697875"
     },
     {
       "test": "Get Categories",
       "status": "PASS",
       "details": "Status: 200",
-      "timestamp": "2025-10-20T01:07:57.002870"
+      "timestamp": "2025-12-03T07:10:49.734837"
     },
     {
       "test": "Get Products",
       "status": "PASS",
       "details": "Status: 200",
-      "timestamp": "2025-10-20T01:07:57.041796"
+      "timestamp": "2025-12-03T07:10:49.773019"
     },
     {
       "test": "Register Admin",
       "status": "FAIL",
       "details": "Status: 400 (Expected: 200) - Email already registered",
-      "timestamp": "2025-10-20T01:07:57.077867"
+      "timestamp": "2025-12-03T07:10:49.812355"
     },
     {
       "test": "Register Store Owner",
       "status": "PASS",
       "details": "Status: 200",
-      "timestamp": "2025-10-20T01:07:57.338553"
+      "timestamp": "2025-12-03T07:10:50.070869"
     },
     {
       "test": "Register Customer",
       "status": "PASS",
       "details": "Status: 200",
-      "timestamp": "2025-10-20T01:07:57.596150"
+      "timestamp": "2025-12-03T07:10:50.329922"
     },
     {
       "test": "Admin Login",
       "status": "PASS",
       "details": "Status: 200",
-      "timestamp": "2025-10-20T01:07:57.854648"
+      "timestamp": "2025-12-03T07:10:50.588980"
     },
     {
       "test": "Create Store",
       "status": "PASS",
       "details": "Status: 200",
-      "timestamp": "2025-10-20T01:07:57.897693"
+      "timestamp": "2025-12-03T07:10:50.629986"
     },
     {
       "test": "Get Stores",
       "status": "PASS",
       "details": "Status: 200",
-      "timestamp": "2025-10-20T01:07:57.936341"
+      "timestamp": "2025-12-03T07:10:50.663551"
     },
     {
       "test": "Get Stores for Approval",
       "status": "PASS",
       "details": "Status: 200",
-      "timestamp": "2025-10-20T01:07:57.989249"
+      "timestamp": "2025-12-03T07:10:50.701368"
     },
     {
       "test": "Approve Store",
       "status": "PASS",
       "details": "Status: 200",
-      "timestamp": "2025-10-20T01:07:58.025900"
+      "timestamp": "2025-12-03T07:10:50.735969"
     },
     {
       "test": "Get Categories for Product",
       "status": "PASS",
       "details": "Status: 200",
-      "timestamp": "2025-10-20T01:07:58.059968"
+      "timestamp": "2025-12-03T07:10:50.771301"
     },
     {
       "test": "Add Product",
-      "status": "PASS",
-      "details": "Status: 200",
-      "timestamp": "2025-10-20T01:07:58.094174"
+      "status": "FAIL",
+      "details": "Status: 403 (Expected: 200) - You need an approved store to add products",
+      "timestamp": "2025-12-03T07:10:50.809657"
     },
     {
       "test": "Get Empty Cart",
       "status": "PASS",
       "details": "Status: 200",
-      "timestamp": "2025-10-20T01:07:58.131124"
+      "timestamp": "2025-12-03T07:10:50.847405"
     },
     {
       "test": "Get Products for Cart",
       "status": "PASS",
       "details": "Status: 200",
-      "timestamp": "2025-10-20T01:07:58.170951"
+      "timestamp": "2025-12-03T07:10:50.886561"
     },
     {
       "test": "Add to Cart",
-      "status": "FAIL",
-      "details": "Status: 500 (Expected: 200) - Internal Server Error",
-      "timestamp": "2025-10-20T01:07:58.219236"
+      "status": "PASS",
+      "details": "Status: 200",
+      "timestamp": "2025-12-03T07:10:50.927198"
+    },
+    {
+      "test": "Get Cart with Items",
+      "status": "PASS",
+      "details": "Status: 200",
+      "timestamp": "2025-12-03T07:10:50.969126"
     },
     {
       "test": "Create Order",
-      "status": "FAIL",
-      "details": "Status: 400 (Expected: 200) - Cart is empty",
-      "timestamp": "2025-10-20T01:07:58.255146"
+      "status": "PASS",
+      "details": "Status: 200",
+      "timestamp": "2025-12-03T07:10:51.010221"
     },
     {
       "test": "Get Customer Orders",
       "status": "PASS",
       "details": "Status: 200",
-      "timestamp": "2025-10-20T01:07:58.290533"
+      "timestamp": "2025-12-03T07:10:51.043857"
     },
     {
       "test": "Get All Orders (Admin)",
       "status": "PASS",
       "details": "Status: 200",
-      "timestamp": "2025-10-20T01:07:58.326205"
+      "timestamp": "2025-12-03T07:10:51.080973"
+    },
+    {
+      "test": "Register Store Owner for Delete Test",
+      "status": "PASS",
+      "details": "Status: 200",
+      "timestamp": "2025-12-03T07:10:51.338828"
+    },
+    {
+      "test": "Create Store for Delete Test",
+      "status": "PASS",
+      "details": "Status: 200",
+      "timestamp": "2025-12-03T07:10:51.371705"
+    },
+    {
+      "test": "Approve Store for Delete Test",
+      "status": "PASS",
+      "details": "Status: 200",
+      "timestamp": "2025-12-03T07:10:51.409437"
+    },
+    {
+      "test": "Get Categories for Delete Test",
+      "status": "PASS",
+      "details": "Status: 200",
+      "timestamp": "2025-12-03T07:10:51.443814"
+    },
+    {
+      "test": "Add Product for Delete Test",
+      "status": "PASS",
+      "details": "Status: 200",
+      "timestamp": "2025-12-03T07:10:51.479509"
+    },
+    {
+      "test": "Admin Delete Store",
+      "status": "PASS",
+      "details": "Status: 200",
+      "timestamp": "2025-12-03T07:10:51.515258"
+    },
+    {
+      "test": "Verify Store Deleted",
+      "status": "PASS",
+      "details": "Status: 200",
+      "timestamp": "2025-12-03T07:10:51.548427"
+    },
+    {
+      "test": "Get Stores After Delete",
+      "status": "PASS",
+      "details": "Status: 200",
+      "timestamp": "2025-12-03T07:10:51.581693"
+    },
+    {
+      "test": "Verify Store Deletion",
+      "status": "PASS",
+      "details": "Store successfully removed from database",
+      "timestamp": "2025-12-03T07:10:51.582308"
     }
   ]
 }
