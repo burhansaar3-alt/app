@@ -294,6 +294,27 @@ async def approve_store(store_id: str, status: str, current_user: dict = Depends
     
     return {"message": "Store status updated"}
 
+@api_router.delete("/stores/{store_id}")
+async def delete_store(store_id: str, current_user: dict = Depends(get_current_user)):
+    if current_user['role'] != 'admin':
+        raise HTTPException(status_code=403, detail="Only admins can delete stores")
+    
+    # Check if store exists
+    store = await db.stores.find_one({"id": store_id}, {"_id": 0})
+    if not store:
+        raise HTTPException(status_code=404, detail="Store not found")
+    
+    # Delete all products from this store
+    products_result = await db.products.delete_many({"store_id": store_id})
+    
+    # Delete the store
+    await db.stores.delete_one({"id": store_id})
+    
+    return {
+        "message": "Store and all its products deleted successfully",
+        "products_deleted": products_result.deleted_count
+    }
+
 # ============= Category Routes =============
 @api_router.get("/categories", response_model=List[Category])
 async def get_categories():
