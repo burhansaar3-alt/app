@@ -67,6 +67,17 @@ const ProductDetails = ({ user, logout }) => {
     fetchSimilarProducts();
   }, [id]);
 
+  // Update main image when product loads or color changes
+  useEffect(() => {
+    if (product) {
+      if (selectedColor && selectedColor.image) {
+        setMainImage(selectedColor.image);
+      } else if (product.images && product.images.length > 0) {
+        setMainImage(product.images[0]);
+      }
+    }
+  }, [product, selectedColor]);
+
   const submitReview = async (e) => {
     e.preventDefault();
     if (!user) {
