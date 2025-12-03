@@ -259,6 +259,79 @@ class SyriaMarketAPITester:
         
         return success
 
+    def test_admin_delete_store(self):
+        """Test admin delete store functionality"""
+        if not self.admin_token:
+            self.log_test("Admin Delete Store", False, "No admin token")
+            return False
+        
+        # First, create a store owner and store to delete
+        timestamp = datetime.now().strftime('%H%M%S')
+        owner_data = {
+            "email": f"delete_test_owner_{timestamp}@example.com",
+            "password": "password123",
+            "name": "Delete Test Owner",
+            "role": "store_owner"
+        }
+        
+        # Register store owner
+        success, response = self.run_test("Register Store Owner for Delete Test", "POST", "auth/register", 200, owner_data)
+        if not success or 'token' not in response:
+            return False
+        
+        temp_owner_token = response['token']
+        
+        # Create a store
+        store_data = {
+            "store_name": f"Test Store to Delete {timestamp}",
+            "description": "This store will be deleted in the test"
+        }
+        headers = {'Authorization': f'Bearer {temp_owner_token}'}
+        success, store_response = self.run_test("Create Store for Delete Test", "POST", "stores", 200, store_data, headers)
+        if not success or 'id' not in store_response:
+            return False
+        
+        store_id = store_response['id']
+        
+        # Approve the store first (admin action)
+        admin_headers = {'Authorization': f'Bearer {self.admin_token}'}
+        success, _ = self.run_test("Approve Store for Delete Test", "PATCH", f"stores/{store_id}/approve?status=approved", 200, None, admin_headers)
+        if not success:
+            return False
+        
+        # Add a product to the store to test cascade deletion
+        # First get categories
+        success, categories = self.run_test("Get Categories for Delete Test", "GET", "categories", 200)
+        if success and categories:
+            product_data = {
+                "category_id": categories[0]['id'],
+                "name": f"Test Product for Delete {timestamp}",
+                "description": "This product will be deleted with the store",
+                "price": 25000,
+                "stock": 5
+            }
+            success, _ = self.run_test("Add Product for Delete Test", "POST", "products", 200, product_data, headers)
+        
+        # Now test the actual delete functionality
+        success, delete_response = self.run_test("Admin Delete Store", "DELETE", f"stores/{store_id}", 200, None, admin_headers)
+        
+        if success:
+            # Verify the store is actually deleted
+            success_verify, _ = self.run_test("Verify Store Deleted", "GET", f"stores", 200)
+            if success_verify:
+                # Check that the deleted store is not in the list
+                success_get_stores, stores_data = self.run_test("Get Stores After Delete", "GET", "stores", 200)
+                if success_get_stores:
+                    remaining_stores = [s for s in stores_data if s.get('id') == store_id]
+                    if len(remaining_stores) == 0:
+                        self.log_test("Verify Store Deletion", True, "Store successfully removed from database")
+                        return True
+                    else:
+                        self.log_test("Verify Store Deletion", False, "Store still exists in database")
+                        return False
+        
+        return success
+
     def run_all_tests(self):
         """Run all tests in sequence"""
         print("🚀 Starting Syria Market API Tests...")
