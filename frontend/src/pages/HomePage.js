@@ -428,8 +428,8 @@ const HomePage = ({ user, logout }) => {
               <div className="space-y-2">
                 <p className="text-gray-400 flex items-center gap-2">
                   <span className="font-semibold text-white">📧 البريد:</span>
-                  <a href="mailto:info@syriamarket.com" className="hover:text-blue-400">
-                    info@syriamarket.com
+                  <a href="mailto:trendsyria926@gmail.com" className="hover:text-blue-400">
+                    trendsyria926@gmail.com
                   </a>
                 </p>
                 <p className="text-gray-400 flex items-center gap-2">
@@ -440,8 +440,8 @@ const HomePage = ({ user, logout }) => {
                 </p>
                 <p className="text-gray-400 flex items-center gap-2">
                   <span className="font-semibold text-white">📷 انستغرام:</span>
-                  <a href="https://instagram.com/syriamarket" target="_blank" rel="noopener noreferrer" className="hover:text-blue-400">
-                    @syriamarket
+                  <a href="https://instagram.com/trend.syria.offical" target="_blank" rel="noopener noreferrer" className="hover:text-blue-400">
+                    @trend.syria.offical
                   </a>
                 </p>
               </div>
