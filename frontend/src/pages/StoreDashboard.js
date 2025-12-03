@@ -332,16 +332,51 @@ const StoreDashboard = ({ user, logout }) => {
                         </select>
                       </div>
                       <div>
-                        <Label htmlFor="image_url">رابط الصورة</Label>
+                        <Label htmlFor="product_images">صور المنتج (يمكن اختيار عدة صور)</Label>
                         <Input
-                          id="image_url"
-                          data-testid="product-image-input"
-                          type="url"
-                          placeholder="https://example.com/image.jpg"
+                          id="product_images"
+                          data-testid="product-images-input"
+                          type="file"
+                          accept="image/*"
+                          multiple
                           onChange={(e) => {
-                            if (e.target.value) {
-                              setProductData({ ...productData, images: [e.target.value] });
-                            }
+                            const files = Array.from(e.target.files);
+                            setSelectedFiles(files);
+                          }}
+                          className="cursor-pointer"
+                        />
+                        {selectedFiles.length > 0 && (
+                          <p className="text-sm text-gray-600 mt-2">
+                            تم اختيار {selectedFiles.length} صورة
+                          </p>
+                        )}
+                        {uploadingImages && (
+                          <p className="text-sm text-blue-600 mt-2">جاري رفع الصور...</p>
+                        )}
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="sizes">المقاسات (اختياري - مفصولة بفاصلة)</Label>
+                        <Input
+                          id="sizes"
+                          data-testid="product-sizes-input"
+                          placeholder="مثال: S, M, L, XL"
+                          onChange={(e) => {
+                            const sizes = e.target.value.split(',').map(s => s.trim()).filter(s => s);
+                            setProductData({ ...productData, sizes });
+                          }}
+                        />
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="shoe_sizes">مقاسات الأحذية (اختياري - مفصولة بفاصلة)</Label>
+                        <Input
+                          id="shoe_sizes"
+                          data-testid="product-shoe-sizes-input"
+                          placeholder="مثال: 38, 39, 40, 41, 42"
+                          onChange={(e) => {
+                            const shoe_sizes = e.target.value.split(',').map(s => s.trim()).filter(s => s);
+                            setProductData({ ...productData, shoe_sizes });
                           }}
                         />
                       </div>
