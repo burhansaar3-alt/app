@@ -440,6 +440,25 @@ async def delete_product(product_id: str, current_user: dict = Depends(get_curre
     await db.products.delete_one({"id": product_id})
     return {"message": "Product deleted"}
 
+# ============= Image Upload Route =============
+@api_router.post("/upload-image")
+async def upload_image(file: UploadFile = File(...), current_user: dict = Depends(get_current_user)):
+    if current_user['role'] not in ['store_owner', 'admin']:
+        raise HTTPException(status_code=403, detail="Only store owners can upload images")
+    
+    # Read file content
+    contents = await file.read()
+    
+    # Convert to base64
+    base64_image = base64.b64encode(contents).decode('utf-8')
+    
+    # Create data URL
+    file_ext = file.filename.split('.')[-1].lower()
+    mime_type = f"image/{file_ext}" if file_ext in ['jpg', 'jpeg', 'png', 'gif', 'webp'] else "image/jpeg"
+    data_url = f"data:{mime_type};base64,{base64_image}"
+    
+    return {"image_url": data_url}
+
 # ============= Cart Routes =============
 @api_router.get("/cart")
 async def get_cart(current_user: dict = Depends(get_current_user)):
