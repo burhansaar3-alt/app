@@ -87,6 +87,9 @@ class Product(BaseModel):
     images: List[str] = []
     stock: int = 0
     status: str = "active"  # active, inactive
+    sizes: List[str] = []  # S, M, L, XL, XXL
+    colors: List[dict] = []  # [{"name": "أحمر", "hex": "#FF0000", "image": "url"}]
+    shoe_sizes: List[str] = []  # 38, 39, 40, 41, 42, 43, 44
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class ProductCreate(BaseModel):
@@ -96,6 +99,9 @@ class ProductCreate(BaseModel):
     price: float
     images: List[str] = []
     stock: int = 0
+    sizes: List[str] = []
+    colors: List[dict] = []
+    shoe_sizes: List[str] = []
 
 class CartItem(BaseModel):
     product_id: str
