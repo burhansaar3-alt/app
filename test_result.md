@@ -167,15 +167,18 @@ backend:
 
   - task: "Admin delete store"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "medium"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Delete store API موجود، يحتاج اختبار"
+      - working: true
+        agent: "testing"
+        comment: "✅ تم اختبار وظيفة حذف المتاجر بنجاح. API endpoint DELETE /api/stores/{store_id} يعمل بشكل صحيح: 1) يتحقق من صلاحيات الأدمن 2) يحذف المتجر وجميع منتجاته 3) يعيد رسالة نجاح مع عدد المنتجات المحذوفة. تم الاختبار مع الحساب المطلوب admin@test.com وحذف متجر يحتوي على 35 منتج بنجاح."
 
 frontend:
   - task: "ProductDetails page with colors/sizes/similar products"
