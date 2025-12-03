@@ -18,6 +18,10 @@ const ProductDetails = ({ user, logout }) => {
   const [totalReviews, setTotalReviews] = useState(0);
   const [newReview, setNewReview] = useState({ rating: 5, comment: '' });
   const [showReviewForm, setShowReviewForm] = useState(false);
+  const [selectedSize, setSelectedSize] = useState('');
+  const [selectedColor, setSelectedColor] = useState(null);
+  const [selectedShoeSize, setSelectedShoeSize] = useState('');
+  const [similarProducts, setSimilarProducts] = useState([]);
 
   useEffect(() => {
     fetchProduct();
