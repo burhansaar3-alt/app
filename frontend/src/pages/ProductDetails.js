@@ -221,9 +221,95 @@ const ProductDetails = ({ user, logout }) => {
 
             {product.stock > 0 && (
               <>
-                <div className="flex items-center gap-4">
-                  <span className="text-gray-700 font-medium">الكمية</span>
-                  <div className="flex items-center gap-3">
+                {/* Color Selection */}
+                {product.colors && product.colors.length > 0 && (
+                  <div className="border-t border-gray-200 pt-6">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-3">اختر اللون</h3>
+                    <div className="flex gap-3 flex-wrap">
+                      {product.colors.map((color, index) => (
+                        <button
+                          key={index}
+                          onClick={() => setSelectedColor(color)}
+                          className={`relative w-16 h-16 rounded-lg border-2 transition-all ${
+                            selectedColor?.name === color.name
+                              ? 'border-blue-600 scale-110'
+                              : 'border-gray-300 hover:border-blue-400'
+                          }`}
+                          title={color.name}
+                          data-testid={`color-${index}`}
+                        >
+                          {color.image ? (
+                            <img src={color.image} alt={color.name} className="w-full h-full object-cover rounded-lg" />
+                          ) : (
+                            <div
+                              className="w-full h-full rounded-lg"
+                              style={{ backgroundColor: color.hex || '#ccc' }}
+                            />
+                          )}
+                          {selectedColor?.name === color.name && (
+                            <div className="absolute inset-0 flex items-center justify-center bg-blue-600 bg-opacity-20 rounded-lg">
+                              <span className="text-white text-2xl">✓</span>
+                            </div>
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                    {selectedColor && (
+                      <p className="mt-2 text-sm text-gray-600">اللون المختار: {selectedColor.name}</p>
+                    )}
+                  </div>
+                )}
+
+                {/* Size Selection (for clothes) */}
+                {product.sizes && product.sizes.length > 0 && (
+                  <div className="border-t border-gray-200 pt-6">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-3">اختر المقاس</h3>
+                    <div className="flex gap-3 flex-wrap">
+                      {product.sizes.map((size) => (
+                        <button
+                          key={size}
+                          onClick={() => setSelectedSize(size)}
+                          className={`px-6 py-3 rounded-lg border-2 font-medium transition-all ${
+                            selectedSize === size
+                              ? 'border-blue-600 bg-blue-50 text-blue-600'
+                              : 'border-gray-300 hover:border-blue-400'
+                          }`}
+                          data-testid={`size-${size}`}
+                        >
+                          {size}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Shoe Size Selection */}
+                {product.shoe_sizes && product.shoe_sizes.length > 0 && (
+                  <div className="border-t border-gray-200 pt-6">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-3">اختر نمرة الحذاء</h3>
+                    <div className="flex gap-3 flex-wrap">
+                      {product.shoe_sizes.map((size) => (
+                        <button
+                          key={size}
+                          onClick={() => setSelectedShoeSize(size)}
+                          className={`px-5 py-3 rounded-lg border-2 font-medium transition-all ${
+                            selectedShoeSize === size
+                              ? 'border-blue-600 bg-blue-50 text-blue-600'
+                              : 'border-gray-300 hover:border-blue-400'
+                          }`}
+                          data-testid={`shoe-size-${size}`}
+                        >
+                          {size}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <div className="border-t border-gray-200 pt-6">
+                  <div className="flex items-center gap-4">
+                    <span className="text-gray-700 font-medium">الكمية</span>
+                    <div className="flex items-center gap-3">
                     <Button
                       data-testid="decrease-quantity"
                       variant="outline"
