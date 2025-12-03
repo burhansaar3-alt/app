@@ -393,6 +393,26 @@ async def get_product(product_id: str):
         product['created_at'] = datetime.fromisoformat(product['created_at'])
     return product
 
+@api_router.get("/products/{product_id}/similar")
+async def get_similar_products(product_id: str, limit: int = 4):
+    # Get the product
+    product = await db.products.find_one({"id": product_id}, {"_id": 0})
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    # Find similar products from same category
+    similar = await db.products.find({
+        "category_id": product['category_id'],
+        "id": {"$ne": product_id},
+        "status": "active"
+    }, {"_id": 0}).limit(limit).to_list(limit)
+    
+    for p in similar:
+        if isinstance(p.get('created_at'), str):
+            p['created_at'] = datetime.fromisoformat(p['created_at'])
+    
+    return similar
+
 @api_router.patch("/products/{product_id}")
 async def update_product(product_id: str, updates: dict, current_user: dict = Depends(get_current_user)):
     product = await db.products.find_one({"id": product_id}, {"_id": 0})
