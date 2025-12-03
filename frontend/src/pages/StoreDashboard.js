@@ -76,14 +76,51 @@ const StoreDashboard = ({ user, logout }) => {
     }
   };
 
+  const handleImageUpload = async (files) => {
+    if (!files || files.length === 0) return [];
+    
+    setUploadingImages(true);
+    const uploadedUrls = [];
+    
+    try {
+      for (const file of files) {
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        const response = await api.post('/upload-image', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
+        
+        uploadedUrls.push(response.data.url);
+      }
+      
+      toast.success(`تم رفع ${uploadedUrls.length} صورة بنجاح`);
+      return uploadedUrls;
+    } catch (error) {
+      toast.error('حدث خطأ في رفع الصور');
+      return [];
+    } finally {
+      setUploadingImages(false);
+    }
+  };
+
   const handleAddProduct = async (e) => {
     e.preventDefault();
     try {
+      // Upload images first
+      let imageUrls = productData.images;
+      if (selectedFiles.length > 0) {
+        const uploadedUrls = await handleImageUpload(selectedFiles);
+        imageUrls = [...imageUrls, ...uploadedUrls];
+      }
+      
       const data = {
         ...productData,
         price: parseFloat(productData.price),
-        stock: parseInt(productData.stock)
+        stock: parseInt(productData.stock),
+        images: imageUrls
       };
+      
       await api.post('/products', data);
       toast.success('تمت إضافة المنتج بنجاح');
       setShowProductDialog(false);
@@ -93,8 +130,12 @@ const StoreDashboard = ({ user, logout }) => {
         price: '',
         stock: '',
         category_id: '',
-        images: []
+        images: [],
+        sizes: [],
+        colors: [],
+        shoe_sizes: []
       });
+      setSelectedFiles([]);
       fetchData();
     } catch (error) {
       toast.error(error.response?.data?.detail || 'حدث خطأ في إضافة المنتج');
