@@ -478,7 +478,7 @@ async def upload_image(file: UploadFile = File(...), current_user: dict = Depend
     mime_type = f"image/{file_ext}" if file_ext in ['jpg', 'jpeg', 'png', 'gif', 'webp'] else "image/jpeg"
     data_url = f"data:{mime_type};base64,{base64_image}"
     
-    return {"image_url": data_url}
+    return {"url": data_url, "image_url": data_url}
 
 # ============= Cart Routes =============
 @api_router.get("/cart")
