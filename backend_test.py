@@ -361,6 +361,9 @@ class SyriaMarketAPITester:
         self.test_create_order()
         self.test_get_orders()
         
+        # Admin functionality tests
+        self.test_admin_delete_store()
+        
         # Print summary
         print("\n" + "=" * 50)
         print(f"📊 Test Summary: {self.tests_passed}/{self.tests_run} tests passed")
