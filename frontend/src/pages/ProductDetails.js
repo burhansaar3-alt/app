@@ -22,6 +22,7 @@ const ProductDetails = ({ user, logout }) => {
   const [selectedColor, setSelectedColor] = useState(null);
   const [selectedShoeSize, setSelectedShoeSize] = useState('');
   const [similarProducts, setSimilarProducts] = useState([]);
+  const [mainImage, setMainImage] = useState('');
 
   const fetchProduct = async () => {
     try {
