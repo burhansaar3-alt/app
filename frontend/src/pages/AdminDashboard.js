@@ -42,6 +42,20 @@ const AdminDashboard = ({ user, logout }) => {
     }
   };
 
+  const deleteStore = async (storeId, storeName) => {
+    if (!window.confirm(`هل أنت متأكد من حذف متجر "${storeName}"؟\n\nسيتم حذف المتجر وجميع منتجاته بشكل نهائي!`)) {
+      return;
+    }
+    
+    try {
+      const res = await api.delete(`/stores/${storeId}`);
+      toast.success(`تم حذف المتجر بنجاح! (${res.data.products_deleted} منتج تم حذفه)`);
+      fetchData();
+    } catch (error) {
+      toast.error('حدث خطأ في الحذف');
+    }
+  };
+
   const updateOrderStatus = async (orderId, status) => {
     try {
       await api.patch(`/orders/${orderId}/status`, null, { params: { status } });
