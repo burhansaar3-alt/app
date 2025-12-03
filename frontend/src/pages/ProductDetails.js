@@ -178,12 +178,32 @@ const ProductDetails = ({ user, logout }) => {
           <div className="space-y-4">
             <div className="bg-white rounded-3xl overflow-hidden shadow-lg h-[500px]">
               <img
-                src={product.images[0] || 'https://via.placeholder.com/500'}
+                src={mainImage || product.images[0] || 'https://via.placeholder.com/500'}
                 alt={product.name}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover transition-all duration-300"
                 data-testid="product-image"
               />
             </div>
+            {/* Thumbnail images if multiple images exist */}
+            {product.images && product.images.length > 1 && (
+              <div className="flex gap-3 overflow-x-auto">
+                {product.images.map((img, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setMainImage(img)}
+                    className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${
+                      mainImage === img ? 'border-blue-600' : 'border-gray-200'
+                    }`}
+                  >
+                    <img
+                      src={img}
+                      alt={`${product.name} ${index + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Product Info */}
