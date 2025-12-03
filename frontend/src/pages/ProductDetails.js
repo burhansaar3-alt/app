@@ -348,6 +348,39 @@ const ProductDetails = ({ user, logout }) => {
           </div>
         </div>
 
+        {/* Similar Products Section */}
+        {similarProducts.length > 0 && (
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-8">منتجات مشابهة</h2>
+            <div className="product-grid">
+              {similarProducts.map((similarProduct) => (
+                <div
+                  key={similarProduct.id}
+                  onClick={() => navigate(`/product/${similarProduct.id}`)}
+                  className="bg-white rounded-2xl overflow-hidden shadow-md card-hover cursor-pointer"
+                  data-testid={`similar-product-${similarProduct.id}`}
+                >
+                  <div className="relative h-64 overflow-hidden">
+                    <img
+                      src={similarProduct.images[0] || 'https://via.placeholder.com/300'}
+                      alt={similarProduct.name}
+                      className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
+                    />
+                  </div>
+                  <div className="p-4">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2 truncate">
+                      {similarProduct.name}
+                    </h3>
+                    <p className="text-2xl font-bold text-blue-600">
+                      {similarProduct.price.toLocaleString()} ل.س
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Reviews Section */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 mt-8">
           <div className="bg-white rounded-3xl shadow-lg p-8">
