@@ -101,3 +101,137 @@
 #====================================================================================================
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
+
+user_problem_statement: "منصة تجارة إلكترونية متعددة البائعين مستوحاة من Trendyol للسوق السوري"
+
+backend:
+  - task: "Product variants (colors, sizes, shoe_sizes)"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "تم إضافة دعم colors, sizes, shoe_sizes في Product model. Backend جاهز للاختبار"
+
+  - task: "Similar products API"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "API endpoint /api/products/{id}/similar موجود ويعيد منتجات من نفس الفئة"
+
+  - task: "Image upload API"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "API endpoint /api/upload-image يستقبل صور ويحولها لـ base64. تم إصلاح response ليحتوي على 'url'"
+
+  - task: "Coupon system"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Coupon system موجود في backend، يحتاج اختبار شامل في checkout flow"
+
+  - task: "Admin delete store"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Delete store API موجود، يحتاج اختبار"
+
+frontend:
+  - task: "ProductDetails page with colors/sizes/similar products"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/pages/ProductDetails.js"
+    stuck_count: 1
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "previous_fork"
+        comment: "كان هناك JSX syntax error منع الصفحة من العمل"
+      - working: true
+        agent: "main"
+        comment: "تم إصلاح JSX error. الصفحة تعمل الآن وتعرض المنتجات والتقييمات. يحتاج اختبار تفاعل الألوان/المقاسات"
+
+  - task: "StoreDashboard with multi-image upload"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/pages/StoreDashboard.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "تم إضافة واجهة رفع الصور المتعددة، حقول للألوان والمقاسات. يحتاج اختبار كامل لـ file upload flow"
+
+  - task: "Coupon input in checkout"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/pages/CheckoutPage.js"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "previous_fork"
+        comment: "Coupon input field موجود لكن لم يتم اختبار التكامل مع backend"
+
+  - task: "Admin delete store button"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/pages/AdminDashboard.js"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "previous_fork"
+        comment: "Delete store button موجود في admin dashboard، يحتاج اختبار"
+
+metadata:
+  created_by: "main_agent"
+  version: "1.0"
+  test_sequence: 1
+  run_ui: true
+
+test_plan:
+  current_focus:
+    - "Multi-image upload in StoreDashboard"
+    - "Product variants (colors/sizes) display and interaction in ProductDetails"
+    - "Similar products display"
+  stuck_tasks: []
+  test_all: false
+  test_priority: "high_first"
+
+agent_communication:
+  - agent: "main"
+    message: "أصلحت المشكلة الحرجة في ProductDetails.js. أضفت ميزة رفع الصور المتعددة في StoreDashboard مع حقول للألوان والمقاسات. الآن يحتاج اختبار شامل للميزات الجديدة خاصة: 1) رفع الصور المتعددة 2) اختيار الألوان والمقاسات في صفحة المنتج 3) المنتجات المشابهة. بعدها نختبر الكوبونات وحذف المتاجر."
