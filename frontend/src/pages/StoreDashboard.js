@@ -380,8 +380,33 @@ const StoreDashboard = ({ user, logout }) => {
                           }}
                         />
                       </div>
-                      <Button data-testid="submit-product" type="submit" className="w-full bg-blue-600 hover:bg-blue-700">
-                        إضافة المنتج
+                      
+                      <div>
+                        <Label htmlFor="colors">الألوان (اختياري - اسم اللون ورمز اللون مفصولة بـ :)</Label>
+                        <Textarea
+                          id="colors"
+                          data-testid="product-colors-input"
+                          placeholder="مثال:&#10;أحمر:#FF0000&#10;أزرق:#0000FF&#10;أخضر:#00FF00"
+                          rows={3}
+                          onChange={(e) => {
+                            const lines = e.target.value.split('\n').filter(l => l.trim());
+                            const colors = lines.map(line => {
+                              const [name, hex] = line.split(':').map(s => s.trim());
+                              return name && hex ? { name, hex } : null;
+                            }).filter(c => c);
+                            setProductData({ ...productData, colors });
+                          }}
+                        />
+                        <p className="text-xs text-gray-500 mt-1">أدخل كل لون في سطر منفصل بصيغة: اسم اللون:الرمز</p>
+                      </div>
+                      
+                      <Button 
+                        data-testid="submit-product" 
+                        type="submit" 
+                        className="w-full bg-blue-600 hover:bg-blue-700"
+                        disabled={uploadingImages}
+                      >
+                        {uploadingImages ? 'جاري الرفع...' : 'إضافة المنتج'}
                       </Button>
                     </form>
                   </DialogContent>
