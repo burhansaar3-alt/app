@@ -145,28 +145,40 @@ const AdminDashboard = ({ user, logout }) => {
                           <p className="text-gray-600 mb-2">{store.description || 'لا يوجد وصف'}</p>
                           <p className="text-sm text-gray-500">تاريخ الطلب: {new Date(store.created_at).toLocaleDateString('ar')}</p>
                         </div>
-                        {store.status === 'pending' && (
-                          <div className="flex gap-2">
-                            <Button
-                              data-testid={`approve-store-${store.id}`}
-                              size="sm"
-                              className="bg-green-600 hover:bg-green-700"
-                              onClick={() => approveStore(store.id, 'approved')}
-                            >
-                              <Check className="w-4 h-4 ml-1" />
-                              قبول
-                            </Button>
-                            <Button
-                              data-testid={`reject-store-${store.id}`}
-                              size="sm"
-                              variant="destructive"
-                              onClick={() => approveStore(store.id, 'rejected')}
-                            >
-                              <X className="w-4 h-4 ml-1" />
-                              رفض
-                            </Button>
-                          </div>
-                        )}
+                        <div className="flex gap-2">
+                          {store.status === 'pending' && (
+                            <>
+                              <Button
+                                data-testid={`approve-store-${store.id}`}
+                                size="sm"
+                                className="bg-green-600 hover:bg-green-700"
+                                onClick={() => approveStore(store.id, 'approved')}
+                              >
+                                <Check className="w-4 h-4 ml-1" />
+                                قبول
+                              </Button>
+                              <Button
+                                data-testid={`reject-store-${store.id}`}
+                                size="sm"
+                                variant="destructive"
+                                onClick={() => approveStore(store.id, 'rejected')}
+                              >
+                                <X className="w-4 h-4 ml-1" />
+                                رفض
+                              </Button>
+                            </>
+                          )}
+                          <Button
+                            data-testid={`delete-store-${store.id}`}
+                            size="sm"
+                            variant="destructive"
+                            className="bg-red-600 hover:bg-red-700"
+                            onClick={() => deleteStore(store.id, store.store_name)}
+                          >
+                            <Trash2 className="w-4 h-4 ml-1" />
+                            حذف
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   ))}
