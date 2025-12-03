@@ -27,8 +27,13 @@ const StoreDashboard = ({ user, logout }) => {
     price: '',
     stock: '',
     category_id: '',
-    images: []
+    images: [],
+    sizes: [],
+    colors: [],
+    shoe_sizes: []
   });
+  const [uploadingImages, setUploadingImages] = useState(false);
+  const [selectedFiles, setSelectedFiles] = useState([]);
 
   useEffect(() => {
     fetchData();
