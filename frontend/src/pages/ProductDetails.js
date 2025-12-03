@@ -26,7 +26,17 @@ const ProductDetails = ({ user, logout }) => {
   useEffect(() => {
     fetchProduct();
     fetchReviews();
+    fetchSimilarProducts();
   }, [id]);
+
+  const fetchSimilarProducts = async () => {
+    try {
+      const res = await api.get(`/products/${id}/similar`);
+      setSimilarProducts(res.data);
+    } catch (error) {
+      console.error('Error fetching similar products:', error);
+    }
+  };
 
   const fetchProduct = async () => {
     try {
