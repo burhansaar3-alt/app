@@ -6,6 +6,49 @@ import { Input } from '../components/ui/input';
 import { ShoppingCart, User, Store, Search, Heart, LogOut, Menu, X, ChevronRight, Mail, Instagram } from 'lucide-react';
 import { toast } from 'sonner';
 
+// Mega Menu Category Component
+const MegaMenuCategory = ({ title, icon, categories, onSelect }) => {
+  const [isHovered, setIsHovered] = useState(false);
+
+  return (
+    <div 
+      className="relative"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <div className="px-4 py-3 hover:bg-orange-50 cursor-pointer transition flex items-center gap-3">
+        <span className="text-2xl">{icon}</span>
+        <div className="flex-1">
+          <h3 className="text-sm font-semibold text-gray-900">{title}</h3>
+        </div>
+        <ChevronRight className="w-4 h-4 text-gray-400" />
+      </div>
+      
+      {/* Subcategories Popup on Hover */}
+      {isHovered && categories.length > 0 && (
+        <div 
+          className="absolute right-full top-0 mr-0 bg-white shadow-xl rounded-lg border border-gray-200 p-6 z-50"
+          style={{ width: '600px', maxHeight: '500px' }}
+        >
+          <h4 className="text-lg font-bold text-gray-900 mb-4">{title}</h4>
+          <div className="grid grid-cols-2 gap-4">
+            {categories.map(cat => (
+              <button
+                key={cat.id}
+                onClick={() => onSelect(cat.id)}
+                className="text-right px-3 py-2 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 rounded transition flex items-center justify-between group"
+              >
+                <span>{cat.name_ar}</span>
+                <ChevronRight className="w-3 h-3 text-gray-400 group-hover:text-orange-600" />
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
 const HomePage = ({ user, logout }) => {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
