@@ -204,7 +204,7 @@ const HomePage = ({ user, logout }) => {
           </div>
         </div>
 
-        {/* Categories Navigation with Popup Menu */}
+        {/* Categories Navigation with Popup Menu - Trendyol Style */}
         <div className="bg-gray-50 border-t border-gray-200">
           <div className="max-w-7xl mx-auto px-4">
             <div className="flex gap-2 overflow-x-auto py-3 scrollbar-hide items-center">
@@ -213,12 +213,7 @@ const HomePage = ({ user, logout }) => {
                 <button
                   onMouseEnter={() => setShowCategoriesMenu(true)}
                   onMouseLeave={() => setShowCategoriesMenu(false)}
-                  onClick={() => setSelectedCategory(null)}
-                  className={`px-4 py-2 rounded-lg font-medium whitespace-nowrap transition flex items-center gap-2 ${
-                    !selectedCategory
-                      ? 'bg-orange-600 text-white'
-                      : 'bg-white text-gray-700 hover:bg-gray-100'
-                  }`}
+                  className="px-4 py-2 rounded-lg font-medium whitespace-nowrap transition flex items-center gap-2 bg-orange-600 text-white hover:bg-orange-700"
                 >
                   <Menu className="w-4 h-4" />
                   جميع التصنيفات
@@ -250,15 +245,15 @@ const HomePage = ({ user, logout }) => {
                 )}
               </div>
 
-              {/* Category Pills */}
-              {categories.slice(0, 8).map((cat) => (
+              {/* All Category Pills - Show all categories */}
+              {categories.map((cat) => (
                 <button
                   key={cat.id}
                   onClick={() => setSelectedCategory(cat.id)}
                   className={`px-4 py-2 rounded-lg font-medium whitespace-nowrap transition ${
                     selectedCategory === cat.id
                       ? 'bg-orange-600 text-white'
-                      : 'bg-white text-gray-700 hover:bg-gray-100'
+                      : 'bg-white text-gray-700 hover:bg-orange-100'
                   }`}
                 >
                   {cat.name_ar}
