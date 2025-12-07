@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { api } from '../App';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
-import { ShoppingCart, User, Store, Search, Heart, LogOut, Menu, X } from 'lucide-react';
+import { ShoppingCart, User, Store, Search, Heart, LogOut, Menu, X, ChevronRight, Mail, Instagram } from 'lucide-react';
 import { toast } from 'sonner';
 
 const HomePage = ({ user, logout }) => {
@@ -13,7 +13,7 @@ const HomePage = ({ user, logout }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [cartCount, setCartCount] = useState(0);
   const [wishlistIds, setWishlistIds] = useState([]);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showCategoriesMenu, setShowCategoriesMenu] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -104,7 +104,23 @@ const HomePage = ({ user, logout }) => {
             <div className="flex gap-4">
               <span>مرحباً بك في سوق سوريا</span>
             </div>
-            <div className="flex gap-4">
+            <div className="flex gap-4 items-center">
+              <a 
+                href="https://www.instagram.com/trend.syria.offical" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="flex items-center gap-1 hover:text-orange-600 transition"
+              >
+                <Instagram className="w-4 h-4" />
+                <span>@trend.syria.offical</span>
+              </a>
+              <a 
+                href="mailto:trendsyria926@gmail.com"
+                className="flex items-center gap-1 hover:text-orange-600 transition"
+              >
+                <Mail className="w-4 h-4" />
+                <span>trendsyria926@gmail.com</span>
+              </a>
               {user ? (
                 <>
                   <span>مرحباً، {user.name}</span>
@@ -188,21 +204,54 @@ const HomePage = ({ user, logout }) => {
           </div>
         </div>
 
-        {/* Categories Navigation */}
+        {/* Categories Navigation with Popup Menu */}
         <div className="bg-gray-50 border-t border-gray-200">
           <div className="max-w-7xl mx-auto px-4">
-            <div className="flex gap-2 overflow-x-auto py-3 scrollbar-hide">
-              <button
-                onClick={() => setSelectedCategory(null)}
-                className={`px-4 py-2 rounded-lg font-medium whitespace-nowrap transition ${
-                  !selectedCategory
-                    ? 'bg-orange-600 text-white'
-                    : 'bg-white text-gray-700 hover:bg-gray-100'
-                }`}
-              >
-                الكل
-              </button>
-              {categories.map((cat) => (
+            <div className="flex gap-2 overflow-x-auto py-3 scrollbar-hide items-center">
+              {/* All Categories Button with Popup */}
+              <div className="relative">
+                <button
+                  onMouseEnter={() => setShowCategoriesMenu(true)}
+                  onMouseLeave={() => setShowCategoriesMenu(false)}
+                  onClick={() => setSelectedCategory(null)}
+                  className={`px-4 py-2 rounded-lg font-medium whitespace-nowrap transition flex items-center gap-2 ${
+                    !selectedCategory
+                      ? 'bg-orange-600 text-white'
+                      : 'bg-white text-gray-700 hover:bg-gray-100'
+                  }`}
+                >
+                  <Menu className="w-4 h-4" />
+                  جميع التصنيفات
+                </button>
+
+                {/* Categories Popup Menu - Trendyol Style */}
+                {showCategoriesMenu && (
+                  <div
+                    onMouseEnter={() => setShowCategoriesMenu(true)}
+                    onMouseLeave={() => setShowCategoriesMenu(false)}
+                    className="absolute top-full left-0 mt-2 bg-white shadow-2xl rounded-lg border border-gray-200 py-4 px-6 z-50 w-[800px] grid grid-cols-3 gap-6"
+                  >
+                    {categories.map((cat) => (
+                      <button
+                        key={cat.id}
+                        onClick={() => {
+                          setSelectedCategory(cat.id);
+                          setShowCategoriesMenu(false);
+                        }}
+                        className="flex items-center justify-between p-3 hover:bg-orange-50 rounded-lg transition text-right group"
+                      >
+                        <span className="text-sm font-medium text-gray-700 group-hover:text-orange-600">
+                          {cat.name_ar}
+                        </span>
+                        <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-orange-600" />
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Category Pills */}
+              {categories.slice(0, 8).map((cat) => (
                 <button
                   key={cat.id}
                   onClick={() => setSelectedCategory(cat.id)}
@@ -331,8 +380,23 @@ const HomePage = ({ user, logout }) => {
             <div>
               <h3 className="font-bold text-lg mb-4">تواصل معنا</h3>
               <ul className="space-y-2 text-sm text-gray-400">
-                <li>البريد: info@souqsyria.com</li>
-                <li>الهاتف: +963 11 1234567</li>
+                <li className="flex items-center gap-2">
+                  <Mail className="w-4 h-4" />
+                  <a href="mailto:trendsyria926@gmail.com" className="hover:text-orange-500 transition">
+                    trendsyria926@gmail.com
+                  </a>
+                </li>
+                <li className="flex items-center gap-2">
+                  <Instagram className="w-4 h-4" />
+                  <a 
+                    href="https://www.instagram.com/trend.syria.offical" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="hover:text-orange-500 transition"
+                  >
+                    @trend.syria.offical
+                  </a>
+                </li>
               </ul>
             </div>
           </div>
