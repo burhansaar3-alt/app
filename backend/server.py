@@ -250,6 +250,81 @@ async def login(credentials: UserLogin):
 async def get_me(current_user: dict = Depends(get_current_user)):
     return {k: v for k, v in current_user.items() if k != 'password_hash'}
 
+@api_router.post("/auth/forgot-password")
+async def forgot_password(request: ForgotPasswordRequest):
+    """Send password reset code to user's email"""
+    # Check if user exists
+    user = await db.users.find_one({"email": request.email}, {"_id": 0})
+    if not user:
+        # Don't reveal if user exists for security
+        return {"message": "If email exists, reset code has been sent"}
+    
+    # Generate 4-digit reset code
+    import random
+    reset_code = str(random.randint(1000, 9999))
+    
+    # Store reset code in database (expires in 10 minutes)
+    reset_data = {
+        "email": request.email,
+        "code": reset_code,
+        "created_at": datetime.now(timezone.utc),
+        "expires_at": datetime.now(timezone.utc) + timedelta(minutes=10),
+        "used": False
+    }
+    
+    # Remove old reset codes for this email
+    await db.password_resets.delete_many({"email": request.email})
+    await db.password_resets.insert_one(reset_data)
+    
+    # Print code to console for development
+    print(f"\n{'='*50}")
+    print(f"🔑 رمز إعادة تعيين كلمة المرور")
+    print(f"📧 البريد: {request.email}")
+    print(f"🔢 الرمز: {reset_code}")
+    print(f"⏰ صالح لمدة: 10 دقائق")
+    print(f"{'='*50}\n")
+    
+    # TODO: Send actual email here if SMTP configured
+    # send_email(request.email, reset_code)
+    
+    return {"message": "If email exists, reset code has been sent"}
+
+@api_router.post("/auth/reset-password")
+async def reset_password(request: ResetPasswordRequest):
+    """Reset password using verification code"""
+    # Find valid reset code
+    reset = await db.password_resets.find_one({
+        "email": request.email,
+        "code": request.code,
+        "used": False,
+        "expires_at": {"$gt": datetime.now(timezone.utc)}
+    }, {"_id": 0})
+    
+    if not reset:
+        raise HTTPException(status_code=400, detail="Invalid or expired reset code")
+    
+    # Hash new password
+    password_hash = bcrypt.hashpw(request.new_password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+    
+    # Update user password
+    result = await db.users.update_one(
+        {"email": request.email},
+        {"$set": {"password_hash": password_hash}}
+    )
+    
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Mark reset code as used
+    await db.password_resets.update_one(
+        {"email": request.email, "code": request.code},
+        {"$set": {"used": True}}
+    )
+    
+    print(f"✅ Password reset successful for {request.email}")
+    
+    return {"message": "Password reset successful"}
+
 # ============= Store Routes =============
 @api_router.post("/stores")
 async def create_store(store_data: StoreCreate, current_user: dict = Depends(get_current_user)):
