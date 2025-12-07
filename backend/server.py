@@ -257,7 +257,7 @@ async def forgot_password(request: ForgotPasswordRequest):
     user = await db.users.find_one({"email": request.email}, {"_id": 0})
     if not user:
         # Don't reveal if user exists for security
-        return {"message": "If email exists, reset code has been sent"}
+        return {"message": "If email exists, reset code has been sent", "code": None}
     
     # Generate 4-digit reset code
     import random
@@ -278,16 +278,89 @@ async def forgot_password(request: ForgotPasswordRequest):
     
     # Print code to console for development
     print(f"\n{'='*50}")
-    print(f"🔑 رمز إعادة تعيين كلمة المرور")
-    print(f"📧 البريد: {request.email}")
-    print(f"🔢 الرمز: {reset_code}")
-    print(f"⏰ صالح لمدة: 10 دقائق")
+    print(f"Reset Code: {reset_code} for {request.email}")
     print(f"{'='*50}\n")
     
-    # TODO: Send actual email here if SMTP configured
-    # send_email(request.email, reset_code)
+    # Check if SMTP is configured
+    smtp_host = os.environ.get('SMTP_HOST')
+    smtp_user = os.environ.get('SMTP_USER')
+    email_sent = False
     
-    return {"message": "If email exists, reset code has been sent"}
+    if smtp_host and smtp_user:
+        # Try to send email
+        try:
+            import smtplib
+            from email.mime.text import MIMEText
+            from email.mime.multipart import MIMEMultipart
+            
+            smtp_port = int(os.environ.get('SMTP_PORT', 587))
+            smtp_password = os.environ.get('SMTP_PASSWORD')
+            smtp_from = os.environ.get('SMTP_FROM', smtp_user)
+            
+            # Create email
+            msg = MIMEMultipart('alternative')
+            msg['Subject'] = 'رمز إعادة تعيين كلمة المرور - سوق سوريا'
+            msg['From'] = smtp_from
+            msg['To'] = request.email
+            
+            # Email body
+            html = f'''
+            <html dir="rtl">
+              <body style="font-family: Arial, sans-serif; direction: rtl; text-align: right;">
+                <div style="max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9fafb;">
+                  <div style="background-color: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                    <h2 style="color: #ea580c; margin-bottom: 20px;">رمز إعادة تعيين كلمة المرور</h2>
+                    <p style="font-size: 16px; color: #374151; margin-bottom: 20px;">
+                      مرحباً،
+                    </p>
+                    <p style="font-size: 16px; color: #374151; margin-bottom: 20px;">
+                      تلقينا طلباً لإعادة تعيين كلمة المرور الخاصة بحسابك في سوق سوريا.
+                    </p>
+                    <div style="background-color: #fef3c7; padding: 20px; border-radius: 8px; margin: 30px 0; text-align: center;">
+                      <p style="font-size: 14px; color: #92400e; margin-bottom: 10px;">رمز التحقق الخاص بك:</p>
+                      <h1 style="font-size: 48px; color: #ea580c; margin: 10px 0; letter-spacing: 8px;">{reset_code}</h1>
+                    </div>
+                    <p style="font-size: 14px; color: #6b7280; margin-bottom: 20px;">
+                      هذا الرمز صالح لمدة <strong>10 دقائق</strong> فقط.
+                    </p>
+                    <p style="font-size: 14px; color: #6b7280; margin-bottom: 20px;">
+                      إذا لم تطلب إعادة تعيين كلمة المرور، يرجى تجاهل هذا البريد.
+                    </p>
+                    <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;">
+                    <p style="font-size: 12px; color: #9ca3af; text-align: center;">
+                      © 2025 سوق سوريا. جميع الحقوق محفوظة.
+                    </p>
+                  </div>
+                </div>
+              </body>
+            </html>
+            '''
+            
+            part = MIMEText(html, 'html')
+            msg.attach(part)
+            
+            # Send email
+            with smtplib.SMTP(smtp_host, smtp_port) as server:
+                server.starttls()
+                server.login(smtp_user, smtp_password)
+                server.send_message(msg)
+            
+            email_sent = True
+            print(f"✅ Email sent successfully to {request.email}")
+            
+        except Exception as e:
+            print(f"❌ Failed to send email: {str(e)}")
+            email_sent = False
+    
+    # Return response with code in development mode
+    # In production, remove the 'code' field for security
+    dev_mode = os.environ.get('ENVIRONMENT', 'development') == 'development'
+    
+    return {
+        "message": "تم إرسال رمز التحقق" if email_sent else "تم إنشاء رمز التحقق",
+        "code": reset_code if dev_mode and not email_sent else None,
+        "email_sent": email_sent
+    }
 
 @api_router.post("/auth/reset-password")
 async def reset_password(request: ResetPasswordRequest):
