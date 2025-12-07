@@ -208,7 +208,7 @@ const HomePage = ({ user, logout }) => {
         <div className="bg-gray-50 border-t border-gray-200">
           <div className="max-w-7xl mx-auto px-4">
             <div className="flex gap-2 overflow-x-auto py-3 scrollbar-hide items-center">
-              {/* All Categories Button with Popup */}
+              {/* All Categories Button with Mega Menu - Trendyol Style */}
               <div className="relative">
                 <button
                   onMouseEnter={() => setShowCategoriesMenu(true)}
@@ -219,28 +219,136 @@ const HomePage = ({ user, logout }) => {
                   جميع التصنيفات
                 </button>
 
-                {/* Categories Popup Menu - Trendyol Style */}
+                {/* Mega Menu - Trendyol Style with Main Categories */}
                 {showCategoriesMenu && (
                   <div
                     onMouseEnter={() => setShowCategoriesMenu(true)}
                     onMouseLeave={() => setShowCategoriesMenu(false)}
-                    className="absolute top-full left-0 mt-2 bg-white shadow-2xl rounded-lg border border-gray-200 py-4 px-6 z-50 w-[800px] grid grid-cols-3 gap-6"
+                    className="absolute top-full left-0 mt-2 bg-white shadow-2xl rounded-lg border border-gray-200 z-50 flex"
+                    style={{ width: '900px', height: '500px' }}
                   >
-                    {categories.map((cat) => (
-                      <button
-                        key={cat.id}
-                        onClick={() => {
-                          setSelectedCategory(cat.id);
+                    {/* Left Side - Main Categories */}
+                    <div className="w-1/3 border-r border-gray-200 py-4 overflow-y-auto">
+                      <MegaMenuCategory 
+                        title="أزياء نسائية"
+                        icon="👗"
+                        categories={categories.filter(c => 
+                          c.name_ar.includes('نسائية') || c.name_ar.includes('نساء')
+                        )}
+                        onSelect={(id) => {
+                          setSelectedCategory(id);
                           setShowCategoriesMenu(false);
                         }}
-                        className="flex items-center justify-between p-3 hover:bg-orange-50 rounded-lg transition text-right group"
-                      >
-                        <span className="text-sm font-medium text-gray-700 group-hover:text-orange-600">
-                          {cat.name_ar}
-                        </span>
-                        <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-orange-600" />
-                      </button>
-                    ))}
+                      />
+                      <MegaMenuCategory 
+                        title="أزياء رجالية"
+                        icon="👔"
+                        categories={categories.filter(c => 
+                          c.name_ar.includes('رجالية') || c.name_ar.includes('رجال')
+                        )}
+                        onSelect={(id) => {
+                          setSelectedCategory(id);
+                          setShowCategoriesMenu(false);
+                        }}
+                      />
+                      <MegaMenuCategory 
+                        title="أحذية"
+                        icon="👟"
+                        categories={categories.filter(c => 
+                          c.name_ar.includes('أحذية') || c.name_ar.includes('حذاء')
+                        )}
+                        onSelect={(id) => {
+                          setSelectedCategory(id);
+                          setShowCategoriesMenu(false);
+                        }}
+                      />
+                      <MegaMenuCategory 
+                        title="حقائب وإكسسوارات"
+                        icon="👜"
+                        categories={categories.filter(c => 
+                          c.name_ar.includes('حقائب') || c.name_ar.includes('منسوجات')
+                        )}
+                        onSelect={(id) => {
+                          setSelectedCategory(id);
+                          setShowCategoriesMenu(false);
+                        }}
+                      />
+                      <MegaMenuCategory 
+                        title="إلكترونيات"
+                        icon="💻"
+                        categories={categories.filter(c => 
+                          c.name_ar.includes('إلكترونيات')
+                        )}
+                        onSelect={(id) => {
+                          setSelectedCategory(id);
+                          setShowCategoriesMenu(false);
+                        }}
+                      />
+                      <MegaMenuCategory 
+                        title="المنزل والمطبخ"
+                        icon="🏠"
+                        categories={categories.filter(c => 
+                          c.name_ar.includes('منزلية') || c.name_ar.includes('مطبخ')
+                        )}
+                        onSelect={(id) => {
+                          setSelectedCategory(id);
+                          setShowCategoriesMenu(false);
+                        }}
+                      />
+                      <MegaMenuCategory 
+                        title="منتجات وعطام"
+                        icon="🍽️"
+                        categories={categories.filter(c => 
+                          c.name_ar.includes('منتجات') || c.name_ar.includes('عطام')
+                        )}
+                        onSelect={(id) => {
+                          setSelectedCategory(id);
+                          setShowCategoriesMenu(false);
+                        }}
+                      />
+                      <MegaMenuCategory 
+                        title="ماركات عالمية"
+                        icon="✨"
+                        categories={categories.filter(c => 
+                          c.name_ar.includes('ماركات')
+                        )}
+                        onSelect={(id) => {
+                          setSelectedCategory(id);
+                          setShowCategoriesMenu(false);
+                        }}
+                      />
+                      {/* Show remaining categories */}
+                      <div className="px-4 py-2">
+                        <h4 className="text-xs font-semibold text-gray-500 mb-2">تصنيفات أخرى</h4>
+                        {categories.filter(c => 
+                          !c.name_ar.includes('نسائية') && 
+                          !c.name_ar.includes('نساء') &&
+                          !c.name_ar.includes('رجالية') && 
+                          !c.name_ar.includes('رجال') &&
+                          !c.name_ar.includes('أحذية') &&
+                          !c.name_ar.includes('حذاء') &&
+                          !c.name_ar.includes('حقائب') &&
+                          !c.name_ar.includes('منسوجات') &&
+                          !c.name_ar.includes('إلكترونيات') &&
+                          !c.name_ar.includes('منزلية') &&
+                          !c.name_ar.includes('مطبخ') &&
+                          !c.name_ar.includes('منتجات') &&
+                          !c.name_ar.includes('عطام') &&
+                          !c.name_ar.includes('ماركات')
+                        ).map(cat => (
+                          <button
+                            key={cat.id}
+                            onClick={() => {
+                              setSelectedCategory(cat.id);
+                              setShowCategoriesMenu(false);
+                            }}
+                            className="block w-full text-right px-3 py-2 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 rounded transition"
+                          >
+                            {cat.name_ar}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 )}
               </div>
