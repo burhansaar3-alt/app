@@ -54,13 +54,23 @@ const AuthPage = ({ setUser }) => {
     e.preventDefault();
     try {
       // Call backend API to send reset code
-      await api.post('/auth/forgot-password', { email: forgotEmail });
-      toast.success('تم إرسال رمز التحقق إلى بريدك الإلكتروني');
+      const response = await api.post('/auth/forgot-password', { email: forgotEmail });
+      
+      // Check if email was sent or code is provided (dev mode)
+      if (response.data.email_sent) {
+        toast.success('✅ تم إرسال رمز التحقق إلى بريدك الإلكتروني');
+      } else if (response.data.code) {
+        // Development mode - show code directly
+        toast.success(`🔑 رمز التحقق: ${response.data.code}`, { duration: 10000 });
+        // Auto-fill the code
+        setResetCode(response.data.code);
+      } else {
+        toast.success('تم إرسال رمز التحقق إلى بريدك الإلكتروني');
+      }
+      
       setResetStep(2);
     } catch (error) {
-      // If API not implemented, show mock message
-      toast.success('في الوضع التجريبي، استخدم رمز: 1234');
-      setResetStep(2);
+      toast.error('حدث خطأ. يرجى المحاولة مرة أخرى');
     }
   };
 
