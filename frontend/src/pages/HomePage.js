@@ -27,7 +27,7 @@ const MegaMenuCategory = ({ title, icon, categories, onSelect }) => {
       {/* Subcategories Popup on Hover */}
       {isHovered && categories.length > 0 && (
         <div 
-          className="absolute right-full top-0 mr-0 bg-white shadow-xl rounded-lg border border-gray-200 p-6 z-50"
+          className="absolute left-full top-0 ml-0 bg-white shadow-xl rounded-r-lg border border-gray-200 p-6 z-50 overflow-y-auto"
           style={{ width: '600px', maxHeight: '500px' }}
         >
           <h4 className="text-lg font-bold text-gray-900 mb-4">{title}</h4>
