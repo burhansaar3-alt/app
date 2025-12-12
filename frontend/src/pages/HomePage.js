@@ -15,7 +15,20 @@ const HomePage = ({ user, logout }) => {
   const [wishlistIds, setWishlistIds] = useState([]);
   const [showMegaMenu, setShowMegaMenu] = useState(false);
   const [hoveredMainCat, setHoveredMainCat] = useState(null);
+  const [showGenderPopup, setShowGenderPopup] = useState(false);
+  const [selectedGender, setSelectedGender] = useState(null);
   const navigate = useNavigate();
+
+  // Check if user has selected gender before
+  useEffect(() => {
+    const savedGender = localStorage.getItem('preferredGender');
+    if (savedGender) {
+      setSelectedGender(savedGender);
+    } else {
+      // Show popup on first visit
+      setShowGenderPopup(true);
+    }
+  }, []);
 
   // Define main category groups
   const mainCategories = [
