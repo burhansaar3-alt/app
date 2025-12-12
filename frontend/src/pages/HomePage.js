@@ -684,9 +684,12 @@ const HomePage = ({ user, logout }) => {
                     href="https://www.instagram.com/trend.syria.offical" 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="hover:text-orange-500 transition"
+                    className="hover:text-orange-500 transition flex items-center gap-2"
                   >
                     @trend.syria.offical
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-blue-500 text-white">
+                      ✓
+                    </span>
                   </a>
                 </li>
               </ul>
