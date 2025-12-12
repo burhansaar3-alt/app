@@ -30,7 +30,7 @@ ACCESS_TOKEN_EXPIRE_DAYS = 30
 security = HTTPBearer()
 
 app = FastAPI()
-api_router = APIRouter(prefix="/api")
+api_router = APIRouter()
 
 # ============= Models =============
 class UserRegister(BaseModel):
