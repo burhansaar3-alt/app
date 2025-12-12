@@ -214,6 +214,63 @@ const HomePage = ({ user, logout }) => {
 
   return (
     <div className="min-h-screen bg-white">
+      {/* Gender Selection Popup */}
+      {showGenderPopup && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-[100] flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 sm:p-8 shadow-2xl relative">
+            <button
+              onClick={() => setShowGenderPopup(false)}
+              className="absolute top-4 right-4 p-2 hover:bg-gray-100 rounded-full transition"
+            >
+              <X className="w-5 h-5 text-gray-600" />
+            </button>
+            
+            <div className="text-center mb-6">
+              <div className="inline-block p-3 bg-orange-100 rounded-full mb-4">
+                <ShoppingCart className="w-8 h-8 text-orange-600" />
+              </div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                مرحباً بك في سوق سوريا! 🛍️
+              </h2>
+              <p className="text-gray-600">
+                اختر الفئة التي تفضل التسوق منها للحصول على توصيات مخصصة
+              </p>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4 mb-6">
+              <button
+                onClick={() => handleGenderSelection('women')}
+                className="group flex flex-col items-center justify-center p-6 border-2 border-gray-200 rounded-xl hover:border-orange-500 hover:bg-orange-50 transition-all"
+              >
+                <div className="text-6xl mb-3">👗</div>
+                <span className="text-lg font-semibold text-gray-900 group-hover:text-orange-600">
+                  أزياء نسائية
+                </span>
+                <span className="text-sm text-gray-500 mt-1">للنساء</span>
+              </button>
+
+              <button
+                onClick={() => handleGenderSelection('men')}
+                className="group flex flex-col items-center justify-center p-6 border-2 border-gray-200 rounded-xl hover:border-orange-500 hover:bg-orange-50 transition-all"
+              >
+                <div className="text-6xl mb-3">👔</div>
+                <span className="text-lg font-semibold text-gray-900 group-hover:text-orange-600">
+                  أزياء رجالية
+                </span>
+                <span className="text-sm text-gray-500 mt-1">للرجال</span>
+              </button>
+            </div>
+
+            <button
+              onClick={() => setShowGenderPopup(false)}
+              className="w-full text-sm text-gray-500 hover:text-gray-700 transition"
+            >
+              تخطي - عرض جميع المنتجات
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Header - Trendyol Style */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
         {/* Top Bar */}
