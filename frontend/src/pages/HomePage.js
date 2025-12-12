@@ -530,58 +530,103 @@ const HomePage = ({ user, logout }) => {
           <p className="text-gray-600">{filteredProducts.length} منتج</p>
         </div>
 
-        {/* Products Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+        {/* Products Grid - Premium Syrian Design */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6">
           {filteredProducts.map((product) => (
             <div
               key={product.id}
-              className="group bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer relative"
+              className="group bg-white rounded-2xl overflow-hidden hover:shadow-2xl transition-all duration-500 cursor-pointer relative border-2 border-transparent hover:border-orange-500"
+              onClick={() => navigate(`/product/${product.id}`)}
             >
-              {user && (
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    toggleWishlist(product.id);
-                  }}
-                  className="absolute top-2 right-2 z-10 p-2 bg-white rounded-full shadow-md hover:scale-110 transition"
-                >
-                  <Heart
-                    className={`w-5 h-5 ${
-                      wishlistIds.includes(product.id)
-                        ? 'fill-orange-600 text-orange-600'
-                        : 'text-gray-400'
-                    }`}
-                  />
-                </button>
-              )}
-              <div
-                onClick={() => navigate(`/product/${product.id}`)}
-                className="aspect-square bg-gray-50 overflow-hidden"
-              >
+              {/* Badges Container */}
+              <div className="absolute top-3 left-3 right-3 z-20 flex justify-between items-start">
+                {/* Stock Badge */}
+                {product.stock > 0 ? (
+                  <div className="bg-green-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg flex items-center gap-1">
+                    <span className="w-2 h-2 bg-white rounded-full animate-pulse"></span>
+                    متوفر
+                  </div>
+                ) : (
+                  <div className="bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
+                    نفذت الكمية
+                  </div>
+                )}
+
+                {/* Wishlist Button */}
+                {user && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleWishlist(product.id);
+                    }}
+                    className="p-2.5 bg-white rounded-full shadow-lg hover:scale-110 transition-transform duration-300 backdrop-blur-sm"
+                  >
+                    <Heart
+                      className={`w-5 h-5 ${
+                        wishlistIds.includes(product.id)
+                          ? 'fill-orange-600 text-orange-600 animate-pulse'
+                          : 'text-gray-600'
+                      }`}
+                    />
+                  </button>
+                )}
+              </div>
+
+              {/* Product Image with Gradient Overlay */}
+              <div className="aspect-square bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden relative">
                 <img
                   src={product.images[0] || 'https://via.placeholder.com/300'}
                   alt={product.name}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                 />
+                {/* Gradient Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
               </div>
-              <div
-                onClick={() => navigate(`/product/${product.id}`)}
-                className="p-3"
-              >
-                <h3 className="text-sm text-gray-900 mb-2 line-clamp-2 min-h-[40px]">
+
+              {/* Product Info */}
+              <div className="p-4">
+                {/* Product Name */}
+                <h3 className="text-sm font-medium text-gray-900 mb-3 line-clamp-2 min-h-[40px] group-hover:text-orange-600 transition-colors">
                   {product.name}
                 </h3>
-                <div className="flex items-center justify-between">
-                  <span className="text-lg font-bold text-gray-900">
-                    {product.price.toLocaleString()} ل.س
+
+                {/* Price Section - Premium Design */}
+                <div className="relative">
+                  {/* Decorative Background */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-orange-50 to-amber-50 rounded-xl opacity-50"></div>
+                  
+                  {/* Price Content */}
+                  <div className="relative bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-xl p-3 shadow-lg transform group-hover:scale-105 transition-all duration-300">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="text-[10px] font-medium opacity-90 mb-0.5">السعر</div>
+                        <div className="flex items-baseline gap-1">
+                          <span className="text-2xl font-black">{product.price.toLocaleString()}</span>
+                          <span className="text-xs font-bold opacity-90">ل.س</span>
+                        </div>
+                      </div>
+                      <div className="bg-white/20 rounded-full p-2 backdrop-blur-sm">
+                        <ShoppingCart className="w-4 h-4" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Shimmer Effect */}
+                  <div className="absolute inset-0 overflow-hidden rounded-xl">
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                  </div>
+                </div>
+
+                {/* Quick View Hint */}
+                <div className="mt-3 text-center">
+                  <span className="text-xs text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    اضغط للتفاصيل →
                   </span>
                 </div>
-                {product.stock > 0 ? (
-                  <span className="text-xs text-green-600 mt-1 block">متوفر</span>
-                ) : (
-                  <span className="text-xs text-red-600 mt-1 block">نفذت الكمية</span>
-                )}
               </div>
+
+              {/* Hover Border Glow */}
+              <div className="absolute inset-0 rounded-2xl border-2 border-orange-500 opacity-0 group-hover:opacity-20 transition-opacity duration-500 pointer-events-none"></div>
             </div>
           ))}
         </div>
