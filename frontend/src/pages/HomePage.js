@@ -123,11 +123,48 @@ const HomePage = ({ user, logout }) => {
     try {
       const params = {};
       if (selectedCategory) params.category_id = selectedCategory;
+      
+      // Filter by gender if selected
+      if (selectedGender && !selectedCategory) {
+        const genderKeywords = {
+          'men': ['رجالية', 'رجال', 'للرجال'],
+          'women': ['نسائية', 'نساء', 'للنساء']
+        };
+        
+        // Get categories matching gender
+        const matchingCategories = categories.filter(cat => 
+          genderKeywords[selectedGender]?.some(keyword => cat.name_ar.includes(keyword))
+        );
+        
+        if (matchingCategories.length > 0) {
+          // Fetch products from gender-specific categories
+          const categoryIds = matchingCategories.map(c => c.id);
+          const allProducts = [];
+          
+          for (const catId of categoryIds) {
+            const res = await api.get('/products', { params: { category_id: catId } });
+            allProducts.push(...res.data);
+          }
+          
+          setProducts(allProducts);
+          return;
+        }
+      }
+      
       const res = await api.get('/products', { params });
       setProducts(res.data);
     } catch (error) {
       console.error('Error fetching products:', error);
     }
+  };
+
+  const handleGenderSelection = (gender) => {
+    setSelectedGender(gender);
+    localStorage.setItem('preferredGender', gender);
+    setShowGenderPopup(false);
+    
+    // Fetch products based on gender
+    fetchProducts();
   };
 
   const fetchWishlist = async () => {
