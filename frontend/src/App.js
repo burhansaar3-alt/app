@@ -72,6 +72,7 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage user={user} logout={logout} />} />
           <Route path="/auth" element={user ? <Navigate to="/" /> : <AuthPage setUser={setUser} />} />
+          <Route path="/about" element={<AboutPage />} />
           <Route path="/product/:id" element={<ProductDetails user={user} logout={logout} />} />
           <Route path="/cart" element={user ? <CartPage user={user} logout={logout} /> : <Navigate to="/auth" />} />
           <Route path="/wishlist" element={user ? <WishlistPage user={user} logout={logout} /> : <Navigate to="/auth" />} />
