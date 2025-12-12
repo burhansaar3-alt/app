@@ -972,7 +972,167 @@ async def get_coupons(current_user: dict = Depends(get_current_user)):
 async def root():
     return {"message": "Marketplace API is running"}
 
-app.include_router(api_router)
+# ============= Stripe Payment Routes =============
+from emergentintegrations.payments.stripe.checkout import (
+    StripeCheckout,
+    CheckoutSessionResponse,
+    CheckoutStatusResponse,
+    CheckoutSessionRequest
+)
+
+class PaymentPackage(BaseModel):
+    package_id: str
+    origin_url: str
+
+# Fixed payment packages (NEVER accept amount from frontend!)
+PAYMENT_PACKAGES = {
+    "delivery_standard": 5000.0,  # 5000 ل.س
+    "delivery_express": 10000.0,  # 10000 ل.س
+    "delivery_premium": 15000.0,  # 15000 ل.س
+}
+
+@api_router.post("/payments/checkout")
+async def create_checkout(
+    payment_data: PaymentPackage,
+    current_user: dict = Depends(get_current_user),
+    http_request: Request = None
+):
+    """Create Stripe checkout session"""
+    # Validate package
+    if payment_data.package_id not in PAYMENT_PACKAGES:
+        raise HTTPException(status_code=400, detail="Invalid payment package")
+    
+    # Get amount from server-side definition
+    amount = PAYMENT_PACKAGES[payment_data.package_id]
+    
+    # Initialize Stripe
+    stripe_api_key = os.environ.get('STRIPE_API_KEY')
+    if not stripe_api_key:
+        raise HTTPException(status_code=500, detail="Stripe not configured")
+    
+    webhook_url = f"{payment_data.origin_url}/api/webhook/stripe"
+    stripe_checkout = StripeCheckout(api_key=stripe_api_key, webhook_url=webhook_url)
+    
+    # Build URLs from provided origin
+    success_url = f"{payment_data.origin_url}/payment-success?session_id={{CHECKOUT_SESSION_ID}}"
+    cancel_url = f"{payment_data.origin_url}/cart"
+    
+    # Create checkout session
+    checkout_request = CheckoutSessionRequest(
+        amount=amount,
+        currency="usd",  # Using USD as SYP not supported
+        success_url=success_url,
+        cancel_url=cancel_url,
+        metadata={
+            "user_id": current_user['id'],
+            "user_email": current_user['email'],
+            "package_id": payment_data.package_id
+        }
+    )
+    
+    try:
+        session = await stripe_checkout.create_checkout_session(checkout_request)
+        
+        # Create payment transaction record
+        transaction = {
+            "session_id": session.session_id,
+            "user_id": current_user['id'],
+            "user_email": current_user['email'],
+            "package_id": payment_data.package_id,
+            "amount": amount,
+            "currency": "usd",
+            "payment_status": "pending",
+            "status": "initiated",
+            "created_at": datetime.now(timezone.utc),
+            "metadata": checkout_request.metadata
+        }
+        
+        await db.payment_transactions.insert_one(transaction)
+        
+        return {"url": session.url, "session_id": session.session_id}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to create checkout: {str(e)}")
+
+@api_router.get("/payments/status/{session_id}")
+async def get_payment_status(
+    session_id: str,
+    current_user: dict = Depends(get_current_user)
+):
+    """Check payment status"""
+    stripe_api_key = os.environ.get('STRIPE_API_KEY')
+    if not stripe_api_key:
+        raise HTTPException(status_code=500, detail="Stripe not configured")
+    
+    # Dummy webhook URL for status check
+    stripe_checkout = StripeCheckout(api_key=stripe_api_key, webhook_url="http://dummy")
+    
+    try:
+        status = await stripe_checkout.get_checkout_status(session_id)
+        
+        # Update transaction in database
+        transaction = await db.payment_transactions.find_one({"session_id": session_id}, {"_id": 0})
+        
+        if transaction and transaction.get('payment_status') != 'paid':
+            # Update only if not already processed
+            update_data = {
+                "payment_status": status.payment_status,
+                "status": status.status,
+                "updated_at": datetime.now(timezone.utc)
+            }
+            
+            await db.payment_transactions.update_one(
+                {"session_id": session_id},
+                {"$set": update_data}
+            )
+        
+        return {
+            "status": status.status,
+            "payment_status": status.payment_status,
+            "amount_total": status.amount_total,
+            "currency": status.currency
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to check status: {str(e)}")
+
+@api_router.post("/webhook/stripe")
+async def stripe_webhook(request: Request):
+    """Handle Stripe webhooks"""
+    stripe_api_key = os.environ.get('STRIPE_API_KEY')
+    if not stripe_api_key:
+        raise HTTPException(status_code=500, detail="Stripe not configured")
+    
+    stripe_checkout = StripeCheckout(api_key=stripe_api_key, webhook_url="")
+    
+    try:
+        body = await request.body()
+        signature = request.headers.get("Stripe-Signature")
+        
+        if not signature:
+            raise HTTPException(status_code=400, detail="Missing signature")
+        
+        webhook_response = await stripe_checkout.handle_webhook(body, signature)
+        
+        # Update transaction based on webhook event
+        if webhook_response.payment_status == "paid":
+            await db.payment_transactions.update_one(
+                {"session_id": webhook_response.session_id},
+                {"$set": {
+                    "payment_status": "paid",
+                    "status": "completed",
+                    "webhook_event_id": webhook_response.event_id,
+                    "updated_at": datetime.now(timezone.utc)
+                }}
+            )
+        
+        return {"status": "success"}
+        
+    except Exception as e:
+        print(f"Webhook error: {str(e)}")
+        raise HTTPException(status_code=400, detail=str(e))
+
+app.include_router(api_router, prefix="/api")
 
 app.add_middleware(
     CORSMiddleware,
