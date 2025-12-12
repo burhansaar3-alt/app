@@ -611,6 +611,7 @@ const HomePage = ({ user, logout }) => {
               <h3 className="font-bold text-lg mb-4">روابط سريعة</h3>
               <ul className="space-y-2 text-sm text-gray-400">
                 <li><Link to="/" className="hover:text-orange-500 transition">الصفحة الرئيسية</Link></li>
+                <li><Link to="/about" className="hover:text-orange-500 transition">عن المتجر</Link></li>
                 <li><Link to="/auth" className="hover:text-orange-500 transition">تسجيل الدخول</Link></li>
               </ul>
             </div>
