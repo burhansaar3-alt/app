@@ -226,8 +226,8 @@ const HomePage = ({ user, logout }) => {
             </button>
             
             <div className="text-center mb-6">
-              <div className="inline-block p-3 bg-orange-100 rounded-full mb-4">
-                <ShoppingCart className="w-8 h-8 text-orange-600" />
+              <div className="inline-block p-3 bg-emerald-100 rounded-full mb-4">
+                <ShoppingCart className="w-8 h-8 text-emerald-600" />
               </div>
               <h2 className="text-2xl font-bold text-gray-900 mb-2">
                 مرحباً بك في سوق سوريا! 🛍️
@@ -240,10 +240,10 @@ const HomePage = ({ user, logout }) => {
             <div className="grid grid-cols-2 gap-4 mb-6">
               <button
                 onClick={() => handleGenderSelection('women')}
-                className="group flex flex-col items-center justify-center p-6 border-2 border-gray-200 rounded-xl hover:border-orange-500 hover:bg-orange-50 transition-all"
+                className="group flex flex-col items-center justify-center p-6 border-2 border-gray-200 rounded-xl hover:border-emerald-500 hover:bg-emerald-50 transition-all"
               >
                 <div className="text-6xl mb-3">👗</div>
-                <span className="text-lg font-semibold text-gray-900 group-hover:text-orange-600">
+                <span className="text-lg font-semibold text-gray-900 group-hover:text-emerald-600">
                   أزياء نسائية
                 </span>
                 <span className="text-sm text-gray-500 mt-1">للنساء</span>
@@ -251,10 +251,10 @@ const HomePage = ({ user, logout }) => {
 
               <button
                 onClick={() => handleGenderSelection('men')}
-                className="group flex flex-col items-center justify-center p-6 border-2 border-gray-200 rounded-xl hover:border-orange-500 hover:bg-orange-50 transition-all"
+                className="group flex flex-col items-center justify-center p-6 border-2 border-gray-200 rounded-xl hover:border-emerald-500 hover:bg-emerald-50 transition-all"
               >
                 <div className="text-6xl mb-3">👔</div>
-                <span className="text-lg font-semibold text-gray-900 group-hover:text-orange-600">
+                <span className="text-lg font-semibold text-gray-900 group-hover:text-emerald-600">
                   أزياء رجالية
                 </span>
                 <span className="text-sm text-gray-500 mt-1">للرجال</span>
@@ -284,7 +284,7 @@ const HomePage = ({ user, logout }) => {
                 href="https://www.instagram.com/trend.syria.offical" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="flex items-center gap-1 hover:text-orange-600 transition group"
+                className="flex items-center gap-1 hover:text-emerald-600 transition group"
               >
                 <Instagram className="w-4 h-4" />
                 <span>@trend.syria.offical</span>
@@ -294,7 +294,7 @@ const HomePage = ({ user, logout }) => {
               </a>
               <a 
                 href="mailto:trendsyria926@gmail.com"
-                className="flex items-center gap-1 hover:text-orange-600 transition"
+                className="flex items-center gap-1 hover:text-emerald-600 transition"
               >
                 <Mail className="w-4 h-4" />
                 <span>trendsyria926@gmail.com</span>
@@ -302,10 +302,10 @@ const HomePage = ({ user, logout }) => {
               {user ? (
                 <>
                   <span>مرحباً، {user.name}</span>
-                  <button onClick={logout} className="hover:text-orange-600 transition">تسجيل الخروج</button>
+                  <button onClick={logout} className="hover:text-emerald-600 transition">تسجيل الخروج</button>
                 </>
               ) : (
-                <Link to="/auth" className="hover:text-orange-600 transition">تسجيل الدخول</Link>
+                <Link to="/auth" className="hover:text-emerald-600 transition">تسجيل الدخول</Link>
               )}
             </div>
           </div>
@@ -316,8 +316,8 @@ const HomePage = ({ user, logout }) => {
           <div className="flex items-center justify-between gap-4">
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2 flex-shrink-0">
-              <ShoppingCart className="w-8 h-8 text-orange-600" />
-              <span className="text-2xl font-bold text-orange-600">سوق سوريا</span>
+              <ShoppingCart className="w-8 h-8 text-emerald-600" />
+              <span className="text-2xl font-bold text-emerald-600">سوق سوريا</span>
             </Link>
 
             {/* Search Bar */}
@@ -328,7 +328,7 @@ const HomePage = ({ user, logout }) => {
                   placeholder="ابحث عن المنتجات..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3 rounded-lg border-2 border-gray-200 focus:border-orange-500 transition"
+                  className="w-full pl-12 pr-4 py-3 rounded-lg border-2 border-gray-200 focus:border-emerald-500 transition"
                 />
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
               </div>
@@ -344,7 +344,7 @@ const HomePage = ({ user, logout }) => {
                   >
                     <Heart className="w-6 h-6 text-gray-700" />
                     {wishlistIds.length > 0 && (
-                      <span className="absolute -top-1 -right-1 bg-orange-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                      <span className="absolute -top-1 -right-1 bg-emerald-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
                         {wishlistIds.length}
                       </span>
                     )}
@@ -355,7 +355,7 @@ const HomePage = ({ user, logout }) => {
                   >
                     <ShoppingCart className="w-6 h-6 text-gray-700" />
                     {cartCount > 0 && (
-                      <span className="absolute -top-1 -right-1 bg-orange-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                      <span className="absolute -top-1 -right-1 bg-emerald-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
                         {cartCount}
                       </span>
                     )}
@@ -371,7 +371,7 @@ const HomePage = ({ user, logout }) => {
                   {user.role === 'admin' && (
                     <Link
                       to="/admin"
-                      className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition font-medium"
+                      className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition font-medium"
                     >
                       لوحة الأدمن
                     </Link>
@@ -390,7 +390,7 @@ const HomePage = ({ user, logout }) => {
               <div className="relative">
                 <button
                   onMouseEnter={() => setShowMegaMenu(true)}
-                  className="px-4 py-2 rounded-lg font-medium whitespace-nowrap transition flex items-center gap-2 bg-orange-600 text-white hover:bg-orange-700"
+                  className="px-4 py-2 rounded-lg font-medium whitespace-nowrap transition flex items-center gap-2 bg-emerald-600 text-white hover:bg-emerald-700"
                 >
                   <Menu className="w-4 h-4" />
                   جميع التصنيفات
@@ -404,8 +404,8 @@ const HomePage = ({ user, logout }) => {
                   onClick={() => setSelectedCategory(cat.id)}
                   className={`px-4 py-2 rounded-lg font-medium whitespace-nowrap transition ${
                     selectedCategory === cat.id
-                      ? 'bg-orange-600 text-white'
-                      : 'bg-white text-gray-700 hover:bg-orange-100'
+                      ? 'bg-emerald-600 text-white'
+                      : 'bg-white text-gray-700 hover:bg-emerald-100'
                   }`}
                 >
                   {cat.name_ar}
@@ -433,7 +433,7 @@ const HomePage = ({ user, logout }) => {
                         onMouseEnter={() => setHoveredMainCat(mainCat.id)}
                         className={`flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer transition ${
                           hoveredMainCat === mainCat.id
-                            ? 'bg-orange-50 text-orange-600'
+                            ? 'bg-emerald-50 text-emerald-600'
                             : 'hover:bg-gray-50'
                         }`}
                       >
@@ -448,7 +448,7 @@ const HomePage = ({ user, logout }) => {
                         onMouseEnter={() => setHoveredMainCat('other')}
                         className={`flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer transition ${
                           hoveredMainCat === 'other'
-                            ? 'bg-orange-50 text-orange-600'
+                            ? 'bg-emerald-50 text-emerald-600'
                             : 'hover:bg-gray-50'
                         }`}
                       >
@@ -475,10 +475,10 @@ const HomePage = ({ user, logout }) => {
                                 setShowMegaMenu(false);
                                 setHoveredMainCat(null);
                               }}
-                              className="text-right px-3 py-2 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 rounded transition flex items-center justify-between group"
+                              className="text-right px-3 py-2 text-sm text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 rounded transition flex items-center justify-between group"
                             >
                               <span>{cat.name_ar}</span>
-                              <ChevronRight className="w-3 h-3 text-gray-400 group-hover:text-orange-600" />
+                              <ChevronRight className="w-3 h-3 text-gray-400 group-hover:text-emerald-600" />
                             </button>
                           ))}
                         </div>
@@ -496,10 +496,10 @@ const HomePage = ({ user, logout }) => {
                                 setShowMegaMenu(false);
                                 setHoveredMainCat(null);
                               }}
-                              className="text-right px-3 py-2 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 rounded transition flex items-center justify-between group"
+                              className="text-right px-3 py-2 text-sm text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 rounded transition flex items-center justify-between group"
                             >
                               <span>{cat.name_ar}</span>
-                              <ChevronRight className="w-3 h-3 text-gray-400 group-hover:text-orange-600" />
+                              <ChevronRight className="w-3 h-3 text-gray-400 group-hover:text-emerald-600" />
                             </button>
                           ))}
                         </div>
@@ -538,7 +538,7 @@ const HomePage = ({ user, logout }) => {
           {filteredProducts.map((product) => (
             <div
               key={product.id}
-              className="group bg-white rounded-2xl overflow-hidden hover:shadow-2xl transition-all duration-500 cursor-pointer relative border-2 border-transparent hover:border-orange-500"
+              className="group bg-white rounded-2xl overflow-hidden hover:shadow-2xl transition-all duration-500 cursor-pointer relative border-2 border-transparent hover:border-emerald-500"
               onClick={() => navigate(`/product/${product.id}`)}
             >
               {/* Badges Container */}
@@ -567,7 +567,7 @@ const HomePage = ({ user, logout }) => {
                     <Heart
                       className={`w-5 h-5 ${
                         wishlistIds.includes(product.id)
-                          ? 'fill-orange-600 text-orange-600 animate-pulse'
+                          ? 'fill-emerald-600 text-emerald-600 animate-pulse'
                           : 'text-gray-600'
                       }`}
                     />
@@ -589,17 +589,17 @@ const HomePage = ({ user, logout }) => {
               {/* Product Info */}
               <div className="p-4">
                 {/* Product Name */}
-                <h3 className="text-sm font-medium text-gray-900 mb-3 line-clamp-2 min-h-[40px] group-hover:text-orange-600 transition-colors">
+                <h3 className="text-sm font-medium text-gray-900 mb-3 line-clamp-2 min-h-[40px] group-hover:text-emerald-600 transition-colors">
                   {product.name}
                 </h3>
 
                 {/* Price Section - Premium Design */}
                 <div className="relative">
                   {/* Decorative Background */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-orange-50 to-amber-50 rounded-xl opacity-50"></div>
+                  <div className="absolute inset-0 bg-gradient-to-r from-emerald-50 to-gray-50 rounded-xl opacity-50"></div>
                   
                   {/* Price Content */}
-                  <div className="relative bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-xl p-3 shadow-lg transform group-hover:scale-105 transition-all duration-300">
+                  <div className="relative bg-gradient-to-r from-emerald-500 to-gray-900 text-white rounded-xl p-3 shadow-lg transform group-hover:scale-105 transition-all duration-300">
                     <div className="flex items-center justify-between">
                       <div>
                         <div className="text-[10px] font-medium opacity-90 mb-0.5">السعر</div>
@@ -629,7 +629,7 @@ const HomePage = ({ user, logout }) => {
               </div>
 
               {/* Hover Border Glow */}
-              <div className="absolute inset-0 rounded-2xl border-2 border-orange-500 opacity-0 group-hover:opacity-20 transition-opacity duration-500 pointer-events-none"></div>
+              <div className="absolute inset-0 rounded-2xl border-2 border-emerald-500 opacity-0 group-hover:opacity-20 transition-opacity duration-500 pointer-events-none"></div>
             </div>
           ))}
         </div>
@@ -658,15 +658,15 @@ const HomePage = ({ user, logout }) => {
             <div>
               <h3 className="font-bold text-lg mb-4">روابط سريعة</h3>
               <ul className="space-y-2 text-sm text-gray-400">
-                <li><Link to="/" className="hover:text-orange-500 transition">الصفحة الرئيسية</Link></li>
-                <li><Link to="/about" className="hover:text-orange-500 transition">عن المتجر</Link></li>
-                <li><Link to="/auth" className="hover:text-orange-500 transition">تسجيل الدخول</Link></li>
+                <li><Link to="/" className="hover:text-emerald-500 transition">الصفحة الرئيسية</Link></li>
+                <li><Link to="/about" className="hover:text-emerald-500 transition">عن المتجر</Link></li>
+                <li><Link to="/auth" className="hover:text-emerald-500 transition">تسجيل الدخول</Link></li>
               </ul>
             </div>
             <div>
               <h3 className="font-bold text-lg mb-4">للبائعين</h3>
               <ul className="space-y-2 text-sm text-gray-400">
-                <li><Link to="/store-dashboard" className="hover:text-orange-500 transition">لوحة تحكم المتجر</Link></li>
+                <li><Link to="/store-dashboard" className="hover:text-emerald-500 transition">لوحة تحكم المتجر</Link></li>
               </ul>
             </div>
             <div>
@@ -674,7 +674,7 @@ const HomePage = ({ user, logout }) => {
               <ul className="space-y-2 text-sm text-gray-400">
                 <li className="flex items-center gap-2">
                   <Mail className="w-4 h-4" />
-                  <a href="mailto:trendsyria926@gmail.com" className="hover:text-orange-500 transition">
+                  <a href="mailto:trendsyria926@gmail.com" className="hover:text-emerald-500 transition">
                     trendsyria926@gmail.com
                   </a>
                 </li>
@@ -684,7 +684,7 @@ const HomePage = ({ user, logout }) => {
                     href="https://www.instagram.com/trend.syria.offical" 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="hover:text-orange-500 transition flex items-center gap-2"
+                    className="hover:text-emerald-500 transition flex items-center gap-2"
                   >
                     @trend.syria.offical
                     <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-blue-500 text-white">

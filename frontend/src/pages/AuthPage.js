@@ -105,12 +105,12 @@ const AuthPage = ({ setUser }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-400 via-orange-500 to-orange-600 flex items-center justify-center p-3 sm:p-4">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-500 via-emerald-600 to-emerald-700 flex items-center justify-center p-3 sm:p-4">
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-6 sm:mb-8">
           <div className="inline-block p-3 sm:p-4 bg-white rounded-full mb-3 sm:mb-4">
-            <Store className="w-10 h-10 sm:w-12 sm:h-12 text-orange-600" />
+            <Store className="w-10 h-10 sm:w-12 sm:h-12 text-emerald-700" />
           </div>
           <h1 className="text-3xl sm:text-4xl font-bold text-white mb-1 sm:mb-2">سوق سوريا</h1>
           <p className="text-sm sm:text-base text-orange-100">منصة التسوق الإلكتروني الأولى</p>
@@ -164,7 +164,7 @@ const AuthPage = ({ setUser }) => {
                     <button
                       type="button"
                       onClick={() => setShowForgotPassword(true)}
-                      className="text-xs sm:text-sm text-orange-600 hover:text-orange-700 font-medium"
+                      className="text-xs sm:text-sm text-emerald-700 hover:text-emerald-800 font-medium"
                     >
                       نسيت كلمة المرور؟
                     </button>
@@ -173,7 +173,7 @@ const AuthPage = ({ setUser }) => {
                   <Button
                     data-testid="login-submit"
                     type="submit"
-                    className="w-full bg-orange-600 hover:bg-orange-700 text-sm sm:text-base h-10 sm:h-11"
+                    className="w-full bg-emerald-700 hover:bg-emerald-800 text-sm sm:text-base h-10 sm:h-11"
                   >
                     دخول
                   </Button>
@@ -239,7 +239,7 @@ const AuthPage = ({ setUser }) => {
                     <select
                       id="register-role"
                       data-testid="register-role"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm sm:text-base h-10 sm:h-11"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-600 text-sm sm:text-base h-10 sm:h-11"
                       value={registerData.role}
                       onChange={(e) => setRegisterData({ ...registerData, role: e.target.value })}
                     >
@@ -250,7 +250,7 @@ const AuthPage = ({ setUser }) => {
                   <Button
                     data-testid="register-submit"
                     type="submit"
-                    className="w-full bg-orange-600 hover:bg-orange-700 text-sm sm:text-base h-10 sm:h-11"
+                    className="w-full bg-emerald-700 hover:bg-emerald-800 text-sm sm:text-base h-10 sm:h-11"
                   >
                     تسجيل
                   </Button>
@@ -296,7 +296,7 @@ const AuthPage = ({ setUser }) => {
                   </div>
                   <Button
                     type="submit"
-                    className="w-full bg-orange-600 hover:bg-orange-700 text-sm sm:text-base h-10 sm:h-11"
+                    className="w-full bg-emerald-700 hover:bg-emerald-800 text-sm sm:text-base h-10 sm:h-11"
                   >
                     إرسال رمز التحقق
                   </Button>
@@ -333,14 +333,14 @@ const AuthPage = ({ setUser }) => {
                   </div>
                   <Button
                     type="submit"
-                    className="w-full bg-orange-600 hover:bg-orange-700 text-sm sm:text-base h-10 sm:h-11"
+                    className="w-full bg-emerald-700 hover:bg-emerald-800 text-sm sm:text-base h-10 sm:h-11"
                   >
                     تغيير كلمة المرور
                   </Button>
                   <button
                     type="button"
                     onClick={() => setResetStep(1)}
-                    className="text-xs sm:text-sm text-orange-600 hover:text-orange-700 w-full text-center"
+                    className="text-xs sm:text-sm text-emerald-700 hover:text-emerald-800 w-full text-center"
                   >
                     إرسال رمز جديد
                   </button>

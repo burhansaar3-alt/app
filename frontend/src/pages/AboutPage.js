@@ -5,13 +5,13 @@ const AboutPage = () => {
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
-      <header className="bg-orange-600 text-white py-16 sm:py-20">
+      <header className="bg-emerald-600 text-white py-16 sm:py-20">
         <div className="max-w-7xl mx-auto px-4 text-center">
           <div className="inline-block p-4 bg-white/20 rounded-full mb-6">
             <ShoppingCart className="w-16 h-16" />
           </div>
           <h1 className="text-4xl sm:text-5xl font-bold mb-4">سوق سوريا</h1>
-          <p className="text-xl sm:text-2xl text-orange-100 max-w-2xl mx-auto">
+          <p className="text-xl sm:text-2xl text-emerald-100 max-w-2xl mx-auto">
             منصة التجارة الإلكترونية الرائدة في سوريا
           </p>
           <div className="flex items-center justify-center gap-2 mt-4">
@@ -35,8 +35,8 @@ const AboutPage = () => {
               نحن نعمل مع متاجر موثوقة ومعتمدة لضمان جودة المنتجات وسرعة التوصيل. 
               رؤيتنا هي أن نصبح الوجهة الأولى للتسوق الإلكتروني في سوريا.
             </p>
-            <div className="flex items-center gap-3 mt-6 bg-orange-50 p-4 rounded-lg border-r-4 border-orange-600">
-              <Award className="w-12 h-12 text-orange-600 flex-shrink-0" />
+            <div className="flex items-center gap-3 mt-6 bg-emerald-50 p-4 rounded-lg border-r-4 border-emerald-600">
+              <Award className="w-12 h-12 text-emerald-600 flex-shrink-0" />
               <div>
                 <h3 className="font-bold text-gray-900 mb-1">متجر موثوق ومعتمد</h3>
                 <p className="text-sm text-gray-600">
@@ -52,9 +52,9 @@ const AboutPage = () => {
           <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">خدماتنا</h2>
           <div className="grid md:grid-cols-3 gap-6">
             {/* Delivery Service */}
-            <div className="bg-white border-2 border-gray-200 rounded-xl p-6 hover:border-orange-500 transition">
-              <div className="inline-block p-3 bg-orange-100 rounded-full mb-4">
-                <Truck className="w-8 h-8 text-orange-600" />
+            <div className="bg-white border-2 border-gray-200 rounded-xl p-6 hover:border-emerald-500 transition">
+              <div className="inline-block p-3 bg-emerald-100 rounded-full mb-4">
+                <Truck className="w-8 h-8 text-emerald-600" />
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-3">التوصيل السريع</h3>
               <p className="text-gray-600 mb-4">
@@ -70,16 +70,16 @@ const AboutPage = () => {
                   باقي المحافظات: 3-5 أيام
                 </li>
                 <li className="flex items-center gap-2">
-                  <Truck className="w-4 h-4 text-orange-600" />
+                  <Truck className="w-4 h-4 text-emerald-600" />
                   تتبع الشحنة عبر رقم الطلب
                 </li>
               </ul>
             </div>
 
             {/* Secure Shopping */}
-            <div className="bg-white border-2 border-gray-200 rounded-xl p-6 hover:border-orange-500 transition">
-              <div className="inline-block p-3 bg-orange-100 rounded-full mb-4">
-                <Shield className="w-8 h-8 text-orange-600" />
+            <div className="bg-white border-2 border-gray-200 rounded-xl p-6 hover:border-emerald-500 transition">
+              <div className="inline-block p-3 bg-emerald-100 rounded-full mb-4">
+                <Shield className="w-8 h-8 text-emerald-600" />
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-3">تسوق آمن</h3>
               <p className="text-gray-600 mb-4">
@@ -102,9 +102,9 @@ const AboutPage = () => {
             </div>
 
             {/* Customer Support */}
-            <div className="bg-white border-2 border-gray-200 rounded-xl p-6 hover:border-orange-500 transition">
-              <div className="inline-block p-3 bg-orange-100 rounded-full mb-4">
-                <Phone className="w-8 h-8 text-orange-600" />
+            <div className="bg-white border-2 border-gray-200 rounded-xl p-6 hover:border-emerald-500 transition">
+              <div className="inline-block p-3 bg-emerald-100 rounded-full mb-4">
+                <Phone className="w-8 h-8 text-emerald-600" />
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-3">خدمة العملاء</h3>
               <p className="text-gray-600 mb-4">
@@ -112,15 +112,15 @@ const AboutPage = () => {
               </p>
               <ul className="space-y-2 text-sm text-gray-600">
                 <li className="flex items-center gap-2">
-                  <Phone className="w-4 h-4 text-orange-600" />
+                  <Phone className="w-4 h-4 text-emerald-600" />
                   +963 11 1234567
                 </li>
                 <li className="flex items-center gap-2">
-                  <Mail className="w-4 h-4 text-orange-600" />
+                  <Mail className="w-4 h-4 text-emerald-600" />
                   trendsyria926@gmail.com
                 </li>
                 <li className="flex items-center gap-2">
-                  <Instagram className="w-4 h-4 text-orange-600" />
+                  <Instagram className="w-4 h-4 text-emerald-600" />
                   @trend.syria.offical ✅
                 </li>
               </ul>
@@ -135,21 +135,21 @@ const AboutPage = () => {
             <div>
               <div className="bg-gray-50 rounded-xl p-6 mb-6">
                 <div className="flex items-start gap-4 mb-4">
-                  <MapPin className="w-6 h-6 text-orange-600 flex-shrink-0 mt-1" />
+                  <MapPin className="w-6 h-6 text-emerald-600 flex-shrink-0 mt-1" />
                   <div>
                     <h3 className="font-bold text-gray-900 mb-2">العنوان الرئيسي</h3>
                     <p className="text-gray-700">دمشق - المزة - شارع الجلاء</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4 mb-4">
-                  <Phone className="w-6 h-6 text-orange-600 flex-shrink-0 mt-1" />
+                  <Phone className="w-6 h-6 text-emerald-600 flex-shrink-0 mt-1" />
                   <div>
                     <h3 className="font-bold text-gray-900 mb-2">الهاتف</h3>
                     <p className="text-gray-700 dir-ltr text-right">+963 11 1234567</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
-                  <Clock className="w-6 h-6 text-orange-600 flex-shrink-0 mt-1" />
+                  <Clock className="w-6 h-6 text-emerald-600 flex-shrink-0 mt-1" />
                   <div>
                     <h3 className="font-bold text-gray-900 mb-2">ساعات العمل</h3>
                     <p className="text-gray-700">السبت - الخميس: 9:00 ص - 8:00 م</p>
@@ -158,10 +158,10 @@ const AboutPage = () => {
                 </div>
               </div>
 
-              <div className="bg-orange-50 rounded-xl p-6 border-r-4 border-orange-600">
+              <div className="bg-emerald-50 rounded-xl p-6 border-r-4 border-emerald-600">
                 <div className="flex items-center gap-3 mb-3">
-                  <Instagram className="w-6 h-6 text-orange-600" />
-                  <Award className="w-6 h-6 text-orange-600" />
+                  <Instagram className="w-6 h-6 text-emerald-600" />
+                  <Award className="w-6 h-6 text-emerald-600" />
                 </div>
                 <h3 className="font-bold text-gray-900 mb-2">حساب Instagram موثق ✅</h3>
                 <p className="text-gray-700 mb-3">
@@ -171,7 +171,7 @@ const AboutPage = () => {
                   href="https://www.instagram.com/trend.syria.offical"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-orange-600 font-semibold hover:text-orange-700 transition"
+                  className="inline-flex items-center gap-2 text-emerald-600 font-semibold hover:text-emerald-700 transition"
                 >
                   <Instagram className="w-5 h-5" />
                   @trend.syria.offical
@@ -201,29 +201,29 @@ const AboutPage = () => {
           <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">لماذا تختار سوق سوريا؟</h2>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             <div className="text-center">
-              <div className="inline-block p-4 bg-orange-100 rounded-full mb-4">
-                <Award className="w-8 h-8 text-orange-600" />
+              <div className="inline-block p-4 bg-emerald-100 rounded-full mb-4">
+                <Award className="w-8 h-8 text-emerald-600" />
               </div>
               <h3 className="font-bold text-gray-900 mb-2">موثوق ومعتمد</h3>
               <p className="text-sm text-gray-600">جميع البائعين معتمدين وموثوقين</p>
             </div>
             <div className="text-center">
-              <div className="inline-block p-4 bg-orange-100 rounded-full mb-4">
-                <Truck className="w-8 h-8 text-orange-600" />
+              <div className="inline-block p-4 bg-emerald-100 rounded-full mb-4">
+                <Truck className="w-8 h-8 text-emerald-600" />
               </div>
               <h3 className="font-bold text-gray-900 mb-2">توصيل سريع</h3>
               <p className="text-sm text-gray-600">توصيل إلى جميع المحافظات</p>
             </div>
             <div className="text-center">
-              <div className="inline-block p-4 bg-orange-100 rounded-full mb-4">
-                <Shield className="w-8 h-8 text-orange-600" />
+              <div className="inline-block p-4 bg-emerald-100 rounded-full mb-4">
+                <Shield className="w-8 h-8 text-emerald-600" />
               </div>
               <h3 className="font-bold text-gray-900 mb-2">دفع آمن</h3>
               <p className="text-sm text-gray-600">حماية كاملة لمعاملاتك</p>
             </div>
             <div className="text-center">
-              <div className="inline-block p-4 bg-orange-100 rounded-full mb-4">
-                <Phone className="w-8 h-8 text-orange-600" />
+              <div className="inline-block p-4 bg-emerald-100 rounded-full mb-4">
+                <Phone className="w-8 h-8 text-emerald-600" />
               </div>
               <h3 className="font-bold text-gray-900 mb-2">دعم 24/7</h3>
               <p className="text-sm text-gray-600">فريق خدمة العملاء جاهز دائماً</p>
@@ -232,14 +232,14 @@ const AboutPage = () => {
         </section>
 
         {/* CTA Section */}
-        <section className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-2xl p-8 sm:p-12 text-center text-white">
+        <section className="bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-2xl p-8 sm:p-12 text-center text-white">
           <h2 className="text-3xl font-bold mb-4">ابدأ التسوق الآن!</h2>
-          <p className="text-xl text-orange-100 mb-8 max-w-2xl mx-auto">
+          <p className="text-xl text-emerald-100 mb-8 max-w-2xl mx-auto">
             اكتشف آلاف المنتجات من متاجر موثوقة وموثقة
           </p>
           <Link
             to="/"
-            className="inline-block bg-white text-orange-600 px-8 py-4 rounded-xl font-bold text-lg hover:bg-gray-100 transition shadow-lg"
+            className="inline-block bg-white text-emerald-600 px-8 py-4 rounded-xl font-bold text-lg hover:bg-gray-100 transition shadow-lg"
           >
             تصفح المنتجات →
           </Link>
