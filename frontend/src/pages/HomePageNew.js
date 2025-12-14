@@ -108,10 +108,10 @@ const HomePage = ({ user, logout }) => {
               {user ? (
                 <>
                   <span>مرحباً، {user.name}</span>
-                  <button onClick={logout} className="hover:text-orange-600 transition">تسجيل الخروج</button>
+                  <button onClick={logout} className="hover:text-emerald-600 transition">تسجيل الخروج</button>
                 </>
               ) : (
-                <Link to="/auth" className="hover:text-orange-600 transition">تسجيل الدخول</Link>
+                <Link to="/auth" className="hover:text-emerald-600 transition">تسجيل الدخول</Link>
               )}
             </div>
           </div>
@@ -122,8 +122,8 @@ const HomePage = ({ user, logout }) => {
           <div className="flex items-center justify-between gap-4">
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2 flex-shrink-0">
-              <ShoppingCart className="w-8 h-8 text-orange-600" />
-              <span className="text-2xl font-bold text-orange-600">سوق سوريا</span>
+              <ShoppingCart className="w-8 h-8 text-emerald-600" />
+              <span className="text-2xl font-bold text-emerald-600">سوق سوريا</span>
             </Link>
 
             {/* Search Bar */}
@@ -134,7 +134,7 @@ const HomePage = ({ user, logout }) => {
                   placeholder="ابحث عن المنتجات..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3 rounded-lg border-2 border-gray-200 focus:border-orange-500 transition"
+                  className="w-full pl-12 pr-4 py-3 rounded-lg border-2 border-gray-200 focus:border-emerald-500 transition"
                 />
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
               </div>
@@ -150,7 +150,7 @@ const HomePage = ({ user, logout }) => {
                   >
                     <Heart className="w-6 h-6 text-gray-700" />
                     {wishlistIds.length > 0 && (
-                      <span className="absolute -top-1 -right-1 bg-orange-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                      <span className="absolute -top-1 -right-1 bg-emerald-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
                         {wishlistIds.length}
                       </span>
                     )}
@@ -161,7 +161,7 @@ const HomePage = ({ user, logout }) => {
                   >
                     <ShoppingCart className="w-6 h-6 text-gray-700" />
                     {cartCount > 0 && (
-                      <span className="absolute -top-1 -right-1 bg-orange-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                      <span className="absolute -top-1 -right-1 bg-emerald-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
                         {cartCount}
                       </span>
                     )}
@@ -177,7 +177,7 @@ const HomePage = ({ user, logout }) => {
                   {user.role === 'admin' && (
                     <Link
                       to="/admin"
-                      className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition font-medium"
+                      className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition font-medium"
                     >
                       لوحة الأدمن
                     </Link>
@@ -196,7 +196,7 @@ const HomePage = ({ user, logout }) => {
                 onClick={() => setSelectedCategory(null)}
                 className={`px-4 py-2 rounded-lg font-medium whitespace-nowrap transition ${
                   !selectedCategory
-                    ? 'bg-orange-600 text-white'
+                    ? 'bg-emerald-600 text-white'
                     : 'bg-white text-gray-700 hover:bg-gray-100'
                 }`}
               >
@@ -208,7 +208,7 @@ const HomePage = ({ user, logout }) => {
                   onClick={() => setSelectedCategory(cat.id)}
                   className={`px-4 py-2 rounded-lg font-medium whitespace-nowrap transition ${
                     selectedCategory === cat.id
-                      ? 'bg-orange-600 text-white'
+                      ? 'bg-emerald-600 text-white'
                       : 'bg-white text-gray-700 hover:bg-gray-100'
                   }`}
                 >
@@ -251,7 +251,7 @@ const HomePage = ({ user, logout }) => {
                   <Heart
                     className={`w-5 h-5 ${
                       wishlistIds.includes(product.id)
-                        ? 'fill-orange-600 text-orange-600'
+                        ? 'fill-emerald-600 text-emerald-600'
                         : 'text-gray-400'
                     }`}
                   />
@@ -318,14 +318,14 @@ const HomePage = ({ user, logout }) => {
             <div>
               <h3 className="font-bold text-lg mb-4">روابط سريعة</h3>
               <ul className="space-y-2 text-sm text-gray-400">
-                <li><Link to="/" className="hover:text-orange-500 transition">الصفحة الرئيسية</Link></li>
-                <li><Link to="/auth" className="hover:text-orange-500 transition">تسجيل الدخول</Link></li>
+                <li><Link to="/" className="hover:text-emerald-500 transition">الصفحة الرئيسية</Link></li>
+                <li><Link to="/auth" className="hover:text-emerald-500 transition">تسجيل الدخول</Link></li>
               </ul>
             </div>
             <div>
               <h3 className="font-bold text-lg mb-4">للبائعين</h3>
               <ul className="space-y-2 text-sm text-gray-400">
-                <li><Link to="/store-dashboard" className="hover:text-orange-500 transition">لوحة تحكم المتجر</Link></li>
+                <li><Link to="/store-dashboard" className="hover:text-emerald-500 transition">لوحة تحكم المتجر</Link></li>
               </ul>
             </div>
             <div>

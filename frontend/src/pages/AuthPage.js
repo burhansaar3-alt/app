@@ -113,7 +113,7 @@ const AuthPage = ({ setUser }) => {
             <Store className="w-10 h-10 sm:w-12 sm:h-12 text-emerald-700" />
           </div>
           <h1 className="text-3xl sm:text-4xl font-bold text-white mb-1 sm:mb-2">سوق سوريا</h1>
-          <p className="text-sm sm:text-base text-orange-100">منصة التسوق الإلكتروني الأولى</p>
+          <p className="text-sm sm:text-base text-emerald-100">منصة التسوق الإلكتروني الأولى</p>
         </div>
 
         {/* Auth Form */}
