@@ -255,12 +255,60 @@ const CheckoutPage = ({ user, logout }) => {
                 <span className="text-2xl">💵</span>
               </label>
 
+              {/* Sham Cash Payment */}
+              <label
+                className={`flex items-center gap-4 p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                  formData.payment_method === 'sham_cash'
+                    ? 'border-emerald-500 bg-emerald-50'
+                    : 'border-gray-200 hover:border-emerald-300'
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="payment_method"
+                  value="sham_cash"
+                  checked={formData.payment_method === 'sham_cash'}
+                  onChange={(e) => setFormData({ ...formData, payment_method: e.target.value })}
+                  className="w-5 h-5"
+                  data-testid="payment-sham-cash"
+                />
+                <div className="flex-1">
+                  <p className="font-semibold text-gray-900">شام كاش</p>
+                  <p className="text-sm text-gray-600">الدفع عبر تطبيق شام كاش</p>
+                </div>
+                <span className="text-2xl">📱</span>
+              </label>
+
+              {/* Bank Transfer */}
+              <label
+                className={`flex items-center gap-4 p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                  formData.payment_method === 'bank_transfer'
+                    ? 'border-purple-500 bg-purple-50'
+                    : 'border-gray-200 hover:border-purple-300'
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="payment_method"
+                  value="bank_transfer"
+                  checked={formData.payment_method === 'bank_transfer'}
+                  onChange={(e) => setFormData({ ...formData, payment_method: e.target.value })}
+                  className="w-5 h-5"
+                  data-testid="payment-bank"
+                />
+                <div className="flex-1">
+                  <p className="font-semibold text-gray-900">تحويل بنكي</p>
+                  <p className="text-sm text-gray-600">التحويل عبر البنك</p>
+                </div>
+                <span className="text-2xl">🏦</span>
+              </label>
+
               {/* Visa Payment */}
               <label
                 className={`flex items-center gap-4 p-4 border-2 rounded-lg cursor-pointer transition-all ${
                   formData.payment_method === 'visa'
-                    ? 'border-purple-500 bg-purple-50'
-                    : 'border-gray-200 hover:border-purple-300'
+                    ? 'border-indigo-500 bg-indigo-50'
+                    : 'border-gray-200 hover:border-indigo-300'
                 }`}
               >
                 <input
