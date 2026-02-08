@@ -470,11 +470,14 @@ class SyriaMarketAPITester:
         self.test_get_categories()
         self.test_get_products()
         
-        # Authentication tests
-        self.test_register_admin()
+        # Authentication tests - try existing admin first
+        existing_admin_success = self.test_login_existing_admin()
+        if not existing_admin_success:
+            self.test_register_admin()
+            self.test_login_admin()
+        
         self.test_register_store_owner()
         self.test_register_customer()
-        self.test_login_admin()
         
         # Store management tests
         self.test_create_store()
@@ -488,6 +491,23 @@ class SyriaMarketAPITester:
         self.test_cart_operations()
         self.test_create_order()
         self.test_get_orders()
+        
+        # NEW FEATURES TESTING - Shop Syria Updates
+        print("\n🆕 Testing New Shop Syria Features...")
+        print("-" * 30)
+        
+        # Test store orders API
+        self.test_store_orders_api()
+        
+        # Test order status updates
+        self.test_update_order_status_admin()
+        self.test_update_order_status_store_owner()
+        
+        # Test product updates
+        self.test_update_product_put()
+        
+        # Test payment methods support
+        self.test_payment_methods_support()
         
         # Admin functionality tests
         self.test_admin_delete_store()
