@@ -604,6 +604,21 @@ async def update_product(product_id: str, updates: dict, current_user: dict = De
     await db.products.update_one({"id": product_id}, {"$set": updates})
     return {"message": "Product updated"}
 
+@api_router.put("/products/{product_id}")
+async def update_product_full(product_id: str, updates: dict, current_user: dict = Depends(get_current_user)):
+    product = await db.products.find_one({"id": product_id}, {"_id": 0})
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    store = await db.stores.find_one({"id": product['store_id']}, {"_id": 0})
+    if store['owner_id'] != current_user['id'] and current_user['role'] != 'admin':
+        raise HTTPException(status_code=403, detail="Not authorized")
+    
+    # Keep the original store_id
+    updates['store_id'] = product['store_id']
+    await db.products.update_one({"id": product_id}, {"$set": updates})
+    return {"message": "Product updated"}
+
 @api_router.delete("/products/{product_id}")
 async def delete_product(product_id: str, current_user: dict = Depends(get_current_user)):
     product = await db.products.find_one({"id": product_id}, {"_id": 0})
