@@ -819,8 +819,9 @@ async def get_all_orders(current_user: dict = Depends(get_current_user)):
 
 @api_router.patch("/orders/{order_id}/status")
 async def update_order_status(order_id: str, status: str, current_user: dict = Depends(get_current_user)):
-    if current_user['role'] != 'admin':
-        raise HTTPException(status_code=403, detail="Only admins can update order status")
+    # Allow admins and store owners to update order status
+    if current_user['role'] not in ['admin', 'store_owner']:
+        raise HTTPException(status_code=403, detail="Permission denied")
     
     result = await db.orders.update_one(
         {"id": order_id},
