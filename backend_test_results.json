@@ -1,232 +1,304 @@
 {
   "summary": {
-    "total_tests": 37,
-    "passed_tests": 35,
-    "success_rate": 94.5945945945946,
-    "timestamp": "2026-02-08T11:46:31.003865"
+    "total_tests": 49,
+    "passed_tests": 49,
+    "success_rate": 100.0,
+    "timestamp": "2026-02-08T11:47:01.995407"
   },
   "detailed_results": [
     {
       "test": "API Health Check",
       "status": "PASS",
       "details": "Status: 200",
-      "timestamp": "2026-02-08T11:46:28.651776"
+      "timestamp": "2026-02-08T11:46:59.156176"
     },
     {
       "test": "Get Categories",
       "status": "PASS",
       "details": "Status: 200",
-      "timestamp": "2026-02-08T11:46:28.693987"
+      "timestamp": "2026-02-08T11:46:59.196036"
     },
     {
       "test": "Get Products",
       "status": "PASS",
       "details": "Status: 200",
-      "timestamp": "2026-02-08T11:46:28.736117"
+      "timestamp": "2026-02-08T11:46:59.241454"
     },
     {
       "test": "Login Existing Admin",
       "status": "PASS",
       "details": "Status: 200",
-      "timestamp": "2026-02-08T11:46:28.994376"
+      "timestamp": "2026-02-08T11:46:59.506423"
     },
     {
       "test": "Register Store Owner",
       "status": "PASS",
       "details": "Status: 200",
-      "timestamp": "2026-02-08T11:46:29.262966"
+      "timestamp": "2026-02-08T11:46:59.806778"
     },
     {
       "test": "Register Customer",
       "status": "PASS",
       "details": "Status: 200",
-      "timestamp": "2026-02-08T11:46:29.527099"
+      "timestamp": "2026-02-08T11:47:00.075261"
     },
     {
       "test": "Create Store",
       "status": "PASS",
       "details": "Status: 200",
-      "timestamp": "2026-02-08T11:46:29.570324"
+      "timestamp": "2026-02-08T11:47:00.119274"
     },
     {
       "test": "Get Stores",
       "status": "PASS",
       "details": "Status: 200",
-      "timestamp": "2026-02-08T11:46:29.614244"
+      "timestamp": "2026-02-08T11:47:00.161599"
     },
     {
       "test": "Get Stores for Approval",
       "status": "PASS",
       "details": "Status: 200",
-      "timestamp": "2026-02-08T11:46:29.653654"
+      "timestamp": "2026-02-08T11:47:00.200731"
     },
     {
       "test": "Approve Store",
       "status": "PASS",
       "details": "Status: 200",
-      "timestamp": "2026-02-08T11:46:29.735272"
+      "timestamp": "2026-02-08T11:47:00.237397"
     },
     {
       "test": "Get Categories for Product",
       "status": "PASS",
       "details": "Status: 200",
-      "timestamp": "2026-02-08T11:46:29.775627"
+      "timestamp": "2026-02-08T11:47:00.274568"
     },
     {
       "test": "Add Product",
       "status": "PASS",
       "details": "Status: 200",
-      "timestamp": "2026-02-08T11:46:29.858081"
+      "timestamp": "2026-02-08T11:47:00.315496"
     },
     {
       "test": "Get Empty Cart",
       "status": "PASS",
       "details": "Status: 200",
-      "timestamp": "2026-02-08T11:46:29.897618"
+      "timestamp": "2026-02-08T11:47:00.350803"
     },
     {
       "test": "Get Products for Cart",
       "status": "PASS",
       "details": "Status: 200",
-      "timestamp": "2026-02-08T11:46:29.934446"
+      "timestamp": "2026-02-08T11:47:00.387998"
     },
     {
       "test": "Add to Cart",
       "status": "PASS",
       "details": "Status: 200",
-      "timestamp": "2026-02-08T11:46:29.975513"
+      "timestamp": "2026-02-08T11:47:00.425756"
     },
     {
       "test": "Get Cart with Items",
       "status": "PASS",
       "details": "Status: 200",
-      "timestamp": "2026-02-08T11:46:30.017955"
+      "timestamp": "2026-02-08T11:47:00.464355"
     },
     {
       "test": "Create Order",
       "status": "PASS",
       "details": "Status: 200",
-      "timestamp": "2026-02-08T11:46:30.064493"
+      "timestamp": "2026-02-08T11:47:00.502595"
     },
     {
       "test": "Get Customer Orders",
       "status": "PASS",
       "details": "Status: 200",
-      "timestamp": "2026-02-08T11:46:30.103138"
+      "timestamp": "2026-02-08T11:47:00.542123"
     },
     {
       "test": "Get All Orders (Admin)",
       "status": "PASS",
       "details": "Status: 200",
-      "timestamp": "2026-02-08T11:46:30.141907"
+      "timestamp": "2026-02-08T11:47:00.580197"
     },
     {
       "test": "Get Store Orders",
       "status": "PASS",
       "details": "Status: 200",
-      "timestamp": "2026-02-08T11:46:30.177860"
+      "timestamp": "2026-02-08T11:47:00.619429"
     },
     {
       "test": "Get Orders for Status Update",
       "status": "PASS",
       "details": "Status: 200",
-      "timestamp": "2026-02-08T11:46:30.216881"
+      "timestamp": "2026-02-08T11:47:00.656844"
     },
     {
       "test": "Update Order Status (Admin)",
       "status": "PASS",
       "details": "Status: 200",
-      "timestamp": "2026-02-08T11:46:30.260172"
+      "timestamp": "2026-02-08T11:47:00.697348"
     },
     {
-      "test": "Get Store Orders for Status Update",
+      "test": "Get Products for Store Owner Order",
       "status": "PASS",
       "details": "Status: 200",
-      "timestamp": "2026-02-08T11:46:30.301330"
+      "timestamp": "2026-02-08T11:47:00.735495"
+    },
+    {
+      "test": "Get My Stores for Order Test",
+      "status": "PASS",
+      "details": "Status: 200",
+      "timestamp": "2026-02-08T11:47:00.773273"
+    },
+    {
+      "test": "Add Store Product to Cart",
+      "status": "PASS",
+      "details": "Status: 200",
+      "timestamp": "2026-02-08T11:47:00.810726"
+    },
+    {
+      "test": "Create Order for Store Owner Test",
+      "status": "PASS",
+      "details": "Status: 200",
+      "timestamp": "2026-02-08T11:47:00.850059"
     },
     {
       "test": "Update Order Status (Store Owner)",
-      "status": "FAIL",
-      "details": "No store orders found to update",
-      "timestamp": "2026-02-08T11:46:30.301989"
+      "status": "PASS",
+      "details": "Status: 200",
+      "timestamp": "2026-02-08T11:47:00.888584"
     },
     {
       "test": "Get Products for PUT Update",
       "status": "PASS",
       "details": "Status: 200",
-      "timestamp": "2026-02-08T11:46:30.337225"
+      "timestamp": "2026-02-08T11:47:00.929543"
     },
     {
       "test": "Get My Stores for Product Update",
       "status": "PASS",
       "details": "Status: 200",
-      "timestamp": "2026-02-08T11:46:30.372305"
+      "timestamp": "2026-02-08T11:47:00.964075"
     },
     {
       "test": "Update Product (PUT)",
       "status": "PASS",
       "details": "Status: 200",
-      "timestamp": "2026-02-08T11:46:30.416987"
+      "timestamp": "2026-02-08T11:47:01.009595"
+    },
+    {
+      "test": "Get Products for Payment Test",
+      "status": "PASS",
+      "details": "Status: 200",
+      "timestamp": "2026-02-08T11:47:01.043369"
+    },
+    {
+      "test": "Add to Cart for Payment Test",
+      "status": "PASS",
+      "details": "Status: 200",
+      "timestamp": "2026-02-08T11:47:01.080198"
     },
     {
       "test": "Create Order with cash_on_delivery",
-      "status": "FAIL",
-      "details": "Status: 400 (Expected: 200) - Cart is empty",
-      "timestamp": "2026-02-08T11:46:30.458313"
+      "status": "PASS",
+      "details": "Status: 200",
+      "timestamp": "2026-02-08T11:47:01.124352"
+    },
+    {
+      "test": "Re-add to Cart for cash_on_delivery",
+      "status": "PASS",
+      "details": "Status: 200",
+      "timestamp": "2026-02-08T11:47:01.172153"
+    },
+    {
+      "test": "Create Order with sham_cash",
+      "status": "PASS",
+      "details": "Status: 200",
+      "timestamp": "2026-02-08T11:47:01.212794"
+    },
+    {
+      "test": "Re-add to Cart for sham_cash",
+      "status": "PASS",
+      "details": "Status: 200",
+      "timestamp": "2026-02-08T11:47:01.255688"
+    },
+    {
+      "test": "Create Order with bank_transfer",
+      "status": "PASS",
+      "details": "Status: 200",
+      "timestamp": "2026-02-08T11:47:01.294507"
+    },
+    {
+      "test": "Re-add to Cart for bank_transfer",
+      "status": "PASS",
+      "details": "Status: 200",
+      "timestamp": "2026-02-08T11:47:01.333300"
+    },
+    {
+      "test": "Create Order with visa",
+      "status": "PASS",
+      "details": "Status: 200",
+      "timestamp": "2026-02-08T11:47:01.416030"
+    },
+    {
+      "test": "Re-add to Cart for visa",
+      "status": "PASS",
+      "details": "Status: 200",
+      "timestamp": "2026-02-08T11:47:01.457654"
     },
     {
       "test": "Register Store Owner for Delete Test",
       "status": "PASS",
       "details": "Status: 200",
-      "timestamp": "2026-02-08T11:46:30.740280"
+      "timestamp": "2026-02-08T11:47:01.720759"
     },
     {
       "test": "Create Store for Delete Test",
       "status": "PASS",
       "details": "Status: 200",
-      "timestamp": "2026-02-08T11:46:30.780423"
+      "timestamp": "2026-02-08T11:47:01.756377"
     },
     {
       "test": "Approve Store for Delete Test",
       "status": "PASS",
       "details": "Status: 200",
-      "timestamp": "2026-02-08T11:46:30.816383"
+      "timestamp": "2026-02-08T11:47:01.794167"
     },
     {
       "test": "Get Categories for Delete Test",
       "status": "PASS",
       "details": "Status: 200",
-      "timestamp": "2026-02-08T11:46:30.854333"
+      "timestamp": "2026-02-08T11:47:01.833660"
     },
     {
       "test": "Add Product for Delete Test",
       "status": "PASS",
       "details": "Status: 200",
-      "timestamp": "2026-02-08T11:46:30.893837"
+      "timestamp": "2026-02-08T11:47:01.872097"
     },
     {
       "test": "Admin Delete Store",
       "status": "PASS",
       "details": "Status: 200",
-      "timestamp": "2026-02-08T11:46:30.930118"
+      "timestamp": "2026-02-08T11:47:01.912848"
     },
     {
       "test": "Verify Store Deleted",
       "status": "PASS",
       "details": "Status: 200",
-      "timestamp": "2026-02-08T11:46:30.965846"
+      "timestamp": "2026-02-08T11:47:01.954634"
     },
     {
       "test": "Get Stores After Delete",
       "status": "PASS",
       "details": "Status: 200",
-      "timestamp": "2026-02-08T11:46:31.002878"
+      "timestamp": "2026-02-08T11:47:01.994555"
     },
     {
       "test": "Verify Store Deletion",
       "status": "PASS",
       "details": "Store successfully removed from database",
-      "timestamp": "2026-02-08T11:46:31.003573"
+      "timestamp": "2026-02-08T11:47:01.995119"
     }
   ]
 }
