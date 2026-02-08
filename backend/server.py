@@ -774,6 +774,38 @@ async def get_my_orders(current_user: dict = Depends(get_current_user)):
             order['created_at'] = datetime.fromisoformat(order['created_at'])
     return orders
 
+@api_router.get("/orders/store")
+async def get_store_orders(current_user: dict = Depends(get_current_user)):
+    """Get orders for store owner's products"""
+    # Find user's store
+    store = await db.stores.find_one({"owner_id": current_user['id'], "status": "approved"}, {"_id": 0})
+    if not store:
+        return []
+    
+    # Find products from this store
+    store_products = await db.products.find({"store_id": store['id']}, {"_id": 0}).to_list(1000)
+    product_ids = [p['id'] for p in store_products]
+    
+    # Find orders containing these products
+    all_orders = await db.orders.find({}, {"_id": 0}).to_list(1000)
+    store_orders = []
+    
+    for order in all_orders:
+        order_items = order.get('items', [])
+        for item in order_items:
+            if item.get('product_id') in product_ids:
+                # Calculate total for this store's items
+                store_total = sum(
+                    i.get('price', 0) * i.get('quantity', 1) 
+                    for i in order_items 
+                    if i.get('product_id') in product_ids
+                )
+                order['total'] = store_total
+                store_orders.append(order)
+                break
+    
+    return store_orders
+
 @api_router.get("/orders")
 async def get_all_orders(current_user: dict = Depends(get_current_user)):
     if current_user['role'] != 'admin':
