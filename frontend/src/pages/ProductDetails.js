@@ -393,12 +393,35 @@ const ProductDetails = ({ user, logout }) => {
                 <Button
                   data-testid="add-to-cart-button"
                   size="lg"
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-lg py-6 rounded-xl"
+                  className="w-full bg-emerald-600 hover:bg-emerald-700 text-lg py-6 rounded-xl"
                   onClick={addToCart}
                 >
                   <ShoppingCart className="w-5 h-5 ml-2" />
                   إضافة إلى السلة
                 </Button>
+
+                <Button
+                  data-testid="buy-now-button"
+                  size="lg"
+                  className="w-full bg-amber-500 hover:bg-amber-600 text-lg py-6 rounded-xl text-black font-bold"
+                  onClick={buyNow}
+                >
+                  <Zap className="w-5 h-5 ml-2" />
+                  اشتري الآن
+                </Button>
+
+                {storeInfo && (
+                  <Button
+                    data-testid="contact-store-button"
+                    size="lg"
+                    variant="outline"
+                    className="w-full text-lg py-6 rounded-xl border-2 border-emerald-600 text-emerald-600 hover:bg-emerald-50"
+                    onClick={contactStore}
+                  >
+                    <MessageCircle className="w-5 h-5 ml-2" />
+                    تواصل مع المتجر
+                  </Button>
+                )}
               </div>
               </>
             )}
