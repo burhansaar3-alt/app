@@ -228,31 +228,7 @@ const CheckoutPage = ({ user, logout }) => {
                   <p className="font-semibold text-gray-900">الدفع عند الاستلام</p>
                   <p className="text-sm text-gray-600">ادفع عند استلام طلبك</p>
                 </div>
-                <CheckCircle2 className="w-6 h-6 text-green-600" />
-              </label>
-
-              {/* Cash Payment */}
-              <label
-                className={`flex items-center gap-4 p-4 border-2 rounded-lg cursor-pointer transition-all ${
-                  formData.payment_method === 'cash'
-                    ? 'border-blue-500 bg-blue-50'
-                    : 'border-gray-200 hover:border-blue-300'
-                }`}
-              >
-                <input
-                  type="radio"
-                  name="payment_method"
-                  value="cash"
-                  checked={formData.payment_method === 'cash'}
-                  onChange={(e) => setFormData({ ...formData, payment_method: e.target.value })}
-                  className="w-5 h-5"
-                  data-testid="payment-cash"
-                />
-                <div className="flex-1">
-                  <p className="font-semibold text-gray-900">الدفع باليد (نقداً)</p>
-                  <p className="text-sm text-gray-600">الدفع نقداً مباشرة</p>
-                </div>
-                <span className="text-2xl">💵</span>
+                <span className="text-2xl">🚚</span>
               </label>
 
               {/* Sham Cash Payment */}
