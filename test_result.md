@@ -154,9 +154,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Frontend payment methods UI"
-    - "Frontend order management interfaces"
-    - "Frontend admin dashboard"
+    - "Store Dashboard testing with store owner account"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
