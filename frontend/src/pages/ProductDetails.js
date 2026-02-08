@@ -126,6 +126,30 @@ const ProductDetails = ({ user, logout }) => {
     }
   };
 
+  const buyNow = async () => {
+    if (!user) {
+      toast.error('يرجى تسجيل الدخول أولاً');
+      navigate('/auth');
+      return;
+    }
+
+    try {
+      await api.post('/cart/add', { product_id: id, quantity });
+      navigate('/checkout');
+    } catch (error) {
+      toast.error('حدث خطأ أثناء الإضافة');
+    }
+  };
+
+  const contactStore = () => {
+    if (storeInfo?.phone) {
+      const message = encodeURIComponent(`مرحباً، أرغب بالاستفسار عن المنتج: ${product.name}`);
+      window.open(`https://wa.me/${storeInfo.phone.replace(/[^0-9]/g, '')}?text=${message}`, '_blank');
+    } else {
+      toast.info('يرجى التواصل مع المتجر عبر الموقع');
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
