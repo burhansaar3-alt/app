@@ -1,184 +1,232 @@
 {
   "summary": {
-    "total_tests": 29,
-    "passed_tests": 27,
-    "success_rate": 93.10344827586206,
-    "timestamp": "2025-12-03T07:10:51.583106"
+    "total_tests": 37,
+    "passed_tests": 35,
+    "success_rate": 94.5945945945946,
+    "timestamp": "2026-02-08T11:46:31.003865"
   },
   "detailed_results": [
     {
       "test": "API Health Check",
       "status": "PASS",
       "details": "Status: 200",
-      "timestamp": "2025-12-03T07:10:49.697875"
+      "timestamp": "2026-02-08T11:46:28.651776"
     },
     {
       "test": "Get Categories",
       "status": "PASS",
       "details": "Status: 200",
-      "timestamp": "2025-12-03T07:10:49.734837"
+      "timestamp": "2026-02-08T11:46:28.693987"
     },
     {
       "test": "Get Products",
       "status": "PASS",
       "details": "Status: 200",
-      "timestamp": "2025-12-03T07:10:49.773019"
+      "timestamp": "2026-02-08T11:46:28.736117"
     },
     {
-      "test": "Register Admin",
-      "status": "FAIL",
-      "details": "Status: 400 (Expected: 200) - Email already registered",
-      "timestamp": "2025-12-03T07:10:49.812355"
+      "test": "Login Existing Admin",
+      "status": "PASS",
+      "details": "Status: 200",
+      "timestamp": "2026-02-08T11:46:28.994376"
     },
     {
       "test": "Register Store Owner",
       "status": "PASS",
       "details": "Status: 200",
-      "timestamp": "2025-12-03T07:10:50.070869"
+      "timestamp": "2026-02-08T11:46:29.262966"
     },
     {
       "test": "Register Customer",
       "status": "PASS",
       "details": "Status: 200",
-      "timestamp": "2025-12-03T07:10:50.329922"
-    },
-    {
-      "test": "Admin Login",
-      "status": "PASS",
-      "details": "Status: 200",
-      "timestamp": "2025-12-03T07:10:50.588980"
+      "timestamp": "2026-02-08T11:46:29.527099"
     },
     {
       "test": "Create Store",
       "status": "PASS",
       "details": "Status: 200",
-      "timestamp": "2025-12-03T07:10:50.629986"
+      "timestamp": "2026-02-08T11:46:29.570324"
     },
     {
       "test": "Get Stores",
       "status": "PASS",
       "details": "Status: 200",
-      "timestamp": "2025-12-03T07:10:50.663551"
+      "timestamp": "2026-02-08T11:46:29.614244"
     },
     {
       "test": "Get Stores for Approval",
       "status": "PASS",
       "details": "Status: 200",
-      "timestamp": "2025-12-03T07:10:50.701368"
+      "timestamp": "2026-02-08T11:46:29.653654"
     },
     {
       "test": "Approve Store",
       "status": "PASS",
       "details": "Status: 200",
-      "timestamp": "2025-12-03T07:10:50.735969"
+      "timestamp": "2026-02-08T11:46:29.735272"
     },
     {
       "test": "Get Categories for Product",
       "status": "PASS",
       "details": "Status: 200",
-      "timestamp": "2025-12-03T07:10:50.771301"
+      "timestamp": "2026-02-08T11:46:29.775627"
     },
     {
       "test": "Add Product",
-      "status": "FAIL",
-      "details": "Status: 403 (Expected: 200) - You need an approved store to add products",
-      "timestamp": "2025-12-03T07:10:50.809657"
+      "status": "PASS",
+      "details": "Status: 200",
+      "timestamp": "2026-02-08T11:46:29.858081"
     },
     {
       "test": "Get Empty Cart",
       "status": "PASS",
       "details": "Status: 200",
-      "timestamp": "2025-12-03T07:10:50.847405"
+      "timestamp": "2026-02-08T11:46:29.897618"
     },
     {
       "test": "Get Products for Cart",
       "status": "PASS",
       "details": "Status: 200",
-      "timestamp": "2025-12-03T07:10:50.886561"
+      "timestamp": "2026-02-08T11:46:29.934446"
     },
     {
       "test": "Add to Cart",
       "status": "PASS",
       "details": "Status: 200",
-      "timestamp": "2025-12-03T07:10:50.927198"
+      "timestamp": "2026-02-08T11:46:29.975513"
     },
     {
       "test": "Get Cart with Items",
       "status": "PASS",
       "details": "Status: 200",
-      "timestamp": "2025-12-03T07:10:50.969126"
+      "timestamp": "2026-02-08T11:46:30.017955"
     },
     {
       "test": "Create Order",
       "status": "PASS",
       "details": "Status: 200",
-      "timestamp": "2025-12-03T07:10:51.010221"
+      "timestamp": "2026-02-08T11:46:30.064493"
     },
     {
       "test": "Get Customer Orders",
       "status": "PASS",
       "details": "Status: 200",
-      "timestamp": "2025-12-03T07:10:51.043857"
+      "timestamp": "2026-02-08T11:46:30.103138"
     },
     {
       "test": "Get All Orders (Admin)",
       "status": "PASS",
       "details": "Status: 200",
-      "timestamp": "2025-12-03T07:10:51.080973"
+      "timestamp": "2026-02-08T11:46:30.141907"
+    },
+    {
+      "test": "Get Store Orders",
+      "status": "PASS",
+      "details": "Status: 200",
+      "timestamp": "2026-02-08T11:46:30.177860"
+    },
+    {
+      "test": "Get Orders for Status Update",
+      "status": "PASS",
+      "details": "Status: 200",
+      "timestamp": "2026-02-08T11:46:30.216881"
+    },
+    {
+      "test": "Update Order Status (Admin)",
+      "status": "PASS",
+      "details": "Status: 200",
+      "timestamp": "2026-02-08T11:46:30.260172"
+    },
+    {
+      "test": "Get Store Orders for Status Update",
+      "status": "PASS",
+      "details": "Status: 200",
+      "timestamp": "2026-02-08T11:46:30.301330"
+    },
+    {
+      "test": "Update Order Status (Store Owner)",
+      "status": "FAIL",
+      "details": "No store orders found to update",
+      "timestamp": "2026-02-08T11:46:30.301989"
+    },
+    {
+      "test": "Get Products for PUT Update",
+      "status": "PASS",
+      "details": "Status: 200",
+      "timestamp": "2026-02-08T11:46:30.337225"
+    },
+    {
+      "test": "Get My Stores for Product Update",
+      "status": "PASS",
+      "details": "Status: 200",
+      "timestamp": "2026-02-08T11:46:30.372305"
+    },
+    {
+      "test": "Update Product (PUT)",
+      "status": "PASS",
+      "details": "Status: 200",
+      "timestamp": "2026-02-08T11:46:30.416987"
+    },
+    {
+      "test": "Create Order with cash_on_delivery",
+      "status": "FAIL",
+      "details": "Status: 400 (Expected: 200) - Cart is empty",
+      "timestamp": "2026-02-08T11:46:30.458313"
     },
     {
       "test": "Register Store Owner for Delete Test",
       "status": "PASS",
       "details": "Status: 200",
-      "timestamp": "2025-12-03T07:10:51.338828"
+      "timestamp": "2026-02-08T11:46:30.740280"
     },
     {
       "test": "Create Store for Delete Test",
       "status": "PASS",
       "details": "Status: 200",
-      "timestamp": "2025-12-03T07:10:51.371705"
+      "timestamp": "2026-02-08T11:46:30.780423"
     },
     {
       "test": "Approve Store for Delete Test",
       "status": "PASS",
       "details": "Status: 200",
-      "timestamp": "2025-12-03T07:10:51.409437"
+      "timestamp": "2026-02-08T11:46:30.816383"
     },
     {
       "test": "Get Categories for Delete Test",
       "status": "PASS",
       "details": "Status: 200",
-      "timestamp": "2025-12-03T07:10:51.443814"
+      "timestamp": "2026-02-08T11:46:30.854333"
     },
     {
       "test": "Add Product for Delete Test",
       "status": "PASS",
       "details": "Status: 200",
-      "timestamp": "2025-12-03T07:10:51.479509"
+      "timestamp": "2026-02-08T11:46:30.893837"
     },
     {
       "test": "Admin Delete Store",
       "status": "PASS",
       "details": "Status: 200",
-      "timestamp": "2025-12-03T07:10:51.515258"
+      "timestamp": "2026-02-08T11:46:30.930118"
     },
     {
       "test": "Verify Store Deleted",
       "status": "PASS",
       "details": "Status: 200",
-      "timestamp": "2025-12-03T07:10:51.548427"
+      "timestamp": "2026-02-08T11:46:30.965846"
     },
     {
       "test": "Get Stores After Delete",
       "status": "PASS",
       "details": "Status: 200",
-      "timestamp": "2025-12-03T07:10:51.581693"
+      "timestamp": "2026-02-08T11:46:31.002878"
     },
     {
       "test": "Verify Store Deletion",
       "status": "PASS",
       "details": "Store successfully removed from database",
-      "timestamp": "2025-12-03T07:10:51.582308"
+      "timestamp": "2026-02-08T11:46:31.003573"
     }
   ]
 }
