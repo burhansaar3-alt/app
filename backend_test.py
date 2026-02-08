@@ -381,20 +381,56 @@ class SyriaMarketAPITester:
             self.log_test("Update Order Status (Store Owner)", False, "No store owner token")
             return False
         
-        # Get store orders first
         headers = {'Authorization': f'Bearer {self.store_owner_token}'}
-        success, orders_data = self.run_test("Get Store Orders for Status Update", "GET", "orders/store", 200, None, headers)
         
-        if not success or not orders_data:
-            self.log_test("Update Order Status (Store Owner)", False, "No store orders found to update")
+        # First, let's create an order with products from our store
+        # Get our store products
+        success, products_data = self.run_test("Get Products for Store Owner Order", "GET", "products", 200)
+        if not success or not products_data:
+            self.log_test("Update Order Status (Store Owner)", False, "No products found")
             return False
         
-        if orders_data:
-            order_id = orders_data[0]['id']
-            # Test updating order status to 'shipped'
-            return self.run_test("Update Order Status (Store Owner)", "PATCH", f"orders/{order_id}/status?status=shipped", 200, None, headers)
+        # Get our store
+        success, stores_data = self.run_test("Get My Stores for Order Test", "GET", "stores/my", 200, None, headers)
+        if not success or not stores_data:
+            self.log_test("Update Order Status (Store Owner)", False, "No stores found")
+            return False
         
-        return False
+        our_store_id = stores_data[0]['id']
+        our_products = [p for p in products_data if p.get('store_id') == our_store_id]
+        
+        if not our_products:
+            self.log_test("Update Order Status (Store Owner)", False, "No products from our store")
+            return False
+        
+        # Create a customer order with our product
+        if not self.customer_token:
+            self.log_test("Update Order Status (Store Owner)", False, "No customer token for order creation")
+            return False
+        
+        customer_headers = {'Authorization': f'Bearer {self.customer_token}'}
+        
+        # Add our product to customer cart
+        product_id = our_products[0]['id']
+        cart_item = {"product_id": product_id, "quantity": 1}
+        success, _ = self.run_test("Add Store Product to Cart", "POST", "cart/add", 200, cart_item, customer_headers)
+        if not success:
+            return False
+        
+        # Create order
+        order_data = {
+            "shipping_address": "دمشق، سوريا، شارع المتجر 456",
+            "phone": "0987654321",
+            "payment_method": "cash_on_delivery"
+        }
+        success, order_response = self.run_test("Create Order for Store Owner Test", "POST", "orders", 200, order_data, customer_headers)
+        if not success or 'id' not in order_response:
+            return False
+        
+        order_id = order_response['id']
+        
+        # Now test updating order status as store owner
+        return self.run_test("Update Order Status (Store Owner)", "PATCH", f"orders/{order_id}/status?status=shipped", 200, None, headers)
 
     def test_update_product_put(self):
         """Test PUT /api/products/{product_id} endpoint"""
