@@ -338,6 +338,14 @@ const HomePage = ({ user, logout }) => {
             <div className="flex items-center gap-3">
               {user && (
                 <>
+                  {/* My Orders Button */}
+                  <Link
+                    to="/orders"
+                    className="p-3 rounded-lg hover:bg-gray-50 transition relative"
+                    title="طلباتي"
+                  >
+                    <Package className="w-6 h-6 text-gray-700" />
+                  </Link>
                   <Link
                     to="/wishlist"
                     className="p-3 rounded-lg hover:bg-gray-50 transition relative"
