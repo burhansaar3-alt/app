@@ -332,6 +332,134 @@ class SyriaMarketAPITester:
         
         return success
 
+    def test_login_existing_admin(self):
+        """Test login with existing admin credentials"""
+        login_data = {
+            "email": "trendsyria926@gmail.com",
+            "password": "admin123"
+        }
+        success, response = self.run_test("Login Existing Admin", "POST", "auth/login", 200, login_data)
+        if success and 'token' in response:
+            self.admin_token = response['token']
+        return success
+
+    def test_store_orders_api(self):
+        """Test GET /api/orders/store endpoint for store owners"""
+        if not self.store_owner_token:
+            self.log_test("Store Orders API", False, "No store owner token")
+            return False
+        
+        headers = {'Authorization': f'Bearer {self.store_owner_token}'}
+        return self.run_test("Get Store Orders", "GET", "orders/store", 200, None, headers)
+
+    def test_update_order_status_admin(self):
+        """Test PATCH /api/orders/{order_id}/status with admin token"""
+        if not self.admin_token:
+            self.log_test("Update Order Status (Admin)", False, "No admin token")
+            return False
+        
+        # First get all orders to find one to update
+        admin_headers = {'Authorization': f'Bearer {self.admin_token}'}
+        success, orders_data = self.run_test("Get Orders for Status Update", "GET", "orders", 200, None, admin_headers)
+        
+        if not success or not orders_data:
+            self.log_test("Update Order Status (Admin)", False, "No orders found to update")
+            return False
+        
+        if orders_data:
+            order_id = orders_data[0]['id']
+            # Test updating order status to 'confirmed'
+            return self.run_test("Update Order Status (Admin)", "PATCH", f"orders/{order_id}/status?status=confirmed", 200, None, admin_headers)
+        
+        return False
+
+    def test_update_order_status_store_owner(self):
+        """Test PATCH /api/orders/{order_id}/status with store owner token"""
+        if not self.store_owner_token:
+            self.log_test("Update Order Status (Store Owner)", False, "No store owner token")
+            return False
+        
+        # Get store orders first
+        headers = {'Authorization': f'Bearer {self.store_owner_token}'}
+        success, orders_data = self.run_test("Get Store Orders for Status Update", "GET", "orders/store", 200, None, headers)
+        
+        if not success or not orders_data:
+            self.log_test("Update Order Status (Store Owner)", False, "No store orders found to update")
+            return False
+        
+        if orders_data:
+            order_id = orders_data[0]['id']
+            # Test updating order status to 'shipped'
+            return self.run_test("Update Order Status (Store Owner)", "PATCH", f"orders/{order_id}/status?status=shipped", 200, None, headers)
+        
+        return False
+
+    def test_update_product_put(self):
+        """Test PUT /api/products/{product_id} endpoint"""
+        if not self.store_owner_token:
+            self.log_test("Update Product (PUT)", False, "No store owner token")
+            return False
+        
+        # First get products to find one to update
+        success, products_data = self.run_test("Get Products for PUT Update", "GET", "products", 200)
+        
+        if not success or not products_data:
+            self.log_test("Update Product (PUT)", False, "No products found to update")
+            return False
+        
+        # Find a product from our store
+        headers = {'Authorization': f'Bearer {self.store_owner_token}'}
+        
+        # Get our store first
+        success, stores_data = self.run_test("Get My Stores for Product Update", "GET", "stores/my", 200, None, headers)
+        if not success or not stores_data:
+            return False
+        
+        our_store_id = stores_data[0]['id']
+        our_products = [p for p in products_data if p.get('store_id') == our_store_id]
+        
+        if not our_products:
+            self.log_test("Update Product (PUT)", False, "No products from our store found")
+            return False
+        
+        product_id = our_products[0]['id']
+        
+        # Update product data
+        update_data = {
+            "name": "Updated Product Name",
+            "description": "Updated product description",
+            "price": 75000,
+            "stock": 15,
+            "category_id": our_products[0]['category_id']
+        }
+        
+        return self.run_test("Update Product (PUT)", "PUT", f"products/{product_id}", 200, update_data, headers)
+
+    def test_payment_methods_support(self):
+        """Test that the system supports multiple payment methods"""
+        # Test creating orders with different payment methods
+        if not self.customer_token:
+            self.log_test("Payment Methods Support", False, "No customer token")
+            return False
+        
+        headers = {'Authorization': f'Bearer {self.customer_token}'}
+        
+        # Test different payment methods
+        payment_methods = ["cash_on_delivery", "sham_cash", "bank_transfer", "visa"]
+        
+        for method in payment_methods:
+            order_data = {
+                "shipping_address": "دمشق، سوريا، شارع الاختبار 123",
+                "phone": "0987654321",
+                "payment_method": method
+            }
+            
+            success, _ = self.run_test(f"Create Order with {method}", "POST", "orders", 200, order_data, headers)
+            if not success:
+                return False
+        
+        return True
+
     def run_all_tests(self):
         """Run all tests in sequence"""
         print("🚀 Starting Syria Market API Tests...")
