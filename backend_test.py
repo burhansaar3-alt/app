@@ -446,6 +446,20 @@ class SyriaMarketAPITester:
         
         headers = {'Authorization': f'Bearer {self.customer_token}'}
         
+        # First add items to cart
+        success, products = self.run_test("Get Products for Payment Test", "GET", "products", 200)
+        if not success or not products:
+            self.log_test("Payment Methods Support", False, "No products available")
+            return False
+        
+        # Add a product to cart
+        if products:
+            product_id = products[0]['id']
+            cart_item = {"product_id": product_id, "quantity": 1}
+            success, _ = self.run_test("Add to Cart for Payment Test", "POST", "cart/add", 200, cart_item, headers)
+            if not success:
+                return False
+        
         # Test different payment methods
         payment_methods = ["cash_on_delivery", "sham_cash", "bank_transfer", "visa"]
         
@@ -459,6 +473,11 @@ class SyriaMarketAPITester:
             success, _ = self.run_test(f"Create Order with {method}", "POST", "orders", 200, order_data, headers)
             if not success:
                 return False
+            
+            # Re-add item to cart for next test (since order creation clears cart)
+            if products:
+                cart_item = {"product_id": products[0]['id'], "quantity": 1}
+                self.run_test(f"Re-add to Cart for {method}", "POST", "cart/add", 200, cart_item, headers)
         
         return True
 
