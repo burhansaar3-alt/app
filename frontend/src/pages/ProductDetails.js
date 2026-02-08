@@ -3,7 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { api } from '../App';
 import { Button } from '../components/ui/button';
 import { Textarea } from '../components/ui/textarea';
-import { ArrowRight, ShoppingCart, Store, Plus, Minus, Star } from 'lucide-react';
+import { ArrowRight, ShoppingCart, Store, Plus, Minus, Star, Zap, MessageCircle } from 'lucide-react';
 import { toast } from 'sonner';
 
 const ProductDetails = ({ user, logout }) => {
