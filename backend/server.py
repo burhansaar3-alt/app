@@ -1312,6 +1312,95 @@ async def reply_to_chat(data: dict, current_user: dict = Depends(get_current_use
     await db.chat_messages.insert_one(message)
     return {"message": "Reply sent", "id": message['id']}
 
+# ============= Complaints Endpoints =============
+
+@api_router.post("/complaints")
+async def create_complaint(data: dict, current_user: dict = Depends(get_current_user)):
+    """Customer submits a complaint"""
+    subject = data.get('subject')
+    message = data.get('message')
+    images = data.get('images', [])
+    order_id = data.get('order_id')
+    product_id = data.get('product_id')
+    
+    if not subject or not message:
+        raise HTTPException(status_code=400, detail="subject and message are required")
+    
+    complaint = {
+        "id": str(uuid.uuid4()),
+        "customer_id": current_user['id'],
+        "customer_name": current_user['name'],
+        "customer_email": current_user['email'],
+        "order_id": order_id,
+        "product_id": product_id,
+        "subject": subject,
+        "message": message,
+        "images": images,
+        "status": "pending",
+        "admin_response": None,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "updated_at": None
+    }
+    
+    await db.complaints.insert_one(complaint)
+    return {"message": "تم إرسال الشكوى بنجاح", "id": complaint['id']}
+
+@api_router.get("/complaints")
+async def get_complaints(current_user: dict = Depends(get_current_user)):
+    """Get complaints - admin/viewer sees all, customer sees own"""
+    if current_user['role'] in ['admin', 'viewer']:
+        complaints = await db.complaints.find({}, {"_id": 0}).sort("created_at", -1).to_list(500)
+    else:
+        complaints = await db.complaints.find(
+            {"customer_id": current_user['id']}, 
+            {"_id": 0}
+        ).sort("created_at", -1).to_list(100)
+    return complaints
+
+@api_router.get("/complaints/{complaint_id}")
+async def get_complaint(complaint_id: str, current_user: dict = Depends(get_current_user)):
+    """Get single complaint"""
+    complaint = await db.complaints.find_one({"id": complaint_id}, {"_id": 0})
+    if not complaint:
+        raise HTTPException(status_code=404, detail="Complaint not found")
+    
+    # Check permission
+    if current_user['role'] not in ['admin', 'viewer'] and complaint['customer_id'] != current_user['id']:
+        raise HTTPException(status_code=403, detail="Permission denied")
+    
+    return complaint
+
+@api_router.patch("/complaints/{complaint_id}")
+async def update_complaint(complaint_id: str, data: dict, current_user: dict = Depends(get_current_user)):
+    """Admin updates complaint status or response"""
+    if current_user['role'] != 'admin':
+        raise HTTPException(status_code=403, detail="Only admin can update complaints")
+    
+    complaint = await db.complaints.find_one({"id": complaint_id}, {"_id": 0})
+    if not complaint:
+        raise HTTPException(status_code=404, detail="Complaint not found")
+    
+    update_data = {"updated_at": datetime.now(timezone.utc).isoformat()}
+    
+    if 'status' in data:
+        update_data['status'] = data['status']
+    if 'admin_response' in data:
+        update_data['admin_response'] = data['admin_response']
+    
+    await db.complaints.update_one({"id": complaint_id}, {"$set": update_data})
+    return {"message": "تم تحديث الشكوى"}
+
+# ============= Users Management =============
+
+@api_router.get("/users")
+async def get_users(current_user: dict = Depends(get_current_user)):
+    """Get all users - admin/viewer only"""
+    if current_user['role'] not in ['admin', 'viewer']:
+        raise HTTPException(status_code=403, detail="Permission denied")
+    
+    users = await db.users.find({}, {"_id": 0, "password": 0}).to_list(1000)
+    return users
+
 app.include_router(api_router, prefix="/api")
 
 app.add_middleware(
