@@ -176,6 +176,22 @@ class ChatMessage(BaseModel):
     product_id: Optional[str] = None
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
+class Complaint(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    customer_id: str
+    customer_name: str
+    customer_email: str
+    order_id: Optional[str] = None
+    product_id: Optional[str] = None
+    subject: str
+    message: str
+    images: List[str] = []
+    status: str = "pending"  # pending, in_progress, resolved, closed
+    admin_response: Optional[str] = None
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: Optional[datetime] = None
+
 class Coupon(BaseModel):
     model_config = ConfigDict(extra="ignore")
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
