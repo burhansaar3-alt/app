@@ -155,14 +155,26 @@ class Review(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     product_id: str
     user_id: str
+    user_name: str
     rating: int  # 1-5
-    comment: Optional[str] = None
+    comment: str
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class ReviewCreate(BaseModel):
     product_id: str
     rating: int
-    comment: Optional[str] = None
+    comment: str
+
+class ChatMessage(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    store_id: str
+    sender_id: str
+    sender_name: str
+    sender_type: str  # customer, store_owner
+    message: str
+    product_id: Optional[str] = None
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class Coupon(BaseModel):
     model_config = ConfigDict(extra="ignore")
