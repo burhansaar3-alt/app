@@ -1194,6 +1194,108 @@ async def stripe_webhook(request: Request):
         print(f"Webhook error: {str(e)}")
         raise HTTPException(status_code=400, detail=str(e))
 
+# ============= Chat Endpoints =============
+
+@api_router.get("/chat/{store_id}")
+async def get_chat_messages(store_id: str, current_user: dict = Depends(get_current_user)):
+    """Get chat messages between current user and a store"""
+    messages = await db.chat_messages.find({
+        "store_id": store_id,
+        "$or": [
+            {"sender_id": current_user['id']},
+            {"receiver_id": current_user['id']}
+        ]
+    }, {"_id": 0}).sort("created_at", 1).to_list(100)
+    return messages
+
+@api_router.post("/chat/send")
+async def send_chat_message(data: dict, current_user: dict = Depends(get_current_user)):
+    """Send a chat message to a store"""
+    store_id = data.get('store_id')
+    message_text = data.get('message')
+    product_id = data.get('product_id')
+    
+    if not store_id or not message_text:
+        raise HTTPException(status_code=400, detail="store_id and message are required")
+    
+    # Find the store
+    store = await db.stores.find_one({"id": store_id}, {"_id": 0})
+    if not store:
+        raise HTTPException(status_code=404, detail="Store not found")
+    
+    message = {
+        "id": str(uuid.uuid4()),
+        "store_id": store_id,
+        "sender_id": current_user['id'],
+        "sender_name": current_user['name'],
+        "sender_type": "customer" if current_user['role'] == 'customer' else "store_owner",
+        "receiver_id": store['owner_id'],
+        "message": message_text,
+        "product_id": product_id,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.chat_messages.insert_one(message)
+    return {"message": "Message sent", "id": message['id']}
+
+@api_router.get("/chat/store/messages")
+async def get_store_chat_messages(current_user: dict = Depends(get_current_user)):
+    """Get all chat messages for store owner"""
+    # Find user's store
+    store = await db.stores.find_one({"owner_id": current_user['id']}, {"_id": 0})
+    if not store:
+        raise HTTPException(status_code=404, detail="Store not found")
+    
+    messages = await db.chat_messages.find(
+        {"store_id": store['id']},
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(500)
+    
+    # Group by customer
+    conversations = {}
+    for msg in messages:
+        customer_id = msg['sender_id'] if msg['sender_type'] == 'customer' else msg.get('receiver_id')
+        if customer_id not in conversations:
+            conversations[customer_id] = {
+                "customer_id": customer_id,
+                "customer_name": msg.get('sender_name') if msg['sender_type'] == 'customer' else 'Unknown',
+                "messages": [],
+                "last_message": None
+            }
+        conversations[customer_id]['messages'].append(msg)
+        if not conversations[customer_id]['last_message']:
+            conversations[customer_id]['last_message'] = msg
+    
+    return list(conversations.values())
+
+@api_router.post("/chat/store/reply")
+async def reply_to_chat(data: dict, current_user: dict = Depends(get_current_user)):
+    """Store owner replies to a customer message"""
+    customer_id = data.get('customer_id')
+    message_text = data.get('message')
+    
+    if not customer_id or not message_text:
+        raise HTTPException(status_code=400, detail="customer_id and message are required")
+    
+    # Find user's store
+    store = await db.stores.find_one({"owner_id": current_user['id']}, {"_id": 0})
+    if not store:
+        raise HTTPException(status_code=404, detail="Store not found")
+    
+    message = {
+        "id": str(uuid.uuid4()),
+        "store_id": store['id'],
+        "sender_id": current_user['id'],
+        "sender_name": store['store_name'],
+        "sender_type": "store_owner",
+        "receiver_id": customer_id,
+        "message": message_text,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.chat_messages.insert_one(message)
+    return {"message": "Reply sent", "id": message['id']}
+
 app.include_router(api_router, prefix="/api")
 
 app.add_middleware(
