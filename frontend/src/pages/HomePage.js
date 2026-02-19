@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { api } from '../App';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
-import { ShoppingCart, User, Store, Search, Heart, LogOut, Menu, X, ChevronRight, Mail, Instagram, Package } from 'lucide-react';
+import { ShoppingCart, User, Store, Search, Heart, LogOut, Menu, X, ChevronRight, Mail, Instagram, Package, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
 
 const HomePage = ({ user, logout }) => {
