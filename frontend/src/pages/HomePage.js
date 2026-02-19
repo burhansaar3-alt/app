@@ -346,6 +346,14 @@ const HomePage = ({ user, logout }) => {
                   >
                     <Package className="w-6 h-6 text-gray-700" />
                   </Link>
+                  {/* Complaints Button */}
+                  <Link
+                    to="/complaints"
+                    className="p-3 rounded-lg hover:bg-gray-50 transition relative"
+                    title="الشكاوي"
+                  >
+                    <AlertTriangle className="w-6 h-6 text-gray-700" />
+                  </Link>
                   <Link
                     to="/wishlist"
                     className="p-3 rounded-lg hover:bg-gray-50 transition relative"
