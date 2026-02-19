@@ -8,7 +8,7 @@ import json
 from datetime import datetime
 
 def test_user_specified_admin():
-    base_url = "https://shopsyria.preview.emergentagent.com/api"
+    base_url = "https://marketplace-syria-1.preview.emergentagent.com/api"
     
     print("🧪 Testing Admin Delete Store with User-Specified Credentials")
     print("=" * 60)
