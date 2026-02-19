@@ -73,7 +73,7 @@ const CheckoutPage = ({ user, logout }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-sky-50 via-white to-blue-50">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-emerald-50">
       {/* Header */}
       <div className="glass-effect border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -283,8 +283,8 @@ const CheckoutPage = ({ user, logout }) => {
               <label
                 className={`flex items-center gap-4 p-4 border-2 rounded-lg cursor-pointer transition-all ${
                   formData.payment_method === 'visa'
-                    ? 'border-indigo-500 bg-indigo-50'
-                    : 'border-gray-200 hover:border-indigo-300'
+                    ? 'border-emerald-500 bg-indigo-50'
+                    : 'border-gray-200 hover:border-emerald-300'
                 }`}
               >
                 <input
@@ -309,7 +309,7 @@ const CheckoutPage = ({ user, logout }) => {
             data-testid="confirm-order-button"
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-lg py-6 rounded-xl"
+            className="w-full bg-emerald-600 hover:bg-emerald-700 text-lg py-6 rounded-xl"
           >
             {loading ? 'جاري الإرسال...' : 'تأكيد الطلب'}
           </Button>

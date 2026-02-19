@@ -60,7 +60,7 @@ const CartPage = ({ user, logout }) => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-sky-50 via-white to-blue-50">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-emerald-50">
       {/* Header */}
       <div className="glass-effect border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -89,7 +89,7 @@ const CartPage = ({ user, logout }) => {
             <Button
               data-testid="continue-shopping"
               onClick={() => navigate('/')}
-              className="bg-blue-600 hover:bg-blue-700"
+              className="bg-emerald-600 hover:bg-emerald-700"
             >
               متابعة التسوق
             </Button>
@@ -114,7 +114,7 @@ const CartPage = ({ user, logout }) => {
                   <div className="flex-1">
                     <Link
                       to={`/product/${item.product.id}`}
-                      className="text-lg font-semibold text-gray-900 hover:text-blue-600"
+                      className="text-lg font-semibold text-gray-900 hover:text-emerald-600"
                     >
                       {item.product.name}
                     </Link>
@@ -182,7 +182,7 @@ const CartPage = ({ user, logout }) => {
                 </div>
                 <Button
                   data-testid="checkout-button"
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-lg py-6 rounded-xl"
+                  className="w-full bg-emerald-600 hover:bg-emerald-700 text-lg py-6 rounded-xl"
                   onClick={() => navigate('/checkout')}
                 >
                   إتمام الطلب
