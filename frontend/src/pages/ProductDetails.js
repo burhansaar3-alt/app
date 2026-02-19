@@ -3,7 +3,9 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { api } from '../App';
 import { Button } from '../components/ui/button';
 import { Textarea } from '../components/ui/textarea';
-import { ArrowRight, ShoppingCart, Store, Plus, Minus, Star, Zap, MessageCircle } from 'lucide-react';
+import { Input } from '../components/ui/input';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../components/ui/dialog';
+import { ArrowRight, ShoppingCart, Store, Plus, Minus, Star, Zap, MessageCircle, Send, X } from 'lucide-react';
 import { toast } from 'sonner';
 
 const ProductDetails = ({ user, logout }) => {
@@ -23,6 +25,12 @@ const ProductDetails = ({ user, logout }) => {
   const [selectedShoeSize, setSelectedShoeSize] = useState('');
   const [similarProducts, setSimilarProducts] = useState([]);
   const [mainImage, setMainImage] = useState('');
+  
+  // Chat State
+  const [showChat, setShowChat] = useState(false);
+  const [messages, setMessages] = useState([]);
+  const [newMessage, setNewMessage] = useState('');
+  const [chatLoading, setChatLoading] = useState(false);
 
   const fetchProduct = async () => {
     try {
@@ -61,22 +69,40 @@ const ProductDetails = ({ user, logout }) => {
     }
   };
 
+  const fetchChatMessages = async () => {
+    if (!user || !storeInfo) return;
+    try {
+      const res = await api.get(`/chat/${storeInfo.id}`);
+      setMessages(res.data || []);
+    } catch (error) {
+      // Chat might not exist yet
+      setMessages([]);
+    }
+  };
+
   useEffect(() => {
     fetchProduct();
     fetchReviews();
     fetchSimilarProducts();
   }, [id]);
 
-  // Update main image when product loads or color changes
   useEffect(() => {
-    if (product) {
-      if (selectedColor && selectedColor.image) {
-        setMainImage(selectedColor.image);
-      } else if (product.images && product.images.length > 0) {
-        setMainImage(product.images[0]);
-      }
+    if (product?.images?.length > 0) {
+      setMainImage(product.images[0]);
     }
-  }, [product, selectedColor]);
+  }, [product]);
+
+  useEffect(() => {
+    if (selectedColor?.image) {
+      setMainImage(selectedColor.image);
+    }
+  }, [selectedColor]);
+
+  useEffect(() => {
+    if (showChat && user && storeInfo) {
+      fetchChatMessages();
+    }
+  }, [showChat, user, storeInfo]);
 
   const submitReview = async (e) => {
     e.preventDefault();
@@ -118,9 +144,14 @@ const ProductDetails = ({ user, logout }) => {
     }
 
     try {
-      await api.post('/cart/add', { product_id: id, quantity });
+      await api.post('/cart/add', { 
+        product_id: id, 
+        quantity,
+        selected_size: selectedSize,
+        selected_color: selectedColor?.name,
+        selected_shoe_size: selectedShoeSize
+      });
       toast.success('تمت إضافة المنتج إلى السلة');
-      navigate('/cart');
     } catch (error) {
       toast.error('حدث خطأ أثناء الإضافة');
     }
@@ -141,18 +172,38 @@ const ProductDetails = ({ user, logout }) => {
     }
   };
 
-  const contactStore = () => {
-    if (storeInfo?.phone) {
-      const message = encodeURIComponent(`مرحباً، أرغب بالاستفسار عن المنتج: ${product.name}`);
-      window.open(`https://wa.me/${storeInfo.phone.replace(/[^0-9]/g, '')}?text=${message}`, '_blank');
-    } else {
-      toast.info('يرجى التواصل مع المتجر عبر الموقع');
+  const openChat = () => {
+    if (!user) {
+      toast.error('يرجى تسجيل الدخول للتواصل مع المتجر');
+      navigate('/auth');
+      return;
+    }
+    setShowChat(true);
+  };
+
+  const sendMessage = async () => {
+    if (!newMessage.trim() || !storeInfo) return;
+    
+    setChatLoading(true);
+    try {
+      await api.post('/chat/send', {
+        store_id: storeInfo.id,
+        message: newMessage,
+        product_id: id
+      });
+      setNewMessage('');
+      fetchChatMessages();
+      toast.success('تم إرسال الرسالة');
+    } catch (error) {
+      toast.error('حدث خطأ في إرسال الرسالة');
+    } finally {
+      setChatLoading(false);
     }
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-50 via-white to-green-50">
         <div className="text-xl font-medium text-gray-600">جاري التحميل...</div>
       </div>
     );
@@ -160,17 +211,17 @@ const ProductDetails = ({ user, logout }) => {
 
   if (!product) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-50 via-white to-green-50">
         <div className="text-xl font-medium text-gray-600">المنتج غير موجود</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-sky-50 via-white to-blue-50">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-green-50">
       {/* Header */}
-      <div className="glass-effect border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <div className="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-40">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
           <div className="flex items-center justify-between">
             <Button
               data-testid="back-button"
@@ -181,227 +232,213 @@ const ProductDetails = ({ user, logout }) => {
               <ArrowRight className="w-5 h-5" />
               العودة
             </Button>
+            <h1 className="text-lg font-bold text-gray-900 hidden sm:block">تفاصيل المنتج</h1>
             {user && (
               <Button
                 data-testid="cart-button"
                 variant="outline"
                 onClick={() => navigate('/cart')}
+                className="border-emerald-600 text-emerald-600 hover:bg-emerald-50"
               >
                 <ShoppingCart className="w-5 h-5 ml-2" />
-                سلة التسوق
+                السلة
               </Button>
             )}
           </div>
         </div>
       </div>
 
-      {/* Product Details */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          {/* Image Gallery */}
-          <div className="space-y-4">
-            <div className="bg-white rounded-3xl overflow-hidden shadow-lg h-[500px]">
-              <img
-                src={mainImage || product.images[0] || 'https://via.placeholder.com/500'}
-                alt={product.name}
-                className="w-full h-full object-cover transition-all duration-300"
-                data-testid="product-image"
-              />
+      {/* Main Product Image - Full Width */}
+      <div className="bg-white">
+        <div className="max-w-4xl mx-auto">
+          <div className="aspect-square sm:aspect-[4/3] lg:aspect-[16/9] relative overflow-hidden">
+            <img
+              src={mainImage || product.images?.[0] || 'https://via.placeholder.com/800'}
+              alt={product.name}
+              className="w-full h-full object-contain bg-gray-50"
+              data-testid="product-image"
+            />
+          </div>
+          
+          {/* Thumbnail Gallery */}
+          {product.images && product.images.length > 1 && (
+            <div className="flex gap-2 p-4 overflow-x-auto justify-center">
+              {product.images.map((img, index) => (
+                <button
+                  key={index}
+                  onClick={() => setMainImage(img)}
+                  className={`flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden border-2 transition-all ${
+                    mainImage === img ? 'border-emerald-600 ring-2 ring-emerald-200' : 'border-gray-200 hover:border-emerald-400'
+                  }`}
+                >
+                  <img src={img} alt={`${product.name} ${index + 1}`} className="w-full h-full object-cover" />
+                </button>
+              ))}
             </div>
-            {/* Thumbnail images if multiple images exist */}
-            {product.images && product.images.length > 1 && (
-              <div className="flex gap-3 overflow-x-auto">
-                {product.images.map((img, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setMainImage(img)}
-                    className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${
-                      mainImage === img ? 'border-blue-600' : 'border-gray-200'
-                    }`}
-                  >
-                    <img
-                      src={img}
-                      alt={`${product.name} ${index + 1}`}
-                      className="w-full h-full object-cover"
-                    />
-                  </button>
-                ))}
-              </div>
+          )}
+        </div>
+      </div>
+
+      {/* Product Info Section */}
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="bg-white rounded-2xl shadow-lg p-6 space-y-6">
+          {/* Title & Store */}
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2" data-testid="product-name">
+              {product.name}
+            </h1>
+            {storeInfo && (
+              <Link
+                to={`/store/${storeInfo.id}`}
+                className="inline-flex items-center gap-2 text-emerald-600 hover:underline"
+              >
+                <Store className="w-4 h-4" />
+                <span>{storeInfo.store_name}</span>
+              </Link>
             )}
           </div>
 
-          {/* Product Info */}
-          <div className="space-y-6">
+          {/* Price & Stock */}
+          <div className="flex items-center justify-between py-4 border-y border-gray-100">
             <div>
-              <h1 className="text-4xl font-bold text-gray-900 mb-4" data-testid="product-name">
-                {product.name}
-              </h1>
-              <p className="text-gray-600 text-lg leading-relaxed" data-testid="product-description">
-                {product.description || 'وصف المنتج'}
+              <span className="text-sm text-gray-500">السعر</span>
+              <p className="text-3xl font-bold text-emerald-600" data-testid="product-price">
+                {product.price?.toLocaleString()} ل.س
               </p>
             </div>
-
-            {storeInfo && (
-              <div className="bg-blue-50 rounded-xl p-4 flex items-center gap-3">
-                <Store className="w-5 h-5 text-blue-600" />
-                <div>
-                  <p className="text-sm text-gray-600">من</p>
-                  <Link
-                    to={`/store/${storeInfo.id}`}
-                    className="font-semibold text-blue-600 hover:underline"
-                    data-testid="store-link"
-                  >
-                    {storeInfo.store_name}
-                  </Link>
-                </div>
-              </div>
-            )}
-
-            <div className="border-t border-b border-gray-200 py-6">
-              <div className="flex items-center justify-between mb-4">
-                <span className="text-gray-600 text-lg">السعر</span>
-                <span className="text-4xl font-bold text-blue-600" data-testid="product-price">
-                  {product.price.toLocaleString()} ل.س
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-gray-600 text-lg">المخزون</span>
-                <span
-                  className={`font-semibold ${product.stock > 0 ? 'text-green-600' : 'text-red-600'}`}
-                  data-testid="product-stock"
-                >
-                  {product.stock > 0 ? `${product.stock} قطعة متوفرة` : 'نفذت الكمية'}
-                </span>
-              </div>
+            <div className="text-left">
+              <span className="text-sm text-gray-500">المخزون</span>
+              <p className={`text-lg font-semibold ${product.stock > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                {product.stock > 0 ? `${product.stock} قطعة` : 'نفذت الكمية'}
+              </p>
             </div>
+          </div>
 
-            {product.stock > 0 && (
-              <>
-                {/* Color Selection */}
-                {product.colors && product.colors.length > 0 && (
-                  <div className="border-t border-gray-200 pt-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-3">اختر اللون</h3>
-                    <div className="flex gap-3 flex-wrap">
-                      {product.colors.map((color, index) => (
-                        <button
-                          key={index}
-                          onClick={() => setSelectedColor(color)}
-                          className={`relative w-16 h-16 rounded-lg border-2 transition-all ${
-                            selectedColor?.name === color.name
-                              ? 'border-blue-600 scale-110'
-                              : 'border-gray-300 hover:border-blue-400'
-                          }`}
-                          title={color.name}
-                          data-testid={`color-${index}`}
-                        >
-                          {color.image ? (
-                            <img src={color.image} alt={color.name} className="w-full h-full object-cover rounded-lg" />
-                          ) : (
-                            <div
-                              className="w-full h-full rounded-lg"
-                              style={{ backgroundColor: color.hex || '#ccc' }}
-                            />
-                          )}
-                          {selectedColor?.name === color.name && (
-                            <div className="absolute inset-0 flex items-center justify-center bg-blue-600 bg-opacity-20 rounded-lg">
-                              <span className="text-white text-2xl">✓</span>
-                            </div>
-                          )}
-                        </button>
-                      ))}
-                    </div>
-                    {selectedColor && (
-                      <p className="mt-2 text-sm text-gray-600">اللون المختار: {selectedColor.name}</p>
-                    )}
+          {/* Description */}
+          {product.description && (
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">وصف المنتج</h3>
+              <p className="text-gray-600 leading-relaxed">{product.description}</p>
+            </div>
+          )}
+
+          {/* Variants Selection */}
+          {product.stock > 0 && (
+            <div className="space-y-4">
+              {/* Colors */}
+              {product.colors && product.colors.length > 0 && (
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-3">اختر اللون</h3>
+                  <div className="flex gap-3 flex-wrap">
+                    {product.colors.map((color, index) => (
+                      <button
+                        key={index}
+                        onClick={() => setSelectedColor(color)}
+                        className={`relative w-14 h-14 rounded-xl border-2 transition-all ${
+                          selectedColor?.name === color.name
+                            ? 'border-emerald-600 ring-2 ring-emerald-200 scale-105'
+                            : 'border-gray-200 hover:border-emerald-400'
+                        }`}
+                        title={color.name}
+                      >
+                        {color.image ? (
+                          <img src={color.image} alt={color.name} className="w-full h-full object-cover rounded-lg" />
+                        ) : (
+                          <div className="w-full h-full rounded-lg" style={{ backgroundColor: color.hex || '#ccc' }} />
+                        )}
+                        {selectedColor?.name === color.name && (
+                          <div className="absolute inset-0 flex items-center justify-center bg-emerald-600/20 rounded-lg">
+                            <span className="text-emerald-700 text-xl font-bold">✓</span>
+                          </div>
+                        )}
+                      </button>
+                    ))}
                   </div>
-                )}
+                  {selectedColor && <p className="mt-2 text-sm text-emerald-600">اللون: {selectedColor.name}</p>}
+                </div>
+              )}
 
-                {/* Size Selection (for clothes) */}
-                {product.sizes && product.sizes.length > 0 && (
-                  <div className="border-t border-gray-200 pt-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-3">اختر المقاس</h3>
-                    <div className="flex gap-3 flex-wrap">
-                      {product.sizes.map((size) => (
-                        <button
-                          key={size}
-                          onClick={() => setSelectedSize(size)}
-                          className={`px-6 py-3 rounded-lg border-2 font-medium transition-all ${
-                            selectedSize === size
-                              ? 'border-blue-600 bg-blue-50 text-blue-600'
-                              : 'border-gray-300 hover:border-blue-400'
-                          }`}
-                          data-testid={`size-${size}`}
-                        >
-                          {size}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Shoe Size Selection */}
-                {product.shoe_sizes && product.shoe_sizes.length > 0 && (
-                  <div className="border-t border-gray-200 pt-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-3">اختر نمرة الحذاء</h3>
-                    <div className="flex gap-3 flex-wrap">
-                      {product.shoe_sizes.map((size) => (
-                        <button
-                          key={size}
-                          onClick={() => setSelectedShoeSize(size)}
-                          className={`px-5 py-3 rounded-lg border-2 font-medium transition-all ${
-                            selectedShoeSize === size
-                              ? 'border-blue-600 bg-blue-50 text-blue-600'
-                              : 'border-gray-300 hover:border-blue-400'
-                          }`}
-                          data-testid={`shoe-size-${size}`}
-                        >
-                          {size}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                <div className="border-t border-gray-200 pt-6">
-                  <div className="flex items-center gap-4">
-                    <span className="text-gray-700 font-medium">الكمية</span>
-                    <div className="flex items-center gap-3">
-                    <Button
-                      data-testid="decrease-quantity"
-                      variant="outline"
-                      size="icon"
-                      onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                      disabled={quantity <= 1}
-                    >
-                      <Minus className="w-4 h-4" />
-                    </Button>
-                    <span className="text-xl font-semibold w-12 text-center" data-testid="quantity-value">
-                      {quantity}
-                    </span>
-                    <Button
-                      data-testid="increase-quantity"
-                      variant="outline"
-                      size="icon"
-                      onClick={() => setQuantity(Math.min(product.stock, quantity + 1))}
-                      disabled={quantity >= product.stock}
-                    >
-                      <Plus className="w-4 h-4" />
-                    </Button>
+              {/* Sizes */}
+              {product.sizes && product.sizes.length > 0 && (
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-3">اختر المقاس</h3>
+                  <div className="flex gap-2 flex-wrap">
+                    {product.sizes.map((size) => (
+                      <button
+                        key={size}
+                        onClick={() => setSelectedSize(size)}
+                        className={`px-5 py-2.5 rounded-xl border-2 font-medium transition-all ${
+                          selectedSize === size
+                            ? 'border-emerald-600 bg-emerald-50 text-emerald-700'
+                            : 'border-gray-200 hover:border-emerald-400 text-gray-700'
+                        }`}
+                      >
+                        {size}
+                      </button>
+                    ))}
                   </div>
                 </div>
+              )}
 
+              {/* Shoe Sizes */}
+              {product.shoe_sizes && product.shoe_sizes.length > 0 && (
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-3">اختر نمرة الحذاء</h3>
+                  <div className="flex gap-2 flex-wrap">
+                    {product.shoe_sizes.map((size) => (
+                      <button
+                        key={size}
+                        onClick={() => setSelectedShoeSize(size)}
+                        className={`w-12 h-12 rounded-xl border-2 font-semibold transition-all ${
+                          selectedShoeSize === size
+                            ? 'border-emerald-600 bg-emerald-50 text-emerald-700'
+                            : 'border-gray-200 hover:border-emerald-400 text-gray-700'
+                        }`}
+                      >
+                        {size}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Quantity */}
+              <div className="flex items-center gap-4">
+                <span className="text-gray-700 font-medium">الكمية:</span>
+                <div className="flex items-center gap-2 bg-gray-100 rounded-xl p-1">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                    disabled={quantity <= 1}
+                    className="h-10 w-10 rounded-lg"
+                  >
+                    <Minus className="w-4 h-4" />
+                  </Button>
+                  <span className="text-xl font-semibold w-12 text-center">{quantity}</span>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setQuantity(Math.min(product.stock, quantity + 1))}
+                    disabled={quantity >= product.stock}
+                    className="h-10 w-10 rounded-lg"
+                  >
+                    <Plus className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-4">
                 <Button
-                  data-testid="add-to-cart-button"
                   size="lg"
                   className="w-full bg-emerald-600 hover:bg-emerald-700 text-lg py-6 rounded-xl"
                   onClick={addToCart}
                 >
                   <ShoppingCart className="w-5 h-5 ml-2" />
-                  إضافة إلى السلة
+                  إضافة للسلة
                 </Button>
-
                 <Button
-                  data-testid="buy-now-button"
                   size="lg"
                   className="w-full bg-amber-500 hover:bg-amber-600 text-lg py-6 rounded-xl text-black font-bold"
                   onClick={buyNow}
@@ -409,189 +446,203 @@ const ProductDetails = ({ user, logout }) => {
                   <Zap className="w-5 h-5 ml-2" />
                   اشتري الآن
                 </Button>
-
-                {storeInfo && (
-                  <Button
-                    data-testid="contact-store-button"
-                    size="lg"
-                    variant="outline"
-                    className="w-full text-lg py-6 rounded-xl border-2 border-emerald-600 text-emerald-600 hover:bg-emerald-50"
-                    onClick={contactStore}
-                  >
-                    <MessageCircle className="w-5 h-5 ml-2" />
-                    تواصل مع المتجر
-                  </Button>
-                )}
               </div>
-              </>
+
+              {/* Contact Store Button */}
+              {storeInfo && (
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="w-full text-lg py-6 rounded-xl border-2 border-emerald-600 text-emerald-600 hover:bg-emerald-50"
+                  onClick={openChat}
+                >
+                  <MessageCircle className="w-5 h-5 ml-2" />
+                  تواصل مع المتجر
+                </Button>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Reviews Section */}
+        <div className="bg-white rounded-2xl shadow-lg p-6 mt-6">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900">التقييمات والمراجعات</h2>
+              {totalReviews > 0 && (
+                <div className="flex items-center gap-2 mt-2">
+                  <div className="flex">{renderStars(Math.round(averageRating), 'w-5 h-5')}</div>
+                  <span className="text-xl font-bold text-gray-900">{averageRating.toFixed(1)}</span>
+                  <span className="text-gray-500">({totalReviews} تقييم)</span>
+                </div>
+              )}
+            </div>
+            {user && !showReviewForm && (
+              <Button onClick={() => setShowReviewForm(true)} className="bg-emerald-600 hover:bg-emerald-700">
+                <Plus className="w-4 h-4 ml-2" />
+                إضافة تقييم
+              </Button>
             )}
           </div>
+
+          {/* Add Review Form */}
+          {showReviewForm && (
+            <form onSubmit={submitReview} className="bg-emerald-50 rounded-xl p-6 mb-6">
+              <h3 className="text-lg font-bold text-gray-900 mb-4">إضافة تقييمك</h3>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">التقييم</label>
+                  <div className="flex gap-2">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <button
+                        key={star}
+                        type="button"
+                        onClick={() => setNewReview({ ...newReview, rating: star })}
+                        className="focus:outline-none"
+                      >
+                        <Star
+                          className={`w-8 h-8 ${star <= newReview.rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`}
+                        />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">تعليقك</label>
+                  <Textarea
+                    value={newReview.comment}
+                    onChange={(e) => setNewReview({ ...newReview, comment: e.target.value })}
+                    placeholder="اكتب تعليقك هنا..."
+                    rows={3}
+                  />
+                </div>
+                <div className="flex gap-3">
+                  <Button type="submit" className="bg-emerald-600 hover:bg-emerald-700">إرسال التقييم</Button>
+                  <Button type="button" variant="outline" onClick={() => setShowReviewForm(false)}>إلغاء</Button>
+                </div>
+              </div>
+            </form>
+          )}
+
+          {/* Reviews List */}
+          {reviews.length === 0 ? (
+            <p className="text-center text-gray-500 py-8">لا توجد تقييمات بعد. كن أول من يقيم هذا المنتج!</p>
+          ) : (
+            <div className="space-y-4">
+              {reviews.map((review, index) => (
+                <div key={index} className="border-b border-gray-100 pb-4 last:border-0">
+                  <div className="flex items-start gap-3">
+                    <div className="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center">
+                      <span className="text-emerald-600 font-bold">{review.user_name?.[0] || 'م'}</span>
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="font-semibold text-gray-900">{review.user_name || 'مستخدم'}</span>
+                        <div className="flex">{renderStars(review.rating, 'w-4 h-4')}</div>
+                      </div>
+                      <p className="text-gray-600">{review.comment}</p>
+                      <p className="text-xs text-gray-400 mt-1">
+                        {new Date(review.created_at).toLocaleDateString('ar')}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
-        {/* Similar Products Section */}
+
+        {/* Similar Products */}
         {similarProducts.length > 0 && (
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-8">منتجات مشابهة</h2>
-            <div className="product-grid">
-              {similarProducts.map((similarProduct) => (
+          <div className="mt-8">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">منتجات مشابهة</h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+              {similarProducts.map((sp) => (
                 <div
-                  key={similarProduct.id}
-                  onClick={() => navigate(`/product/${similarProduct.id}`)}
-                  className="bg-white rounded-2xl overflow-hidden shadow-md card-hover cursor-pointer"
-                  data-testid={`similar-product-${similarProduct.id}`}
+                  key={sp.id}
+                  onClick={() => navigate(`/product/${sp.id}`)}
+                  className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition cursor-pointer"
                 >
-                  <div className="relative h-64 overflow-hidden">
+                  <div className="aspect-square overflow-hidden">
                     <img
-                      src={similarProduct.images[0] || 'https://via.placeholder.com/300'}
-                      alt={similarProduct.name}
-                      className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
+                      src={sp.images?.[0] || 'https://via.placeholder.com/200'}
+                      alt={sp.name}
+                      className="w-full h-full object-cover hover:scale-105 transition"
                     />
                   </div>
-                  <div className="p-4">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2 truncate">
-                      {similarProduct.name}
-                    </h3>
-                    <p className="text-2xl font-bold text-blue-600">
-                      {similarProduct.price.toLocaleString()} ل.س
-                    </p>
+                  <div className="p-3">
+                    <h3 className="font-semibold text-gray-900 text-sm line-clamp-2 mb-1">{sp.name}</h3>
+                    <p className="text-emerald-600 font-bold">{sp.price?.toLocaleString()} ل.س</p>
                   </div>
                 </div>
               ))}
             </div>
           </div>
         )}
+      </div>
 
-        {/* Reviews Section */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 mt-8">
-          <div className="bg-white rounded-3xl shadow-lg p-8">
-            <div className="flex items-center justify-between mb-8">
-              <div>
-                <h2 className="text-3xl font-bold text-gray-900 mb-2">التقييمات والمراجعات</h2>
-                {totalReviews > 0 && (
-                  <div className="flex items-center gap-3">
-                    <div className="flex items-center gap-1">
-                      {renderStars(Math.round(averageRating))}
-                    </div>
-                    <span className="text-2xl font-bold text-gray-900">{averageRating.toFixed(1)}</span>
-                    <span className="text-gray-600">({totalReviews} تقييم)</span>
-                  </div>
-                )}
-              </div>
-              {user && !showReviewForm && (
-                <Button
-                  onClick={() => setShowReviewForm(true)}
-                  className="bg-blue-600 hover:bg-blue-700"
-                  data-testid="add-review-button"
-                >
-                  <Plus className="w-5 h-5 ml-2" />
-                  إضافة تقييم
-                </Button>
-              )}
-            </div>
-
-            {/* Add Review Form */}
-            {showReviewForm && (
-              <form onSubmit={submitReview} className="bg-blue-50 rounded-xl p-6 mb-8">
-                <h3 className="text-xl font-bold text-gray-900 mb-4">إضافة تقييمك</h3>
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">التقييم</label>
-                    <div className="flex gap-2">
-                      {[1, 2, 3, 4, 5].map((star) => (
-                        <button
-                          key={star}
-                          type="button"
-                          onClick={() => setNewReview({ ...newReview, rating: star })}
-                          className="transition-transform hover:scale-110"
-                          data-testid={`rating-star-${star}`}
-                        >
-                          <Star
-                            className={`w-8 h-8 ${star <= newReview.rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`}
-                          />
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">التعليق (اختياري)</label>
-                    <Textarea
-                      value={newReview.comment}
-                      onChange={(e) => setNewReview({ ...newReview, comment: e.target.value })}
-                      placeholder="شاركنا رأيك في المنتج..."
-                      rows={4}
-                      data-testid="review-comment"
-                    />
-                  </div>
-                  <div className="flex gap-3">
-                    <Button
-                      type="submit"
-                      className="bg-blue-600 hover:bg-blue-700"
-                      data-testid="submit-review"
-                    >
-                      إرسال التقييم
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => {
-                        setShowReviewForm(false);
-                        setNewReview({ rating: 5, comment: '' });
-                      }}
-                      data-testid="cancel-review"
-                    >
-                      إلغاء
-                    </Button>
-                  </div>
-                </div>
-              </form>
-            )}
-
-            {/* Reviews List */}
-            {reviews.length === 0 ? (
-              <div className="text-center py-12">
-                <Star className="w-16 h-16 mx-auto text-gray-300 mb-4" />
-                <p className="text-gray-500 text-lg">لا توجد تقييمات بعد</p>
-                <p className="text-gray-400 mt-2">كن أول من يقيّم هذا المنتج</p>
+      {/* Chat Dialog */}
+      <Dialog open={showChat} onOpenChange={setShowChat}>
+        <DialogContent className="max-w-md h-[80vh] flex flex-col p-0">
+          <DialogHeader className="p-4 border-b bg-emerald-600 text-white rounded-t-lg">
+            <DialogTitle className="flex items-center gap-2">
+              <Store className="w-5 h-5" />
+              محادثة مع {storeInfo?.store_name}
+            </DialogTitle>
+          </DialogHeader>
+          
+          {/* Messages */}
+          <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50">
+            {messages.length === 0 ? (
+              <div className="text-center text-gray-500 py-8">
+                <MessageCircle className="w-12 h-12 mx-auto text-gray-300 mb-2" />
+                <p>ابدأ محادثتك مع المتجر</p>
+                <p className="text-sm mt-1">اسأل عن المنتج: {product?.name}</p>
               </div>
             ) : (
-              <div className="space-y-6">
-                {reviews.map((review) => (
+              messages.map((msg, idx) => (
+                <div
+                  key={idx}
+                  className={`flex ${msg.sender_id === user?.id ? 'justify-start' : 'justify-end'}`}
+                >
                   <div
-                    key={review.id}
-                    className="border-b border-gray-200 pb-6 last:border-0"
-                    data-testid={`review-${review.id}`}
+                    className={`max-w-[80%] px-4 py-2 rounded-2xl ${
+                      msg.sender_id === user?.id
+                        ? 'bg-emerald-600 text-white rounded-br-sm'
+                        : 'bg-white text-gray-900 rounded-bl-sm shadow'
+                    }`}
                   >
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                          <span className="text-blue-600 font-bold text-lg">
-                            {review.user_name?.charAt(0) || 'ز'}
-                          </span>
-                        </div>
-                        <div>
-                          <p className="font-semibold text-gray-900">{review.user_name || 'زبون'}</p>
-                          <div className="flex items-center gap-1">
-                            {renderStars(review.rating, 'w-4 h-4')}
-                          </div>
-                        </div>
-                      </div>
-                      <span className="text-sm text-gray-500">
-                        {new Date(review.created_at).toLocaleDateString('ar-SY', {
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric'
-                        })}
-                      </span>
-                    </div>
-                    {review.comment && (
-                      <p className="text-gray-700 leading-relaxed">{review.comment}</p>
-                    )}
+                    <p>{msg.message}</p>
+                    <p className={`text-xs mt-1 ${msg.sender_id === user?.id ? 'text-emerald-100' : 'text-gray-400'}`}>
+                      {new Date(msg.created_at).toLocaleTimeString('ar', { hour: '2-digit', minute: '2-digit' })}
+                    </p>
                   </div>
-                ))}
-              </div>
+                </div>
+              ))
             )}
           </div>
-        </div>
-      </div>
+
+          {/* Input */}
+          <div className="p-4 border-t bg-white">
+            <div className="flex gap-2">
+              <Input
+                value={newMessage}
+                onChange={(e) => setNewMessage(e.target.value)}
+                placeholder="اكتب رسالتك..."
+                onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+                className="flex-1"
+              />
+              <Button
+                onClick={sendMessage}
+                disabled={chatLoading || !newMessage.trim()}
+                className="bg-emerald-600 hover:bg-emerald-700"
+              >
+                <Send className="w-5 h-5" />
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
