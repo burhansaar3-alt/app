@@ -8,7 +8,7 @@ import { Textarea } from '../components/ui/textarea';
 import { Badge } from '../components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
-import { ArrowRight, Package, Store, Trash2, Check, X, Users, CreditCard, Truck, Settings, Plus, Edit, Image } from 'lucide-react';
+import { ArrowRight, Package, Store, Trash2, Check, X, Users, CreditCard, Truck, Settings, Plus, Edit, AlertTriangle, MessageSquare, Eye } from 'lucide-react';
 import { toast } from 'sonner';
 
 const AdminDashboard = ({ user, logout }) => {
@@ -18,50 +18,48 @@ const AdminDashboard = ({ user, logout }) => {
   const [orders, setOrders] = useState([]);
   const [users, setUsers] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [complaints, setComplaints] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showStoreDialog, setShowStoreDialog] = useState(false);
   const [showCategoryDialog, setShowCategoryDialog] = useState(false);
   const [showEditProductDialog, setShowEditProductDialog] = useState(false);
+  const [showComplaintDialog, setShowComplaintDialog] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
-  const [newStoreData, setNewStoreData] = useState({ store_name: '', description: '', owner_email: '' });
+  const [selectedComplaint, setSelectedComplaint] = useState(null);
+  const [complaintResponse, setComplaintResponse] = useState('');
   const [newCategoryData, setNewCategoryData] = useState({ name_ar: '', name_en: '', slug: '' });
   
-  // Payment & Shipping Settings
   const [paymentMethods, setPaymentMethods] = useState({
-    cash_on_delivery: true,
-    sham_cash: true,
-    bank_transfer: true,
-    visa: false
+    cash_on_delivery: true, sham_cash: true, bank_transfer: true, visa: false
   });
   const [shippingCompanies, setShippingCompanies] = useState([
     { id: 1, name: 'شحن داخلي', active: true },
     { id: 2, name: 'شحن خارجي', active: false }
   ]);
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  // Check if user is viewer (read-only)
+  const isViewer = user?.role === 'viewer';
+
+  useEffect(() => { fetchData(); }, []);
 
   const fetchData = async () => {
     try {
-      const [storesRes, ordersRes, categoriesRes, productsRes] = await Promise.all([
+      const [storesRes, ordersRes, categoriesRes, productsRes, complaintsRes] = await Promise.all([
         api.get('/stores'),
         api.get('/orders'),
         api.get('/categories'),
-        api.get('/products')
+        api.get('/products'),
+        api.get('/complaints').catch(() => ({ data: [] }))
       ]);
       setStores(storesRes.data);
       setOrders(ordersRes.data);
       setCategories(categoriesRes.data);
       setProducts(productsRes.data);
+      setComplaints(complaintsRes.data || []);
       
-      // Try to fetch users
       try {
         const usersRes = await api.get('/users');
         setUsers(usersRes.data);
-      } catch (e) {
-        console.log('Users endpoint not available');
-      }
+      } catch (e) { console.log('Users endpoint not available'); }
       
       setLoading(false);
     } catch (error) {
@@ -71,91 +69,84 @@ const AdminDashboard = ({ user, logout }) => {
   };
 
   const approveStore = async (storeId, status) => {
+    if (isViewer) { toast.error('ليس لديك صلاحية لهذه العملية'); return; }
     try {
       await api.patch(`/stores/${storeId}/approve`, null, { params: { status } });
       toast.success(`تم ${status === 'approved' ? 'قبول' : 'رفض'} المتجر`);
       fetchData();
-    } catch (error) {
-      toast.error('حدث خطأ في العملية');
-    }
+    } catch (error) { toast.error('حدث خطأ في العملية'); }
   };
 
   const deleteStore = async (storeId, storeName) => {
-    if (!window.confirm(`هل أنت متأكد من حذف متجر "${storeName}"؟\n\nسيتم حذف المتجر وجميع منتجاته بشكل نهائي!`)) {
-      return;
-    }
-    
+    if (isViewer) { toast.error('ليس لديك صلاحية لهذه العملية'); return; }
+    if (!window.confirm(`هل أنت متأكد من حذف متجر "${storeName}"؟`)) return;
     try {
       const res = await api.delete(`/stores/${storeId}`);
-      toast.success(`تم حذف المتجر بنجاح! (${res.data.products_deleted} منتج تم حذفه)`);
+      toast.success(`تم حذف المتجر بنجاح!`);
       fetchData();
-    } catch (error) {
-      toast.error('حدث خطأ في الحذف');
-    }
+    } catch (error) { toast.error('حدث خطأ في الحذف'); }
   };
 
   const deleteProduct = async (productId) => {
+    if (isViewer) { toast.error('ليس لديك صلاحية لهذه العملية'); return; }
     if (!window.confirm('هل أنت متأكد من حذف هذا المنتج؟')) return;
-    
     try {
       await api.delete(`/products/${productId}`);
       toast.success('تم حذف المنتج');
       fetchData();
-    } catch (error) {
-      toast.error('حدث خطأ في الحذف');
-    }
+    } catch (error) { toast.error('حدث خطأ في الحذف'); }
   };
 
   const updateProduct = async (e) => {
     e.preventDefault();
+    if (isViewer) { toast.error('ليس لديك صلاحية لهذه العملية'); return; }
     try {
       await api.put(`/products/${editingProduct.id}`, {
-        name: editingProduct.name,
-        description: editingProduct.description,
-        price: parseFloat(editingProduct.price),
-        stock: parseInt(editingProduct.stock),
+        name: editingProduct.name, description: editingProduct.description,
+        price: parseFloat(editingProduct.price), stock: parseInt(editingProduct.stock),
         status: editingProduct.status
       });
       toast.success('تم تحديث المنتج');
       setShowEditProductDialog(false);
       fetchData();
-    } catch (error) {
-      toast.error('حدث خطأ في التحديث');
-    }
-  };
-
-  const toggleProductStatus = async (productId, currentStatus) => {
-    const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
-    try {
-      await api.put(`/products/${productId}`, { status: newStatus });
-      toast.success(newStatus === 'active' ? 'تم تفعيل المنتج' : 'تم إيقاف المنتج');
-      fetchData();
-    } catch (error) {
-      toast.error('حدث خطأ');
-    }
+    } catch (error) { toast.error('حدث خطأ في التحديث'); }
   };
 
   const updateOrderStatus = async (orderId, status) => {
+    if (isViewer) { toast.error('ليس لديك صلاحية لهذه العملية'); return; }
     try {
       await api.patch(`/orders/${orderId}/status`, null, { params: { status } });
       toast.success('تم تحديث حالة الطلب');
       fetchData();
-    } catch (error) {
-      toast.error('حدث خطأ في التحديث');
-    }
+    } catch (error) { toast.error('حدث خطأ في التحديث'); }
   };
 
   const addCategory = async (e) => {
     e.preventDefault();
+    if (isViewer) { toast.error('ليس لديك صلاحية لهذه العملية'); return; }
     try {
       await api.post('/categories', newCategoryData);
       toast.success('تم إضافة التصنيف');
       setShowCategoryDialog(false);
       setNewCategoryData({ name_ar: '', name_en: '', slug: '' });
       fetchData();
-    } catch (error) {
-      toast.error('حدث خطأ في الإضافة');
-    }
+    } catch (error) { toast.error('حدث خطأ في الإضافة'); }
+  };
+
+  const updateComplaint = async (status) => {
+    if (isViewer) { toast.error('ليس لديك صلاحية لهذه العملية'); return; }
+    if (!selectedComplaint) return;
+    try {
+      await api.patch(`/complaints/${selectedComplaint.id}`, {
+        status,
+        admin_response: complaintResponse || selectedComplaint.admin_response
+      });
+      toast.success('تم تحديث الشكوى');
+      setShowComplaintDialog(false);
+      setSelectedComplaint(null);
+      setComplaintResponse('');
+      fetchData();
+    } catch (error) { toast.error('حدث خطأ في التحديث'); }
   };
 
   const getStatusBadge = (status) => {
@@ -169,31 +160,20 @@ const AdminDashboard = ({ user, logout }) => {
       out_for_delivery: { label: 'في الطريق', className: 'bg-orange-100 text-orange-800' },
       delivered: { label: 'مكتمل', className: 'bg-green-100 text-green-800' },
       cancelled: { label: 'ملغى', className: 'bg-gray-100 text-gray-800' },
-      active: { label: 'نشط', className: 'bg-green-100 text-green-800' },
-      inactive: { label: 'متوقف', className: 'bg-red-100 text-red-800' }
+      in_progress: { label: 'قيد المعالجة', className: 'bg-blue-100 text-blue-800' },
+      resolved: { label: 'تم الحل', className: 'bg-green-100 text-green-800' },
+      closed: { label: 'مغلق', className: 'bg-gray-100 text-gray-800' }
     };
     const config = statusMap[status] || statusMap.pending;
     return <Badge className={config.className}>{config.label}</Badge>;
   };
 
   const getPaymentMethodLabel = (method) => {
-    const methods = {
-      cash_on_delivery: 'الدفع عند الاستلام',
-      sham_cash: 'شام كاش',
-      bank_transfer: 'تحويل بنكي',
-      visa: 'فيزا',
-      cash: 'نقداً'
-    };
+    const methods = { cash_on_delivery: 'الدفع عند الاستلام', sham_cash: 'شام كاش', bank_transfer: 'تحويل بنكي', visa: 'فيزا' };
     return methods[method] || method;
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-xl font-medium text-gray-600">جاري التحميل...</div>
-      </div>
-    );
-  }
+  if (loading) return <div className="min-h-screen flex items-center justify-center"><div className="text-xl font-medium text-gray-600">جاري التحميل...</div></div>;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-gray-100">
@@ -201,113 +181,80 @@ const AdminDashboard = ({ user, logout }) => {
       <div className="bg-gray-900 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
-            <Button
-              data-testid="back-button"
-              variant="ghost"
-              onClick={() => navigate('/')}
-              className="flex items-center gap-2 text-white hover:bg-gray-800"
-            >
-              <ArrowRight className="w-5 h-5" />
-              العودة
+            <Button variant="ghost" onClick={() => navigate('/')} className="flex items-center gap-2 text-white hover:bg-gray-800">
+              <ArrowRight className="w-5 h-5" />العودة
             </Button>
-            <h1 className="text-2xl font-bold">لوحة تحكم الأدمن</h1>
-            <Button data-testid="logout-button" variant="outline" onClick={logout} className="border-white text-white hover:bg-gray-800">
-              تسجيل الخروج
-            </Button>
+            <div className="text-center">
+              <h1 className="text-2xl font-bold">لوحة تحكم الأدمن</h1>
+              {isViewer && <p className="text-sm text-yellow-400 flex items-center gap-1 justify-center"><Eye className="w-4 h-4" />وضع المشاهدة فقط</p>}
+            </div>
+            <Button variant="outline" onClick={logout} className="border-white text-white hover:bg-gray-800">تسجيل الخروج</Button>
           </div>
         </div>
       </div>
 
+      {/* Viewer Warning Banner */}
+      {isViewer && (
+        <div className="bg-yellow-50 border-b border-yellow-200 px-4 py-2">
+          <p className="text-center text-yellow-800 text-sm">
+            <Eye className="w-4 h-4 inline ml-1" />
+            أنت في وضع المشاهدة فقط - لا يمكنك إجراء أي تغييرات
+          </p>
+        </div>
+      )}
+
       {/* Stats Cards */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
           <div className="bg-white rounded-xl shadow p-4">
             <div className="flex items-center gap-3">
-              <div className="p-3 bg-emerald-100 rounded-lg">
-                <Store className="w-6 h-6 text-emerald-600" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-gray-900">{stores.length}</p>
-                <p className="text-sm text-gray-600">المتاجر</p>
-              </div>
+              <div className="p-3 bg-emerald-100 rounded-lg"><Store className="w-6 h-6 text-emerald-600" /></div>
+              <div><p className="text-2xl font-bold text-gray-900">{stores.length}</p><p className="text-sm text-gray-600">المتاجر</p></div>
             </div>
           </div>
           <div className="bg-white rounded-xl shadow p-4">
             <div className="flex items-center gap-3">
-              <div className="p-3 bg-blue-100 rounded-lg">
-                <Package className="w-6 h-6 text-blue-600" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-gray-900">{products.length}</p>
-                <p className="text-sm text-gray-600">المنتجات</p>
-              </div>
+              <div className="p-3 bg-blue-100 rounded-lg"><Package className="w-6 h-6 text-blue-600" /></div>
+              <div><p className="text-2xl font-bold text-gray-900">{products.length}</p><p className="text-sm text-gray-600">المنتجات</p></div>
             </div>
           </div>
           <div className="bg-white rounded-xl shadow p-4">
             <div className="flex items-center gap-3">
-              <div className="p-3 bg-purple-100 rounded-lg">
-                <CreditCard className="w-6 h-6 text-purple-600" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-gray-900">{orders.length}</p>
-                <p className="text-sm text-gray-600">الطلبات</p>
-              </div>
+              <div className="p-3 bg-purple-100 rounded-lg"><CreditCard className="w-6 h-6 text-purple-600" /></div>
+              <div><p className="text-2xl font-bold text-gray-900">{orders.length}</p><p className="text-sm text-gray-600">الطلبات</p></div>
             </div>
           </div>
           <div className="bg-white rounded-xl shadow p-4">
             <div className="flex items-center gap-3">
-              <div className="p-3 bg-orange-100 rounded-lg">
-                <Users className="w-6 h-6 text-orange-600" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-gray-900">{users.length || '-'}</p>
-                <p className="text-sm text-gray-600">المستخدمين</p>
-              </div>
+              <div className="p-3 bg-orange-100 rounded-lg"><Users className="w-6 h-6 text-orange-600" /></div>
+              <div><p className="text-2xl font-bold text-gray-900">{users.length || '-'}</p><p className="text-sm text-gray-600">المستخدمين</p></div>
+            </div>
+          </div>
+          <div className="bg-white rounded-xl shadow p-4">
+            <div className="flex items-center gap-3">
+              <div className="p-3 bg-red-100 rounded-lg"><AlertTriangle className="w-6 h-6 text-red-600" /></div>
+              <div><p className="text-2xl font-bold text-gray-900">{complaints.filter(c => c.status === 'pending').length}</p><p className="text-sm text-gray-600">شكاوي جديدة</p></div>
             </div>
           </div>
         </div>
 
         <Tabs defaultValue="stores" className="w-full">
-          <TabsList className="grid w-full grid-cols-4 lg:grid-cols-7 mb-6">
-            <TabsTrigger value="stores" className="flex items-center gap-1 text-xs sm:text-sm">
-              <Store className="w-4 h-4" />
-              المتاجر
-            </TabsTrigger>
-            <TabsTrigger value="products" className="flex items-center gap-1 text-xs sm:text-sm">
-              <Package className="w-4 h-4" />
-              المنتجات
-            </TabsTrigger>
-            <TabsTrigger value="orders" className="flex items-center gap-1 text-xs sm:text-sm">
-              <CreditCard className="w-4 h-4" />
-              الطلبات
-            </TabsTrigger>
-            <TabsTrigger value="users" className="flex items-center gap-1 text-xs sm:text-sm">
-              <Users className="w-4 h-4" />
-              الحسابات
-            </TabsTrigger>
-            <TabsTrigger value="reports" className="flex items-center gap-1 text-xs sm:text-sm">
-              <CreditCard className="w-4 h-4" />
-              التقارير
-            </TabsTrigger>
-            <TabsTrigger value="shipping" className="flex items-center gap-1 text-xs sm:text-sm">
-              <Truck className="w-4 h-4" />
-              الشحن
-            </TabsTrigger>
-            <TabsTrigger value="settings" className="flex items-center gap-1 text-xs sm:text-sm">
-              <Settings className="w-4 h-4" />
-              الإعدادات
-            </TabsTrigger>
+          <TabsList className="grid w-full grid-cols-4 lg:grid-cols-8 mb-6">
+            <TabsTrigger value="stores" className="flex items-center gap-1 text-xs"><Store className="w-4 h-4" />المتاجر</TabsTrigger>
+            <TabsTrigger value="products" className="flex items-center gap-1 text-xs"><Package className="w-4 h-4" />المنتجات</TabsTrigger>
+            <TabsTrigger value="orders" className="flex items-center gap-1 text-xs"><CreditCard className="w-4 h-4" />الطلبات</TabsTrigger>
+            <TabsTrigger value="complaints" className="flex items-center gap-1 text-xs"><AlertTriangle className="w-4 h-4" />الشكاوي</TabsTrigger>
+            <TabsTrigger value="users" className="flex items-center gap-1 text-xs"><Users className="w-4 h-4" />الحسابات</TabsTrigger>
+            <TabsTrigger value="reports" className="flex items-center gap-1 text-xs"><CreditCard className="w-4 h-4" />التقارير</TabsTrigger>
+            <TabsTrigger value="shipping" className="flex items-center gap-1 text-xs"><Truck className="w-4 h-4" />الشحن</TabsTrigger>
+            <TabsTrigger value="settings" className="flex items-center gap-1 text-xs"><Settings className="w-4 h-4" />الإعدادات</TabsTrigger>
           </TabsList>
 
           {/* Stores Tab */}
           <TabsContent value="stores">
             <div className="bg-white rounded-xl shadow-lg p-6">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-bold text-gray-900">إدارة المتاجر ({stores.length})</h2>
-              </div>
-              {stores.length === 0 ? (
-                <p className="text-center text-gray-500 py-12">لا توجد متاجر</p>
-              ) : (
+              <h2 className="text-xl font-bold text-gray-900 mb-6">إدارة المتاجر ({stores.length})</h2>
+              {stores.length === 0 ? <p className="text-center text-gray-500 py-12">لا توجد متاجر</p> : (
                 <div className="space-y-4">
                   {stores.map((store) => (
                     <div key={store.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition">
@@ -318,26 +265,18 @@ const AdminDashboard = ({ user, logout }) => {
                             {getStatusBadge(store.status)}
                           </div>
                           <p className="text-gray-600 text-sm mb-1">{store.description || 'لا يوجد وصف'}</p>
-                          <p className="text-xs text-gray-500">تاريخ الإنشاء: {new Date(store.created_at).toLocaleDateString('ar')}</p>
                         </div>
-                        <div className="flex gap-2">
-                          {store.status === 'pending' && (
-                            <>
-                              <Button size="sm" className="bg-green-600 hover:bg-green-700" onClick={() => approveStore(store.id, 'approved')}>
-                                <Check className="w-4 h-4 ml-1" />
-                                قبول
-                              </Button>
-                              <Button size="sm" variant="destructive" onClick={() => approveStore(store.id, 'rejected')}>
-                                <X className="w-4 h-4 ml-1" />
-                                رفض
-                              </Button>
-                            </>
-                          )}
-                          <Button size="sm" variant="destructive" onClick={() => deleteStore(store.id, store.store_name)}>
-                            <Trash2 className="w-4 h-4 ml-1" />
-                            حذف
-                          </Button>
-                        </div>
+                        {!isViewer && (
+                          <div className="flex gap-2">
+                            {store.status === 'pending' && (
+                              <>
+                                <Button size="sm" className="bg-green-600 hover:bg-green-700" onClick={() => approveStore(store.id, 'approved')}><Check className="w-4 h-4 ml-1" />قبول</Button>
+                                <Button size="sm" variant="destructive" onClick={() => approveStore(store.id, 'rejected')}><X className="w-4 h-4 ml-1" />رفض</Button>
+                              </>
+                            )}
+                            <Button size="sm" variant="destructive" onClick={() => deleteStore(store.id, store.store_name)}><Trash2 className="w-4 h-4 ml-1" />حذف</Button>
+                          </div>
+                        )}
                       </div>
                     </div>
                   ))}
@@ -349,12 +288,8 @@ const AdminDashboard = ({ user, logout }) => {
           {/* Products Tab */}
           <TabsContent value="products">
             <div className="bg-white rounded-xl shadow-lg p-6">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-bold text-gray-900">إدارة المنتجات ({products.length})</h2>
-              </div>
-              {products.length === 0 ? (
-                <p className="text-center text-gray-500 py-12">لا توجد منتجات</p>
-              ) : (
+              <h2 className="text-xl font-bold text-gray-900 mb-6">إدارة المنتجات ({products.length})</h2>
+              {products.length === 0 ? <p className="text-center text-gray-500 py-12">لا توجد منتجات</p> : (
                 <div className="overflow-x-auto">
                   <table className="w-full">
                     <thead className="bg-gray-50">
@@ -362,7 +297,6 @@ const AdminDashboard = ({ user, logout }) => {
                         <th className="px-4 py-3 text-right text-sm font-medium text-gray-600">المنتج</th>
                         <th className="px-4 py-3 text-right text-sm font-medium text-gray-600">السعر</th>
                         <th className="px-4 py-3 text-right text-sm font-medium text-gray-600">المخزون</th>
-                        <th className="px-4 py-3 text-right text-sm font-medium text-gray-600">الحالة</th>
                         <th className="px-4 py-3 text-right text-sm font-medium text-gray-600">إجراءات</th>
                       </tr>
                     </thead>
@@ -371,49 +305,19 @@ const AdminDashboard = ({ user, logout }) => {
                         <tr key={product.id} className="hover:bg-gray-50">
                           <td className="px-4 py-3">
                             <div className="flex items-center gap-3">
-                              <img
-                                src={product.images?.[0] || 'https://via.placeholder.com/50'}
-                                alt={product.name}
-                                className="w-12 h-12 object-cover rounded-lg"
-                              />
-                              <div>
-                                <p className="font-medium text-gray-900 line-clamp-1">{product.name}</p>
-                                <p className="text-xs text-gray-500">{product.images?.length || 0} صور</p>
-                              </div>
+                              <img src={product.images?.[0] || 'https://via.placeholder.com/50'} alt={product.name} className="w-12 h-12 object-cover rounded-lg" />
+                              <p className="font-medium text-gray-900 line-clamp-1">{product.name}</p>
                             </div>
                           </td>
-                          <td className="px-4 py-3 text-emerald-600 font-semibold">
-                            {product.price.toLocaleString()} ل.س
-                          </td>
+                          <td className="px-4 py-3 text-emerald-600 font-semibold">{product.price?.toLocaleString()} ل.س</td>
                           <td className="px-4 py-3">{product.stock}</td>
-                          <td className="px-4 py-3">{getStatusBadge(product.status || 'active')}</td>
                           <td className="px-4 py-3">
-                            <div className="flex gap-1">
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => {
-                                  setEditingProduct(product);
-                                  setShowEditProductDialog(true);
-                                }}
-                              >
-                                <Edit className="w-3 h-3" />
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant={product.status === 'active' ? 'outline' : 'default'}
-                                onClick={() => toggleProductStatus(product.id, product.status || 'active')}
-                              >
-                                {product.status === 'active' ? 'إيقاف' : 'تفعيل'}
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="destructive"
-                                onClick={() => deleteProduct(product.id)}
-                              >
-                                <Trash2 className="w-3 h-3" />
-                              </Button>
-                            </div>
+                            {!isViewer && (
+                              <div className="flex gap-1">
+                                <Button size="sm" variant="outline" onClick={() => { setEditingProduct(product); setShowEditProductDialog(true); }}><Edit className="w-3 h-3" /></Button>
+                                <Button size="sm" variant="destructive" onClick={() => deleteProduct(product.id)}><Trash2 className="w-3 h-3" /></Button>
+                              </div>
+                            )}
                           </td>
                         </tr>
                       ))}
@@ -428,33 +332,23 @@ const AdminDashboard = ({ user, logout }) => {
           <TabsContent value="orders">
             <div className="bg-white rounded-xl shadow-lg p-6">
               <h2 className="text-xl font-bold text-gray-900 mb-6">إدارة الطلبات ({orders.length})</h2>
-              {orders.length === 0 ? (
-                <p className="text-center text-gray-500 py-12">لا توجد طلبات</p>
-              ) : (
+              {orders.length === 0 ? <p className="text-center text-gray-500 py-12">لا توجد طلبات</p> : (
                 <div className="space-y-4">
                   {orders.map((order) => (
                     <div key={order.id} className="border border-gray-200 rounded-lg p-4">
                       <div className="flex justify-between items-start mb-3">
                         <div>
                           <div className="flex items-center gap-2 mb-1">
-                            <p className="font-semibold">طلب #{order.id.slice(0, 8)}</p>
+                            <p className="font-semibold">طلب #{order.id?.slice(0, 8)}</p>
                             {getStatusBadge(order.status)}
                           </div>
                           <p className="text-sm text-gray-600">العنوان: {order.shipping_address}</p>
-                          <p className="text-sm text-gray-600">الهاتف: {order.phone}</p>
                           <p className="text-sm text-gray-600">طريقة الدفع: {getPaymentMethodLabel(order.payment_method)}</p>
                         </div>
-                        <div className="text-left">
-                          <p className="text-xl font-bold text-emerald-600">{(order.total_amount || order.total || 0).toLocaleString()} ل.س</p>
-                          <p className="text-xs text-gray-500">{new Date(order.created_at).toLocaleDateString('ar')}</p>
-                        </div>
+                        <p className="text-xl font-bold text-emerald-600">{(order.total_amount || order.total || 0).toLocaleString()} ل.س</p>
                       </div>
-                      <div className="flex gap-2 flex-wrap">
-                        <select
-                          className="px-3 py-2 border border-gray-300 rounded-md text-sm"
-                          value={order.status}
-                          onChange={(e) => updateOrderStatus(order.id, e.target.value)}
-                        >
+                      {!isViewer && (
+                        <select className="px-3 py-2 border border-gray-300 rounded-md text-sm" value={order.status} onChange={(e) => updateOrderStatus(order.id, e.target.value)}>
                           <option value="pending">قيد الانتظار</option>
                           <option value="confirmed">مؤكد</option>
                           <option value="processing">جاري التجهيز</option>
@@ -463,7 +357,48 @@ const AdminDashboard = ({ user, logout }) => {
                           <option value="delivered">تم التسليم</option>
                           <option value="cancelled">ملغى</option>
                         </select>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </TabsContent>
+
+          {/* Complaints Tab */}
+          <TabsContent value="complaints">
+            <div className="bg-white rounded-xl shadow-lg p-6">
+              <h2 className="text-xl font-bold text-gray-900 mb-6">شكاوي الزبائن ({complaints.length})</h2>
+              {complaints.length === 0 ? (
+                <div className="text-center py-12">
+                  <AlertTriangle className="w-16 h-16 mx-auto text-gray-300 mb-4" />
+                  <p className="text-gray-500">لا توجد شكاوي</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {complaints.map((complaint) => (
+                    <div key={complaint.id} className={`border rounded-lg p-4 ${complaint.status === 'pending' ? 'border-red-200 bg-red-50' : 'border-gray-200'}`}>
+                      <div className="flex justify-between items-start mb-3">
+                        <div>
+                          <div className="flex items-center gap-2 mb-1">
+                            <p className="font-semibold text-gray-900">{complaint.subject}</p>
+                            {getStatusBadge(complaint.status)}
+                          </div>
+                          <p className="text-sm text-gray-600">من: {complaint.customer_name} ({complaint.customer_email})</p>
+                          <p className="text-xs text-gray-400">{new Date(complaint.created_at).toLocaleDateString('ar')}</p>
+                        </div>
+                        <Button size="sm" variant="outline" onClick={() => { setSelectedComplaint(complaint); setShowComplaintDialog(true); }}>
+                          <MessageSquare className="w-4 h-4 ml-1" />عرض
+                        </Button>
                       </div>
+                      <p className="text-gray-700 line-clamp-2">{complaint.message}</p>
+                      {complaint.images?.length > 0 && (
+                        <div className="flex gap-2 mt-2">
+                          {complaint.images.map((img, idx) => (
+                            <img key={idx} src={img} alt="" className="w-16 h-16 object-cover rounded-lg border" />
+                          ))}
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -474,13 +409,8 @@ const AdminDashboard = ({ user, logout }) => {
           {/* Users Tab */}
           <TabsContent value="users">
             <div className="bg-white rounded-xl shadow-lg p-6">
-              <h2 className="text-xl font-bold text-gray-900 mb-6">إدارة الحسابات</h2>
-              {users.length === 0 ? (
-                <div className="text-center py-12">
-                  <Users className="w-16 h-16 mx-auto text-gray-300 mb-4" />
-                  <p className="text-gray-500">لا يمكن عرض المستخدمين حالياً</p>
-                </div>
-              ) : (
+              <h2 className="text-xl font-bold text-gray-900 mb-6">إدارة الحسابات ({users.length})</h2>
+              {users.length === 0 ? <p className="text-center text-gray-500 py-12">لا يمكن عرض المستخدمين</p> : (
                 <div className="overflow-x-auto">
                   <table className="w-full">
                     <thead className="bg-gray-50">
@@ -497,8 +427,13 @@ const AdminDashboard = ({ user, logout }) => {
                           <td className="px-4 py-3 font-medium">{u.name}</td>
                           <td className="px-4 py-3 text-gray-600">{u.email}</td>
                           <td className="px-4 py-3">
-                            <Badge className={u.role === 'admin' ? 'bg-red-100 text-red-800' : u.role === 'store_owner' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'}>
-                              {u.role === 'admin' ? 'أدمن' : u.role === 'store_owner' ? 'صاحب متجر' : 'عميل'}
+                            <Badge className={
+                              u.role === 'admin' ? 'bg-red-100 text-red-800' : 
+                              u.role === 'viewer' ? 'bg-yellow-100 text-yellow-800' :
+                              u.role === 'store_owner' ? 'bg-blue-100 text-blue-800' : 
+                              'bg-gray-100 text-gray-800'
+                            }>
+                              {u.role === 'admin' ? 'أدمن' : u.role === 'viewer' ? 'مشاهد' : u.role === 'store_owner' ? 'صاحب متجر' : 'عميل'}
                             </Badge>
                           </td>
                           <td className="px-4 py-3 text-sm text-gray-500">{new Date(u.created_at).toLocaleDateString('ar')}</td>
@@ -508,6 +443,42 @@ const AdminDashboard = ({ user, logout }) => {
                   </table>
                 </div>
               )}
+            </div>
+          </TabsContent>
+
+          {/* Reports Tab */}
+          <TabsContent value="reports">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="bg-white rounded-xl shadow-lg p-6">
+                <h2 className="text-xl font-bold text-gray-900 mb-6">ملخص المبيعات</h2>
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center p-4 bg-emerald-50 rounded-lg">
+                    <span className="text-gray-700">إجمالي المبيعات</span>
+                    <span className="text-2xl font-bold text-emerald-600">{orders.filter(o => o.status === 'delivered').reduce((sum, o) => sum + (o.total_amount || o.total || 0), 0).toLocaleString()} ل.س</span>
+                  </div>
+                  <div className="flex justify-between items-center p-4 bg-blue-50 rounded-lg">
+                    <span className="text-gray-700">طلبات مكتملة</span>
+                    <span className="text-2xl font-bold text-blue-600">{orders.filter(o => o.status === 'delivered').length}</span>
+                  </div>
+                  <div className="flex justify-between items-center p-4 bg-yellow-50 rounded-lg">
+                    <span className="text-gray-700">طلبات قيد الانتظار</span>
+                    <span className="text-2xl font-bold text-yellow-600">{orders.filter(o => o.status === 'pending').length}</span>
+                  </div>
+                </div>
+              </div>
+              <div className="bg-white rounded-xl shadow-lg p-6">
+                <h2 className="text-xl font-bold text-gray-900 mb-6">إحصائيات المنتجات</h2>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="text-center p-4 bg-purple-50 rounded-lg">
+                    <p className="text-3xl font-bold text-purple-600">{products.length}</p>
+                    <p className="text-sm text-gray-600">إجمالي المنتجات</p>
+                  </div>
+                  <div className="text-center p-4 bg-green-50 rounded-lg">
+                    <p className="text-3xl font-bold text-green-600">{products.filter(p => p.stock > 0).length}</p>
+                    <p className="text-sm text-gray-600">متوفرة</p>
+                  </div>
+                </div>
+              </div>
             </div>
           </TabsContent>
 
@@ -522,130 +493,17 @@ const AdminDashboard = ({ user, logout }) => {
                       <Truck className="w-8 h-8 text-gray-400" />
                       <span className="font-medium">{company.name}</span>
                     </div>
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={company.active}
-                        onChange={() => {
-                          setShippingCompanies(prev =>
-                            prev.map(c => c.id === company.id ? { ...c, active: !c.active } : c)
-                          );
+                    {!isViewer && (
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" checked={company.active} onChange={() => {
+                          setShippingCompanies(prev => prev.map(c => c.id === company.id ? { ...c, active: !c.active } : c));
                           toast.success(company.active ? 'تم إلغاء التفعيل' : 'تم التفعيل');
-                        }}
-                        className="w-5 h-5"
-                      />
-                      <span className="text-sm text-gray-600">{company.active ? 'مفعل' : 'غير مفعل'}</span>
-                    </label>
+                        }} className="w-5 h-5" />
+                        <span className="text-sm text-gray-600">{company.active ? 'مفعل' : 'غير مفعل'}</span>
+                      </label>
+                    )}
                   </div>
                 ))}
-                <Button variant="outline" className="w-full mt-4">
-                  <Plus className="w-4 h-4 ml-2" />
-                  إضافة شركة شحن
-                </Button>
-              </div>
-            </div>
-          </TabsContent>
-
-          {/* Reports Tab */}
-          <TabsContent value="reports">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Sales Summary */}
-              <div className="bg-white rounded-xl shadow-lg p-6">
-                <h2 className="text-xl font-bold text-gray-900 mb-6">ملخص المبيعات</h2>
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center p-4 bg-emerald-50 rounded-lg">
-                    <span className="text-gray-700">إجمالي المبيعات</span>
-                    <span className="text-2xl font-bold text-emerald-600">
-                      {orders.filter(o => o.status === 'delivered').reduce((sum, o) => sum + (o.total_amount || o.total || 0), 0).toLocaleString()} ل.س
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center p-4 bg-blue-50 rounded-lg">
-                    <span className="text-gray-700">عدد الطلبات المكتملة</span>
-                    <span className="text-2xl font-bold text-blue-600">{orders.filter(o => o.status === 'delivered').length}</span>
-                  </div>
-                  <div className="flex justify-between items-center p-4 bg-yellow-50 rounded-lg">
-                    <span className="text-gray-700">طلبات قيد الانتظار</span>
-                    <span className="text-2xl font-bold text-yellow-600">{orders.filter(o => o.status === 'pending').length}</span>
-                  </div>
-                  <div className="flex justify-between items-center p-4 bg-red-50 rounded-lg">
-                    <span className="text-gray-700">طلبات ملغاة</span>
-                    <span className="text-2xl font-bold text-red-600">{orders.filter(o => o.status === 'cancelled').length}</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Store Performance */}
-              <div className="bg-white rounded-xl shadow-lg p-6">
-                <h2 className="text-xl font-bold text-gray-900 mb-6">أداء المتاجر</h2>
-                <div className="space-y-3">
-                  {stores.filter(s => s.status === 'approved').slice(0, 5).map((store, idx) => {
-                    const storeProducts = products.filter(p => p.store_id === store.id);
-                    return (
-                      <div key={store.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                        <div className="flex items-center gap-3">
-                          <span className="w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center font-bold text-emerald-600">{idx + 1}</span>
-                          <div>
-                            <p className="font-medium">{store.store_name}</p>
-                            <p className="text-sm text-gray-500">{storeProducts.length} منتج</p>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Product Stats */}
-              <div className="bg-white rounded-xl shadow-lg p-6">
-                <h2 className="text-xl font-bold text-gray-900 mb-6">إحصائيات المنتجات</h2>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="text-center p-4 bg-purple-50 rounded-lg">
-                    <p className="text-3xl font-bold text-purple-600">{products.length}</p>
-                    <p className="text-sm text-gray-600">إجمالي المنتجات</p>
-                  </div>
-                  <div className="text-center p-4 bg-green-50 rounded-lg">
-                    <p className="text-3xl font-bold text-green-600">{products.filter(p => p.stock > 0).length}</p>
-                    <p className="text-sm text-gray-600">منتجات متوفرة</p>
-                  </div>
-                  <div className="text-center p-4 bg-red-50 rounded-lg">
-                    <p className="text-3xl font-bold text-red-600">{products.filter(p => p.stock === 0).length}</p>
-                    <p className="text-sm text-gray-600">نفذت الكمية</p>
-                  </div>
-                  <div className="text-center p-4 bg-amber-50 rounded-lg">
-                    <p className="text-3xl font-bold text-amber-600">{categories.length}</p>
-                    <p className="text-sm text-gray-600">التصنيفات</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Order Status Distribution */}
-              <div className="bg-white rounded-xl shadow-lg p-6">
-                <h2 className="text-xl font-bold text-gray-900 mb-6">توزيع حالات الطلبات</h2>
-                <div className="space-y-3">
-                  {['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'].map(status => {
-                    const count = orders.filter(o => o.status === status).length;
-                    const percentage = orders.length > 0 ? Math.round((count / orders.length) * 100) : 0;
-                    const colors = {
-                      pending: 'bg-yellow-500', confirmed: 'bg-blue-500', processing: 'bg-indigo-500',
-                      shipped: 'bg-purple-500', delivered: 'bg-green-500', cancelled: 'bg-red-500'
-                    };
-                    const labels = {
-                      pending: 'قيد الانتظار', confirmed: 'مؤكد', processing: 'جاري التجهيز',
-                      shipped: 'تم الشحن', delivered: 'مكتمل', cancelled: 'ملغى'
-                    };
-                    return (
-                      <div key={status}>
-                        <div className="flex justify-between text-sm mb-1">
-                          <span>{labels[status]}</span>
-                          <span>{count} ({percentage}%)</span>
-                        </div>
-                        <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-                          <div className={`h-full ${colors[status]}`} style={{ width: `${percentage}%` }} />
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
               </div>
             </div>
           </TabsContent>
@@ -653,105 +511,44 @@ const AdminDashboard = ({ user, logout }) => {
           {/* Settings Tab */}
           <TabsContent value="settings">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Payment Methods */}
               <div className="bg-white rounded-xl shadow-lg p-6">
                 <h2 className="text-xl font-bold text-gray-900 mb-6">طرق الدفع</h2>
                 <div className="space-y-4">
-                  <label className="flex items-center justify-between p-4 border border-gray-200 rounded-lg cursor-pointer">
-                    <div className="flex items-center gap-3">
-                      <span className="text-2xl">🚚</span>
-                      <span className="font-medium">الدفع عند الاستلام</span>
-                    </div>
-                    <input
-                      type="checkbox"
-                      checked={paymentMethods.cash_on_delivery}
-                      onChange={() => setPaymentMethods(prev => ({ ...prev, cash_on_delivery: !prev.cash_on_delivery }))}
-                      className="w-5 h-5"
-                    />
-                  </label>
-                  <label className="flex items-center justify-between p-4 border border-gray-200 rounded-lg cursor-pointer">
-                    <div className="flex items-center gap-3">
-                      <span className="text-2xl">📱</span>
-                      <span className="font-medium">شام كاش</span>
-                    </div>
-                    <input
-                      type="checkbox"
-                      checked={paymentMethods.sham_cash}
-                      onChange={() => setPaymentMethods(prev => ({ ...prev, sham_cash: !prev.sham_cash }))}
-                      className="w-5 h-5"
-                    />
-                  </label>
-                  <label className="flex items-center justify-between p-4 border border-gray-200 rounded-lg cursor-pointer">
-                    <div className="flex items-center gap-3">
-                      <span className="text-2xl">🏦</span>
-                      <span className="font-medium">تحويل بنكي</span>
-                    </div>
-                    <input
-                      type="checkbox"
-                      checked={paymentMethods.bank_transfer}
-                      onChange={() => setPaymentMethods(prev => ({ ...prev, bank_transfer: !prev.bank_transfer }))}
-                      className="w-5 h-5"
-                    />
-                  </label>
-                  <label className="flex items-center justify-between p-4 border border-gray-200 rounded-lg cursor-pointer">
-                    <div className="flex items-center gap-3">
-                      <span className="text-2xl">💳</span>
-                      <span className="font-medium">فيزا / ماستركارد</span>
-                    </div>
-                    <input
-                      type="checkbox"
-                      checked={paymentMethods.visa}
-                      onChange={() => setPaymentMethods(prev => ({ ...prev, visa: !prev.visa }))}
-                      className="w-5 h-5"
-                    />
-                  </label>
+                  {[
+                    { key: 'cash_on_delivery', label: 'الدفع عند الاستلام', icon: '🚚' },
+                    { key: 'sham_cash', label: 'شام كاش', icon: '📱' },
+                    { key: 'bank_transfer', label: 'تحويل بنكي', icon: '🏦' },
+                    { key: 'visa', label: 'فيزا', icon: '💳' }
+                  ].map(method => (
+                    <label key={method.key} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg cursor-pointer">
+                      <div className="flex items-center gap-3">
+                        <span className="text-2xl">{method.icon}</span>
+                        <span className="font-medium">{method.label}</span>
+                      </div>
+                      {!isViewer && (
+                        <input type="checkbox" checked={paymentMethods[method.key]} onChange={() => setPaymentMethods(prev => ({ ...prev, [method.key]: !prev[method.key] }))} className="w-5 h-5" />
+                      )}
+                    </label>
+                  ))}
                 </div>
               </div>
-
-              {/* Categories */}
               <div className="bg-white rounded-xl shadow-lg p-6">
                 <div className="flex justify-between items-center mb-6">
                   <h2 className="text-xl font-bold text-gray-900">التصنيفات</h2>
-                  <Dialog open={showCategoryDialog} onOpenChange={setShowCategoryDialog}>
-                    <DialogTrigger asChild>
-                      <Button size="sm">
-                        <Plus className="w-4 h-4 ml-1" />
-                        إضافة
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>إضافة تصنيف جديد</DialogTitle>
-                      </DialogHeader>
-                      <form onSubmit={addCategory} className="space-y-4">
-                        <div>
-                          <Label>الاسم بالعربية</Label>
-                          <Input
-                            value={newCategoryData.name_ar}
-                            onChange={(e) => setNewCategoryData({ ...newCategoryData, name_ar: e.target.value })}
-                            required
-                          />
-                        </div>
-                        <div>
-                          <Label>الاسم بالإنجليزية</Label>
-                          <Input
-                            value={newCategoryData.name_en}
-                            onChange={(e) => setNewCategoryData({ ...newCategoryData, name_en: e.target.value })}
-                            required
-                          />
-                        </div>
-                        <div>
-                          <Label>الرابط (slug)</Label>
-                          <Input
-                            value={newCategoryData.slug}
-                            onChange={(e) => setNewCategoryData({ ...newCategoryData, slug: e.target.value })}
-                            required
-                          />
-                        </div>
-                        <Button type="submit" className="w-full">إضافة التصنيف</Button>
-                      </form>
-                    </DialogContent>
-                  </Dialog>
+                  {!isViewer && (
+                    <Dialog open={showCategoryDialog} onOpenChange={setShowCategoryDialog}>
+                      <DialogTrigger asChild><Button size="sm"><Plus className="w-4 h-4 ml-1" />إضافة</Button></DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader><DialogTitle>إضافة تصنيف جديد</DialogTitle></DialogHeader>
+                        <form onSubmit={addCategory} className="space-y-4">
+                          <div><Label>الاسم بالعربية</Label><Input value={newCategoryData.name_ar} onChange={(e) => setNewCategoryData({ ...newCategoryData, name_ar: e.target.value })} required /></div>
+                          <div><Label>الاسم بالإنجليزية</Label><Input value={newCategoryData.name_en} onChange={(e) => setNewCategoryData({ ...newCategoryData, name_en: e.target.value })} required /></div>
+                          <div><Label>الرابط (slug)</Label><Input value={newCategoryData.slug} onChange={(e) => setNewCategoryData({ ...newCategoryData, slug: e.target.value })} required /></div>
+                          <Button type="submit" className="w-full">إضافة التصنيف</Button>
+                        </form>
+                      </DialogContent>
+                    </Dialog>
+                  )}
                 </div>
                 <div className="space-y-2">
                   {categories.map((cat) => (
@@ -769,49 +566,68 @@ const AdminDashboard = ({ user, logout }) => {
         {/* Edit Product Dialog */}
         <Dialog open={showEditProductDialog} onOpenChange={setShowEditProductDialog}>
           <DialogContent>
-            <DialogHeader>
-              <DialogTitle>تعديل المنتج</DialogTitle>
-            </DialogHeader>
+            <DialogHeader><DialogTitle>تعديل المنتج</DialogTitle></DialogHeader>
             {editingProduct && (
               <form onSubmit={updateProduct} className="space-y-4">
-                <div>
-                  <Label>اسم المنتج</Label>
-                  <Input
-                    value={editingProduct.name}
-                    onChange={(e) => setEditingProduct({ ...editingProduct, name: e.target.value })}
-                    required
-                  />
-                </div>
-                <div>
-                  <Label>الوصف</Label>
-                  <Textarea
-                    value={editingProduct.description || ''}
-                    onChange={(e) => setEditingProduct({ ...editingProduct, description: e.target.value })}
-                    rows={3}
-                  />
-                </div>
+                <div><Label>اسم المنتج</Label><Input value={editingProduct.name} onChange={(e) => setEditingProduct({ ...editingProduct, name: e.target.value })} required /></div>
+                <div><Label>الوصف</Label><Textarea value={editingProduct.description || ''} onChange={(e) => setEditingProduct({ ...editingProduct, description: e.target.value })} rows={3} /></div>
                 <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label>السعر (ل.س)</Label>
-                    <Input
-                      type="number"
-                      value={editingProduct.price}
-                      onChange={(e) => setEditingProduct({ ...editingProduct, price: e.target.value })}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Label>المخزون</Label>
-                    <Input
-                      type="number"
-                      value={editingProduct.stock}
-                      onChange={(e) => setEditingProduct({ ...editingProduct, stock: e.target.value })}
-                      required
-                    />
-                  </div>
+                  <div><Label>السعر (ل.س)</Label><Input type="number" value={editingProduct.price} onChange={(e) => setEditingProduct({ ...editingProduct, price: e.target.value })} required /></div>
+                  <div><Label>المخزون</Label><Input type="number" value={editingProduct.stock} onChange={(e) => setEditingProduct({ ...editingProduct, stock: e.target.value })} required /></div>
                 </div>
                 <Button type="submit" className="w-full">حفظ التغييرات</Button>
               </form>
+            )}
+          </DialogContent>
+        </Dialog>
+
+        {/* Complaint Dialog */}
+        <Dialog open={showComplaintDialog} onOpenChange={setShowComplaintDialog}>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader><DialogTitle>تفاصيل الشكوى</DialogTitle></DialogHeader>
+            {selectedComplaint && (
+              <div className="space-y-4">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h3 className="text-lg font-bold">{selectedComplaint.subject}</h3>
+                    <p className="text-sm text-gray-600">من: {selectedComplaint.customer_name}</p>
+                    <p className="text-sm text-gray-600">{selectedComplaint.customer_email}</p>
+                  </div>
+                  {getStatusBadge(selectedComplaint.status)}
+                </div>
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <p className="text-gray-700">{selectedComplaint.message}</p>
+                </div>
+                {selectedComplaint.images?.length > 0 && (
+                  <div>
+                    <p className="text-sm font-medium mb-2">الصور المرفقة:</p>
+                    <div className="flex gap-2 flex-wrap">
+                      {selectedComplaint.images.map((img, idx) => (
+                        <img key={idx} src={img} alt="" className="w-32 h-32 object-cover rounded-lg border cursor-pointer" onClick={() => window.open(img, '_blank')} />
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {selectedComplaint.admin_response && (
+                  <div className="bg-emerald-50 rounded-lg p-4">
+                    <p className="text-sm font-medium text-emerald-800 mb-1">رد الإدارة:</p>
+                    <p className="text-gray-700">{selectedComplaint.admin_response}</p>
+                  </div>
+                )}
+                {!isViewer && (
+                  <div className="space-y-3 pt-4 border-t">
+                    <div>
+                      <Label>رد الإدارة</Label>
+                      <Textarea value={complaintResponse} onChange={(e) => setComplaintResponse(e.target.value)} placeholder="اكتب ردك على الشكوى..." rows={3} />
+                    </div>
+                    <div className="flex gap-2">
+                      <Button onClick={() => updateComplaint('in_progress')} variant="outline">قيد المعالجة</Button>
+                      <Button onClick={() => updateComplaint('resolved')} className="bg-green-600 hover:bg-green-700">تم الحل</Button>
+                      <Button onClick={() => updateComplaint('closed')} variant="outline">إغلاق</Button>
+                    </div>
+                  </div>
+                )}
+              </div>
             )}
           </DialogContent>
         </Dialog>
