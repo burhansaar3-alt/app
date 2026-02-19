@@ -82,11 +82,15 @@ function App() {
           <Route path="/store/:id" element={<StoreView user={user} logout={logout} />} />
           <Route 
             path="/admin" 
-            element={user?.role === 'admin' ? <AdminDashboard user={user} logout={logout} /> : <Navigate to="/" />} 
+            element={user?.role === 'admin' || user?.role === 'viewer' ? <AdminDashboard user={user} logout={logout} /> : <Navigate to="/" />} 
           />
           <Route 
             path="/store-dashboard" 
             element={user?.role === 'store_owner' ? <StoreDashboard user={user} logout={logout} /> : <Navigate to="/" />} 
+          />
+          <Route 
+            path="/complaints" 
+            element={user ? <ComplaintsPage user={user} /> : <Navigate to="/auth" />} 
           />
         </Routes>
       </BrowserRouter>
