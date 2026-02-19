@@ -546,6 +546,110 @@ const AdminDashboard = ({ user, logout }) => {
             </div>
           </TabsContent>
 
+          {/* Reports Tab */}
+          <TabsContent value="reports">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Sales Summary */}
+              <div className="bg-white rounded-xl shadow-lg p-6">
+                <h2 className="text-xl font-bold text-gray-900 mb-6">ملخص المبيعات</h2>
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center p-4 bg-emerald-50 rounded-lg">
+                    <span className="text-gray-700">إجمالي المبيعات</span>
+                    <span className="text-2xl font-bold text-emerald-600">
+                      {orders.filter(o => o.status === 'delivered').reduce((sum, o) => sum + (o.total_amount || o.total || 0), 0).toLocaleString()} ل.س
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center p-4 bg-blue-50 rounded-lg">
+                    <span className="text-gray-700">عدد الطلبات المكتملة</span>
+                    <span className="text-2xl font-bold text-blue-600">{orders.filter(o => o.status === 'delivered').length}</span>
+                  </div>
+                  <div className="flex justify-between items-center p-4 bg-yellow-50 rounded-lg">
+                    <span className="text-gray-700">طلبات قيد الانتظار</span>
+                    <span className="text-2xl font-bold text-yellow-600">{orders.filter(o => o.status === 'pending').length}</span>
+                  </div>
+                  <div className="flex justify-between items-center p-4 bg-red-50 rounded-lg">
+                    <span className="text-gray-700">طلبات ملغاة</span>
+                    <span className="text-2xl font-bold text-red-600">{orders.filter(o => o.status === 'cancelled').length}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Store Performance */}
+              <div className="bg-white rounded-xl shadow-lg p-6">
+                <h2 className="text-xl font-bold text-gray-900 mb-6">أداء المتاجر</h2>
+                <div className="space-y-3">
+                  {stores.filter(s => s.status === 'approved').slice(0, 5).map((store, idx) => {
+                    const storeProducts = products.filter(p => p.store_id === store.id);
+                    return (
+                      <div key={store.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div className="flex items-center gap-3">
+                          <span className="w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center font-bold text-emerald-600">{idx + 1}</span>
+                          <div>
+                            <p className="font-medium">{store.store_name}</p>
+                            <p className="text-sm text-gray-500">{storeProducts.length} منتج</p>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Product Stats */}
+              <div className="bg-white rounded-xl shadow-lg p-6">
+                <h2 className="text-xl font-bold text-gray-900 mb-6">إحصائيات المنتجات</h2>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="text-center p-4 bg-purple-50 rounded-lg">
+                    <p className="text-3xl font-bold text-purple-600">{products.length}</p>
+                    <p className="text-sm text-gray-600">إجمالي المنتجات</p>
+                  </div>
+                  <div className="text-center p-4 bg-green-50 rounded-lg">
+                    <p className="text-3xl font-bold text-green-600">{products.filter(p => p.stock > 0).length}</p>
+                    <p className="text-sm text-gray-600">منتجات متوفرة</p>
+                  </div>
+                  <div className="text-center p-4 bg-red-50 rounded-lg">
+                    <p className="text-3xl font-bold text-red-600">{products.filter(p => p.stock === 0).length}</p>
+                    <p className="text-sm text-gray-600">نفذت الكمية</p>
+                  </div>
+                  <div className="text-center p-4 bg-amber-50 rounded-lg">
+                    <p className="text-3xl font-bold text-amber-600">{categories.length}</p>
+                    <p className="text-sm text-gray-600">التصنيفات</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Order Status Distribution */}
+              <div className="bg-white rounded-xl shadow-lg p-6">
+                <h2 className="text-xl font-bold text-gray-900 mb-6">توزيع حالات الطلبات</h2>
+                <div className="space-y-3">
+                  {['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'].map(status => {
+                    const count = orders.filter(o => o.status === status).length;
+                    const percentage = orders.length > 0 ? Math.round((count / orders.length) * 100) : 0;
+                    const colors = {
+                      pending: 'bg-yellow-500', confirmed: 'bg-blue-500', processing: 'bg-indigo-500',
+                      shipped: 'bg-purple-500', delivered: 'bg-green-500', cancelled: 'bg-red-500'
+                    };
+                    const labels = {
+                      pending: 'قيد الانتظار', confirmed: 'مؤكد', processing: 'جاري التجهيز',
+                      shipped: 'تم الشحن', delivered: 'مكتمل', cancelled: 'ملغى'
+                    };
+                    return (
+                      <div key={status}>
+                        <div className="flex justify-between text-sm mb-1">
+                          <span>{labels[status]}</span>
+                          <span>{count} ({percentage}%)</span>
+                        </div>
+                        <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                          <div className={`h-full ${colors[status]}`} style={{ width: `${percentage}%` }} />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          </TabsContent>
+
           {/* Settings Tab */}
           <TabsContent value="settings">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
