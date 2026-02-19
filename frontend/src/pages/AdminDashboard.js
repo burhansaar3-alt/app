@@ -268,7 +268,7 @@ const AdminDashboard = ({ user, logout }) => {
         </div>
 
         <Tabs defaultValue="stores" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6 mb-6">
+          <TabsList className="grid w-full grid-cols-4 lg:grid-cols-7 mb-6">
             <TabsTrigger value="stores" className="flex items-center gap-1 text-xs sm:text-sm">
               <Store className="w-4 h-4" />
               المتاجر
@@ -284,6 +284,10 @@ const AdminDashboard = ({ user, logout }) => {
             <TabsTrigger value="users" className="flex items-center gap-1 text-xs sm:text-sm">
               <Users className="w-4 h-4" />
               الحسابات
+            </TabsTrigger>
+            <TabsTrigger value="reports" className="flex items-center gap-1 text-xs sm:text-sm">
+              <CreditCard className="w-4 h-4" />
+              التقارير
             </TabsTrigger>
             <TabsTrigger value="shipping" className="flex items-center gap-1 text-xs sm:text-sm">
               <Truck className="w-4 h-4" />
