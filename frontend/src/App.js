@@ -16,7 +16,6 @@ import WishlistPage from './pages/WishlistPage';
 import ComplaintsPage from './pages/ComplaintsPage';
 import { Toaster } from './components/ui/sonner';
 
-const BACKEND_URL = 
 const BACKEND_URL = "https://trend-syria.com";
 const API = ${BACKEND_URL}/api;
 
