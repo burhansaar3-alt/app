@@ -419,6 +419,7 @@ const AdminDashboard = ({ user, logout }) => {
                         <th className="px-4 py-3 text-right text-sm font-medium text-gray-600">البريد</th>
                         <th className="px-4 py-3 text-right text-sm font-medium text-gray-600">الدور</th>
                         <th className="px-4 py-3 text-right text-sm font-medium text-gray-600">تاريخ التسجيل</th>
+                        {!isViewer && <th className="px-4 py-3 text-right text-sm font-medium text-gray-600">إجراءات</th>}
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200">
@@ -427,16 +428,64 @@ const AdminDashboard = ({ user, logout }) => {
                           <td className="px-4 py-3 font-medium">{u.name}</td>
                           <td className="px-4 py-3 text-gray-600">{u.email}</td>
                           <td className="px-4 py-3">
-                            <Badge className={
-                              u.role === 'admin' ? 'bg-red-100 text-red-800' : 
-                              u.role === 'viewer' ? 'bg-yellow-100 text-yellow-800' :
-                              u.role === 'store_owner' ? 'bg-blue-100 text-blue-800' : 
-                              'bg-gray-100 text-gray-800'
-                            }>
-                              {u.role === 'admin' ? 'أدمن' : u.role === 'viewer' ? 'مشاهد' : u.role === 'store_owner' ? 'صاحب متجر' : 'عميل'}
-                            </Badge>
+                            {!isViewer && u.id !== user?.id ? (
+                              <select
+                                className="px-2 py-1 border border-gray-300 rounded-md text-sm"
+                                value={u.role}
+                                onChange={async (e) => {
+                                  const newRole = e.target.value;
+                                  if (window.confirm(`هل تريد تغيير صلاحية "${u.name}" إلى "${newRole === 'admin' ? 'أدمن' : newRole === 'viewer' ? 'مشاهد' : newRole === 'store_owner' ? 'صاحب متجر' : 'عميل'}"؟`)) {
+                                    try {
+                                      await api.patch(`/users/${u.id}/role`, { role: newRole });
+                                      toast.success('تم تغيير الصلاحية بنجاح');
+                                      fetchData();
+                                    } catch (error) {
+                                      toast.error('حدث خطأ في تغيير الصلاحية');
+                                    }
+                                  }
+                                }}
+                              >
+                                <option value="customer">عميل</option>
+                                <option value="store_owner">صاحب متجر</option>
+                                <option value="viewer">مشاهد</option>
+                                <option value="admin">أدمن</option>
+                              </select>
+                            ) : (
+                              <Badge className={
+                                u.role === 'admin' ? 'bg-red-100 text-red-800' : 
+                                u.role === 'viewer' ? 'bg-yellow-100 text-yellow-800' :
+                                u.role === 'store_owner' ? 'bg-blue-100 text-blue-800' : 
+                                'bg-gray-100 text-gray-800'
+                              }>
+                                {u.role === 'admin' ? 'أدمن' : u.role === 'viewer' ? 'مشاهد' : u.role === 'store_owner' ? 'صاحب متجر' : 'عميل'}
+                                {u.id === user?.id && ' (أنت)'}
+                              </Badge>
+                            )}
                           </td>
                           <td className="px-4 py-3 text-sm text-gray-500">{new Date(u.created_at).toLocaleDateString('ar')}</td>
+                          {!isViewer && (
+                            <td className="px-4 py-3">
+                              {u.id !== user?.id && (
+                                <Button
+                                  size="sm"
+                                  variant="destructive"
+                                  onClick={async () => {
+                                    if (window.confirm(`هل أنت متأكد من حذف حساب "${u.name}"؟`)) {
+                                      try {
+                                        await api.delete(`/users/${u.id}`);
+                                        toast.success('تم حذف الحساب');
+                                        fetchData();
+                                      } catch (error) {
+                                        toast.error('حدث خطأ في الحذف');
+                                      }
+                                    }
+                                  }}
+                                >
+                                  <Trash2 className="w-3 h-3" />
+                                </Button>
+                              )}
+                            </td>
+                          )}
                         </tr>
                       ))}
                     </tbody>
