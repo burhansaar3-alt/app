@@ -1398,8 +1398,56 @@ async def get_users(current_user: dict = Depends(get_current_user)):
     if current_user['role'] not in ['admin', 'viewer']:
         raise HTTPException(status_code=403, detail="Permission denied")
     
-    users = await db.users.find({}, {"_id": 0, "password": 0}).to_list(1000)
+    users = await db.users.find({}, {"_id": 0, "password_hash": 0}).to_list(1000)
     return users
+
+class UpdateUserRole(BaseModel):
+    role: str
+
+@api_router.patch("/users/{user_id}/role")
+async def update_user_role(user_id: str, role_data: UpdateUserRole, current_user: dict = Depends(get_current_user)):
+    """Update user role - admin only"""
+    if current_user['role'] != 'admin':
+        raise HTTPException(status_code=403, detail="Permission denied - admin only")
+    
+    # Validate role
+    valid_roles = ['customer', 'store_owner', 'admin', 'viewer']
+    if role_data.role not in valid_roles:
+        raise HTTPException(status_code=400, detail=f"Invalid role. Must be one of: {valid_roles}")
+    
+    # Check if user exists
+    user = await db.users.find_one({"id": user_id})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Don't allow changing own role
+    if user_id == current_user['id']:
+        raise HTTPException(status_code=400, detail="Cannot change your own role")
+    
+    # Update role
+    await db.users.update_one({"id": user_id}, {"$set": {"role": role_data.role}})
+    
+    return {"message": "Role updated successfully", "new_role": role_data.role}
+
+@api_router.delete("/users/{user_id}")
+async def delete_user(user_id: str, current_user: dict = Depends(get_current_user)):
+    """Delete user - admin only"""
+    if current_user['role'] != 'admin':
+        raise HTTPException(status_code=403, detail="Permission denied - admin only")
+    
+    # Check if user exists
+    user = await db.users.find_one({"id": user_id})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Don't allow deleting yourself
+    if user_id == current_user['id']:
+        raise HTTPException(status_code=400, detail="Cannot delete your own account")
+    
+    # Delete user
+    await db.users.delete_one({"id": user_id})
+    
+    return {"message": "User deleted successfully"}
 
 app.include_router(api_router, prefix="/api")
 
