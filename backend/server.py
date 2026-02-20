@@ -1404,11 +1404,15 @@ async def get_users(current_user: dict = Depends(get_current_user)):
 class UpdateUserRole(BaseModel):
     role: str
 
+# Super admin email - only this account can manage user roles and delete users
+SUPER_ADMIN_EMAIL = "burhan.saar@trendsyria.com"
+
 @api_router.patch("/users/{user_id}/role")
 async def update_user_role(user_id: str, role_data: UpdateUserRole, current_user: dict = Depends(get_current_user)):
-    """Update user role - admin only"""
-    if current_user['role'] != 'admin':
-        raise HTTPException(status_code=403, detail="Permission denied - admin only")
+    """Update user role - super admin only"""
+    # Only super admin can change roles
+    if current_user.get('email', '').lower() != SUPER_ADMIN_EMAIL.lower():
+        raise HTTPException(status_code=403, detail="فقط المدير الأعلى يمكنه تغيير الصلاحيات")
     
     # Validate role
     valid_roles = ['customer', 'store_owner', 'admin', 'viewer']
@@ -1431,9 +1435,10 @@ async def update_user_role(user_id: str, role_data: UpdateUserRole, current_user
 
 @api_router.delete("/users/{user_id}")
 async def delete_user(user_id: str, current_user: dict = Depends(get_current_user)):
-    """Delete user - admin only"""
-    if current_user['role'] != 'admin':
-        raise HTTPException(status_code=403, detail="Permission denied - admin only")
+    """Delete user - super admin only"""
+    # Only super admin can delete users
+    if current_user.get('email', '').lower() != SUPER_ADMIN_EMAIL.lower():
+        raise HTTPException(status_code=403, detail="فقط المدير الأعلى يمكنه حذف الحسابات")
     
     # Check if user exists
     user = await db.users.find_one({"id": user_id})
