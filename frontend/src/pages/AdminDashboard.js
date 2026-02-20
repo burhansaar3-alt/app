@@ -38,6 +38,8 @@ const AdminDashboard = ({ user, logout }) => {
 
   // Check if user is viewer (read-only)
   const isViewer = user?.role === 'viewer';
+  // Check if user is super admin (can manage roles)
+  const isSuperAdmin = user?.email?.toLowerCase() === 'burhan.saar@trendsyria.com';
 
   useEffect(() => { fetchData(); }, []);
 
