@@ -412,6 +412,11 @@ const AdminDashboard = ({ user, logout }) => {
           <TabsContent value="users">
             <div className="bg-white rounded-xl shadow-lg p-6">
               <h2 className="text-xl font-bold text-gray-900 mb-6">إدارة الحسابات ({users.length})</h2>
+              {isSuperAdmin && (
+                <div className="mb-4 p-3 bg-emerald-50 border border-emerald-200 rounded-lg">
+                  <p className="text-sm text-emerald-800">✅ أنت المدير الأعلى - يمكنك تغيير صلاحيات الحسابات وحذفها</p>
+                </div>
+              )}
               {users.length === 0 ? <p className="text-center text-gray-500 py-12">لا يمكن عرض المستخدمين</p> : (
                 <div className="overflow-x-auto">
                   <table className="w-full">
@@ -421,7 +426,7 @@ const AdminDashboard = ({ user, logout }) => {
                         <th className="px-4 py-3 text-right text-sm font-medium text-gray-600">البريد</th>
                         <th className="px-4 py-3 text-right text-sm font-medium text-gray-600">الدور</th>
                         <th className="px-4 py-3 text-right text-sm font-medium text-gray-600">تاريخ التسجيل</th>
-                        {!isViewer && <th className="px-4 py-3 text-right text-sm font-medium text-gray-600">إجراءات</th>}
+                        {isSuperAdmin && <th className="px-4 py-3 text-right text-sm font-medium text-gray-600">إجراءات</th>}
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200">
@@ -430,7 +435,7 @@ const AdminDashboard = ({ user, logout }) => {
                           <td className="px-4 py-3 font-medium">{u.name}</td>
                           <td className="px-4 py-3 text-gray-600">{u.email}</td>
                           <td className="px-4 py-3">
-                            {!isViewer && u.id !== user?.id ? (
+                            {isSuperAdmin && u.id !== user?.id ? (
                               <select
                                 className="px-2 py-1 border border-gray-300 rounded-md text-sm"
                                 value={u.role}
@@ -442,7 +447,7 @@ const AdminDashboard = ({ user, logout }) => {
                                       toast.success('تم تغيير الصلاحية بنجاح');
                                       fetchData();
                                     } catch (error) {
-                                      toast.error('حدث خطأ في تغيير الصلاحية');
+                                      toast.error(error.response?.data?.detail || 'حدث خطأ في تغيير الصلاحية');
                                     }
                                   }
                                 }}
@@ -465,7 +470,7 @@ const AdminDashboard = ({ user, logout }) => {
                             )}
                           </td>
                           <td className="px-4 py-3 text-sm text-gray-500">{new Date(u.created_at).toLocaleDateString('ar')}</td>
-                          {!isViewer && (
+                          {isSuperAdmin && (
                             <td className="px-4 py-3">
                               {u.id !== user?.id && (
                                 <Button
@@ -478,7 +483,7 @@ const AdminDashboard = ({ user, logout }) => {
                                         toast.success('تم حذف الحساب');
                                         fetchData();
                                       } catch (error) {
-                                        toast.error('حدث خطأ في الحذف');
+                                        toast.error(error.response?.data?.detail || 'حدث خطأ في الحذف');
                                       }
                                     }
                                   }}
