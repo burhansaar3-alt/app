@@ -181,8 +181,9 @@ const HomePage = ({ user, logout }) => {
                     )}
                   </Link>
                   {user.role === 'store_owner' && (
-                    <Link to="/store-dashboard" className="p-2.5 rounded-lg hover:bg-gray-100 transition">
-                      <Store className="w-5 h-5 text-gray-700" />
+                    <Link to="/store-dashboard" className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm font-medium flex items-center gap-2">
+                      <Store className="w-4 h-4" />
+                      <span>لوحة المتجر</span>
                     </Link>
                   )}
                   {(user.role === 'admin' || user.role === 'viewer') && (
