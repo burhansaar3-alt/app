@@ -86,6 +86,13 @@ class Category(BaseModel):
     name_en: str
     slug: str
     icon: Optional[str] = None
+    type: str = "main"  # main, food, market
+    subcategories: List[dict] = []  # [{"id": "...", "name_ar": "...", "name_en": "...", "icon": "..."}]
+
+class SubcategoryCreate(BaseModel):
+    name_ar: str
+    name_en: str
+    icon: Optional[str] = None
 
 class Product(BaseModel):
     model_config = ConfigDict(extra="ignore")
