@@ -180,17 +180,17 @@ const AboutPage = () => {
               </div>
             </div>
 
-            {/* Google Maps Embed */}
+            {/* Google Maps Embed - Latakia */}
             <div className="rounded-xl overflow-hidden shadow-lg h-[400px]">
               <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3325.3582!2d36.2765!3d33.5138!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1518e6dc413cc6a7%3A0x6b9f66ebd1e394f2!2sDamascus%2C%20Syria!5e0!3m2!1sen!2s!4v1234567890"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d52625.85846!2d35.7556!3d35.5167!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1525cfba97e9e29b%3A0x7b5b3b6d7f5b5b5b!2sLatakia%2C%20Syria!5e0!3m2!1sen!2s!4v1234567890"
                 width="100%"
                 height="100%"
                 style={{ border: 0 }}
                 allowFullScreen=""
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
-                title="موقع سوق سوريا على الخريطة"
+                title="موقع سوق سوريا على الخريطة - اللاذقية"
               ></iframe>
             </div>
           </div>
