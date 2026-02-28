@@ -99,6 +99,7 @@ class Product(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     store_id: str
     category_id: str
+    subcategory_id: Optional[str] = None
     name: str
     description: Optional[str] = None
     price: float
@@ -112,6 +113,7 @@ class Product(BaseModel):
 
 class ProductCreate(BaseModel):
     category_id: str
+    subcategory_id: Optional[str] = None
     name: str
     description: Optional[str] = None
     price: float
