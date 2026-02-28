@@ -1,0 +1,126 @@
+{
+  "project_name": "Syrian E-commerce Redesign",
+  "version": "1.0",
+  "last_updated": "2024-05-23",
+  "typography": {
+    "font_family_arabic": "Cairo, sans-serif",
+    "font_family_latin": "Cairo, sans-serif",
+    "import_url": "https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;500;600;700;800;900&display=swap",
+    "usage": {
+      "headings": "font-bold tracking-tight",
+      "body": "font-normal leading-relaxed",
+      "price": "font-bold tabular-nums",
+      "captions": "text-xs font-medium text-muted-foreground"
+    }
+  },
+  "colors": {
+    "primary": {
+      "DEFAULT": "#059669", 
+      "foreground": "#ffffff",
+      "50": "#ecfdf5",
+      "100": "#d1fae5",
+      "500": "#10b981",
+      "600": "#059669",
+      "700": "#047857"
+    },
+    "gradient": {
+      "price_bar": "bg-gradient-to-r from-emerald-700 to-emerald-500"
+    },
+    "neutral": {
+      "background": "#ffffff",
+      "surface": "#f8fafc",
+      "border": "#e2e8f0"
+    },
+    "semantic": {
+      "success": "#10b981",
+      "warning": "#f59e0b",
+      "danger": "#ef4444",
+      "info": "#3b82f6"
+    }
+  },
+  "visual_enhancers": {
+    "shadows": {
+      "card": "shadow-sm hover:shadow-lg transition-shadow duration-300",
+      "floating": "shadow-[0_8px_30px_rgb(0,0,0,0.12)]"
+    },
+    "rounded": {
+      "card": "rounded-xl",
+      "button": "rounded-full",
+      "badge": "rounded-md"
+    },
+    "borders": {
+      "card_hover": "border border-transparent hover:border-emerald-500"
+    },
+    "glassmorphism": {
+      "overlay": "backdrop-blur-md bg-white/70"
+    }
+  },
+  "layout_grid": {
+    "mobile": "grid-cols-2 gap-3",
+    "tablet": "md:grid-cols-3 md:gap-4",
+    "desktop": "lg:grid-cols-4 xl:grid-cols-5 xl:gap-6",
+    "container": "container mx-auto px-4"
+  },
+  "components": {
+    "ProductCard": {
+      "path": "/app/frontend/src/components/ProductCard.js",
+      "description": "A high-conversion product card blending Trendyol's density with Syrian market preferences (Green Gradients).",
+      "structure": {
+        "wrapper": "group relative flex flex-col overflow-hidden rounded-xl bg-white shadow-sm transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:border-emerald-500 border border-transparent h-full",
+        "image_container": "relative aspect-[3/4] overflow-hidden bg-gray-100",
+        "image": "h-full w-full object-cover transition-transform duration-500 group-hover:scale-110",
+        "wishlist_btn": "absolute top-3 right-3 z-20 flex h-8 w-8 items-center justify-center rounded-full bg-white shadow-md transition-colors hover:bg-gray-50 text-gray-400 hover:text-red-500",
+        "stock_badge": "absolute top-3 left-3 z-20 rounded-full bg-emerald-100/90 px-2 py-1 text-[10px] font-bold text-emerald-700 backdrop-blur-sm",
+        "content": "flex flex-col flex-1 p-3",
+        "brand": "text-[10px] font-bold uppercase tracking-wider text-gray-400",
+        "title": "mt-1 line-clamp-2 text-sm font-semibold text-gray-800 h-10",
+        "rating_container": "mt-2 flex items-center gap-1",
+        "star_icon": "h-3 w-3 fill-amber-400 text-amber-400",
+        "rating_text": "text-[10px] text-gray-500",
+        "price_bar": "mt-auto flex items-center justify-between rounded-lg bg-gradient-to-r from-emerald-700 to-emerald-500 px-3 py-2 shadow-sm",
+        "price_text": "text-base font-bold text-white",
+        "old_price": "text-xs text-emerald-100 line-through mr-2",
+        "cart_btn": "flex h-7 w-7 items-center justify-center rounded-full bg-white/20 hover:bg-white/30 text-white transition-colors"
+      },
+      "icons": {
+        "wishlist": "Heart (Lucide/Heroicons)",
+        "cart": "ShoppingCart (Lucide/Heroicons)",
+        "star": "Star (Lucide/Heroicons)"
+      }
+    }
+  },
+  "image_urls": {
+    "products": [
+      {
+        "url": "https://images.unsplash.com/photo-1658500140897-7f2a772391e3?auto=format&fit=crop&w=800&q=80",
+        "category": "electronics",
+        "alt": "Wireless Headphones"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1606741965509-717b9fdd6549?auto=format&fit=crop&w=800&q=80",
+        "category": "electronics",
+        "alt": "Earbuds Case"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1695048312363-9c2e156e7dae?auto=format&fit=crop&w=800&q=80",
+        "category": "beauty",
+        "alt": "Luxury Perfume"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1755182529034-189a6051faae?auto=format&fit=crop&w=800&q=80",
+        "category": "electronics",
+        "alt": "Wireless Earbuds"
+      }
+    ]
+  },
+  "universal_guidelines": [
+    "Use 'Cairo' font for all text to ensure Arabic legibility.",
+    "Ensure all interactive elements have a minimum touch target of 44px on mobile.",
+    "Use RTL (Right-to-Left) direction for all layouts by adding dir='rtl' to the root or body.",
+    "Do not use generic 'Inter' font; stick to Cairo.",
+    "Test all hover states; on mobile, ensure the 'Green Border' effect is visible on active/focus if hover isn't available.",
+    "The 'Available' badge (متوفر) is mandatory on all in-stock items.",
+    "Price formatting: use 'ل.س' (Syrian Lira) as the currency symbol."
+  ],
+  "instructions_to_main_agent": "1. Install 'lucide-react' if not present for icons.\n2. Update 'index.css' to import the Cairo font.\n3. Create the 'ProductCard' component using the provided structure.\n4. Update 'HomePage.js' to use a responsive grid with these cards.\n5. Ensure the gradient flows from Dark Green (Right) to Light Green (Left) in RTL mode (or vice versa depending on visual preference, but standard is lighter towards the end)."
+}
