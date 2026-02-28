@@ -28,7 +28,7 @@ const StoreDashboard = ({ user, logout }) => {
   const [replyMessage, setReplyMessage] = useState('');
   const [storeData, setStoreData] = useState({ store_name: '', description: '', phone: '' });
   const [productData, setProductData] = useState({
-    name: '', description: '', price: '', stock: '', category_id: '',
+    name: '', description: '', price: '', stock: '', category_id: '', subcategory_id: '',
     images: [], sizes: [], colors: [], shoe_sizes: []
   });
   const [uploadingImages, setUploadingImages] = useState(false);
