@@ -116,33 +116,6 @@ const HomePage = ({ user, logout }) => {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
-        {/* Top Bar */}
-        <div className="bg-gray-900 text-white">
-          <div className="max-w-7xl mx-auto px-4 py-2 flex items-center justify-between text-xs">
-            <div className="flex gap-4">
-              <span>مرحباً بك في سوق سوريا</span>
-            </div>
-            <div className="hidden md:flex gap-4 items-center">
-              <a href="https://www.instagram.com/trend.syria.offical" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:text-emerald-400 transition">
-                <Instagram className="w-4 h-4" />
-                <span>@trend.syria.offical</span>
-              </a>
-              <a href="mailto:trendsyria926@gmail.com" className="flex items-center gap-1 hover:text-emerald-400 transition">
-                <Mail className="w-4 h-4" />
-                <span>trendsyria926@gmail.com</span>
-              </a>
-              {user ? (
-                <>
-                  <span>مرحباً، {user.name}</span>
-                  <button onClick={logout} className="hover:text-emerald-400 transition">تسجيل الخروج</button>
-                </>
-              ) : (
-                <Link to="/auth" className="hover:text-emerald-400 transition">تسجيل الدخول</Link>
-              )}
-            </div>
-          </div>
-        </div>
-
         {/* Main Header */}
         <div className="max-w-7xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between gap-4">
