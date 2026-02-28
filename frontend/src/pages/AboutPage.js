@@ -113,7 +113,7 @@ const AboutPage = () => {
               <ul className="space-y-2 text-sm text-gray-600">
                 <li className="flex items-center gap-2">
                   <Phone className="w-4 h-4 text-emerald-600" />
-                  +963 11 1234567
+                  <span className="text-gray-400 italic">سيتم إضافته قريباً</span>
                 </li>
                 <li className="flex items-center gap-2">
                   <Mail className="w-4 h-4 text-emerald-600" />
@@ -121,7 +121,7 @@ const AboutPage = () => {
                 </li>
                 <li className="flex items-center gap-2">
                   <Instagram className="w-4 h-4 text-emerald-600" />
-                  @trend.syria.offical ✅
+                  @trend.syria.offical
                 </li>
               </ul>
             </div>
