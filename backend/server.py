@@ -554,6 +554,7 @@ async def create_product(product_data: ProductCreate, current_user: dict = Depen
 @api_router.get("/products")
 async def get_products(
     category_id: Optional[str] = None,
+    subcategory_id: Optional[str] = None,
     store_id: Optional[str] = None,
     min_price: Optional[float] = None,
     max_price: Optional[float] = None,
@@ -563,6 +564,8 @@ async def get_products(
     query = {"status": "active"}
     if category_id:
         query['category_id'] = category_id
+    if subcategory_id:
+        query['subcategory_id'] = subcategory_id
     if store_id:
         query['store_id'] = store_id
     if min_price is not None:
