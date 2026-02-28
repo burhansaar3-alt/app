@@ -358,11 +358,22 @@ const StoreDashboard = ({ user, logout }) => {
                             <div><Label>الكمية</Label><Input type="number" value={productData.stock} onChange={(e) => setProductData({ ...productData, stock: e.target.value })} required /></div>
                           </div>
                           <div><Label>الفئة</Label>
-                            <select className="w-full px-3 py-2 border border-gray-300 rounded-md" value={productData.category_id} onChange={(e) => setProductData({ ...productData, category_id: e.target.value })} required>
+                            <select className="w-full px-3 py-2 border border-gray-300 rounded-md" value={productData.category_id} onChange={(e) => setProductData({ ...productData, category_id: e.target.value, subcategory_id: '' })} required>
                               <option value="">اختر فئة</option>
                               {categories.map((cat) => <option key={cat.id} value={cat.id}>{cat.name_ar}</option>)}
                             </select>
                           </div>
+                          {/* Subcategory Selection */}
+                          {productData.category_id && categories.find(c => c.id === productData.category_id)?.subcategories?.length > 0 && (
+                            <div><Label>التصنيف الفرعي</Label>
+                              <select className="w-full px-3 py-2 border border-gray-300 rounded-md" value={productData.subcategory_id} onChange={(e) => setProductData({ ...productData, subcategory_id: e.target.value })}>
+                                <option value="">اختر التصنيف الفرعي</option>
+                                {categories.find(c => c.id === productData.category_id)?.subcategories?.map((sub) => (
+                                  <option key={sub.id} value={sub.id}>{sub.icon} {sub.name_ar}</option>
+                                ))}
+                              </select>
+                            </div>
+                          )}
                           <div><Label>صور المنتج (يمكنك اختيار عدة صور)</Label>
                             <Input type="file" accept="image/*" multiple onChange={(e) => setSelectedFiles(Array.from(e.target.files))} className="cursor-pointer" />
                             {selectedFiles.length > 0 && <p className="text-sm text-emerald-600 mt-2">تم اختيار {selectedFiles.length} صورة</p>}
