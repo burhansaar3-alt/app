@@ -305,16 +305,18 @@ const HomePage = ({ user, logout }) => {
               {/* All in category */}
               <button
                 onClick={() => setSelectedSubcategory(null)}
-                className={`flex flex-col items-center gap-2 min-w-[80px] group`}
+                className={`flex flex-col items-center gap-2 min-w-[90px] group`}
               >
-                <div className={`w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center text-2xl md:text-3xl transition-all ${
+                <div className={`w-18 h-18 md:w-20 md:h-20 rounded-full overflow-hidden flex items-center justify-center transition-all duration-300 ${
                   !selectedSubcategory 
-                    ? 'bg-emerald-600 text-white shadow-lg scale-105' 
-                    : 'bg-white border-2 border-gray-200 group-hover:border-emerald-500'
+                    ? 'ring-4 ring-emerald-500 shadow-xl scale-105' 
+                    : 'ring-2 ring-gray-200 group-hover:ring-emerald-400 group-hover:shadow-lg'
                 }`}>
-                  🏷️
+                  <div className="w-full h-full bg-gradient-to-br from-emerald-500 to-emerald-700 flex items-center justify-center">
+                    <span className="text-white text-2xl font-bold">الكل</span>
+                  </div>
                 </div>
-                <span className={`text-xs md:text-sm font-medium text-center ${!selectedSubcategory ? 'text-emerald-600' : 'text-gray-700'}`}>
+                <span className={`text-xs md:text-sm font-medium text-center transition-colors ${!selectedSubcategory ? 'text-emerald-600' : 'text-gray-700 group-hover:text-emerald-600'}`}>
                   الكل
                 </span>
               </button>
@@ -323,17 +325,27 @@ const HomePage = ({ user, logout }) => {
                 <button
                   key={sub.id}
                   onClick={() => handleSubcategorySelect(sub.id)}
-                  className="flex flex-col items-center gap-2 min-w-[80px] group"
+                  className="flex flex-col items-center gap-2 min-w-[90px] group"
                 >
-                  <div className={`w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center text-2xl md:text-3xl transition-all ${
+                  <div className={`w-18 h-18 md:w-20 md:h-20 rounded-full overflow-hidden transition-all duration-300 ${
                     selectedSubcategory === sub.id 
-                      ? 'bg-emerald-600 text-white shadow-lg scale-105' 
-                      : 'bg-white border-2 border-gray-200 group-hover:border-emerald-500 group-hover:shadow-md'
+                      ? 'ring-4 ring-emerald-500 shadow-xl scale-105' 
+                      : 'ring-2 ring-gray-200 group-hover:ring-emerald-400 group-hover:shadow-lg'
                   }`}>
-                    {sub.icon}
+                    {sub.image ? (
+                      <img 
+                        src={sub.image} 
+                        alt={sub.name_ar}
+                        className="w-full h-full object-cover"
+                        onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
+                      />
+                    ) : null}
+                    <div className={`w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 items-center justify-center text-3xl ${sub.image ? 'hidden' : 'flex'}`}>
+                      {sub.icon || '📦'}
+                    </div>
                   </div>
-                  <span className={`text-xs md:text-sm font-medium text-center max-w-[80px] line-clamp-2 ${
-                    selectedSubcategory === sub.id ? 'text-emerald-600' : 'text-gray-700'
+                  <span className={`text-xs md:text-sm font-medium text-center max-w-[90px] line-clamp-2 transition-colors ${
+                    selectedSubcategory === sub.id ? 'text-emerald-600' : 'text-gray-700 group-hover:text-emerald-600'
                   }`}>
                     {sub.name_ar}
                   </span>
