@@ -1482,6 +1482,160 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+# ============= Initialize Categories on Startup =============
+async def initialize_categories():
+    """Initialize or update categories with subcategories on server startup"""
+    
+    categories_data = [
+        {
+            "name_ar": "الإلكترونيات",
+            "name_en": "Electronics",
+            "slug": "electronics",
+            "icon": "Smartphone",
+            "type": "main",
+            "subcategories": [
+                {"id": str(uuid.uuid4()), "name_ar": "هواتف ذكية", "name_en": "Smartphones", "image": "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=200"},
+                {"id": str(uuid.uuid4()), "name_ar": "لابتوبات", "name_en": "Laptops", "image": "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=200"},
+                {"id": str(uuid.uuid4()), "name_ar": "تابلت", "name_en": "Tablets", "image": "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=200"},
+                {"id": str(uuid.uuid4()), "name_ar": "تلفزيونات", "name_en": "TVs", "image": "https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=200"},
+                {"id": str(uuid.uuid4()), "name_ar": "كاميرات", "name_en": "Cameras", "image": "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=200"},
+                {"id": str(uuid.uuid4()), "name_ar": "سماعات", "name_en": "Headphones", "image": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200"},
+                {"id": str(uuid.uuid4()), "name_ar": "شواحن وكوابل", "name_en": "Chargers", "image": "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=200"},
+                {"id": str(uuid.uuid4()), "name_ar": "كفرات موبايل", "name_en": "Phone Cases", "image": "https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?w=200"},
+                {"id": str(uuid.uuid4()), "name_ar": "أجهزة منزلية", "name_en": "Appliances", "image": "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=200"},
+                {"id": str(uuid.uuid4()), "name_ar": "ألعاب فيديو", "name_en": "Gaming", "image": "https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?w=200"},
+                {"id": str(uuid.uuid4()), "name_ar": "معدات كمبيوتر", "name_en": "PC Parts", "image": "https://images.unsplash.com/photo-1591488320449-011701bb6704?w=200"},
+            ]
+        },
+        {
+            "name_ar": "أزياء نسائية",
+            "name_en": "Women Fashion",
+            "slug": "women-fashion",
+            "icon": "Shirt",
+            "type": "main",
+            "subcategories": [
+                {"id": str(uuid.uuid4()), "name_ar": "فساتين", "name_en": "Dresses", "image": "https://images.pexels.com/photos/985635/pexels-photo-985635.jpeg?w=200"},
+                {"id": str(uuid.uuid4()), "name_ar": "بلوزات", "name_en": "Blouses", "image": "https://images.pexels.com/photos/6311392/pexels-photo-6311392.jpeg?w=200"},
+                {"id": str(uuid.uuid4()), "name_ar": "بناطيل", "name_en": "Pants", "image": "https://images.pexels.com/photos/1598507/pexels-photo-1598507.jpeg?w=200"},
+                {"id": str(uuid.uuid4()), "name_ar": "عبايات", "name_en": "Abayas", "image": "https://images.pexels.com/photos/6567607/pexels-photo-6567607.jpeg?w=200"},
+                {"id": str(uuid.uuid4()), "name_ar": "حجابات", "name_en": "Hijabs", "image": "https://images.pexels.com/photos/7203957/pexels-photo-7203957.jpeg?w=200"},
+                {"id": str(uuid.uuid4()), "name_ar": "جاكيتات", "name_en": "Jackets", "image": "https://images.pexels.com/photos/6311652/pexels-photo-6311652.jpeg?w=200"},
+            ]
+        },
+        {
+            "name_ar": "أزياء رجالية",
+            "name_en": "Men Fashion",
+            "slug": "men-fashion",
+            "icon": "User",
+            "type": "main",
+            "subcategories": [
+                {"id": str(uuid.uuid4()), "name_ar": "قمصان", "name_en": "Shirts", "image": "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=200"},
+                {"id": str(uuid.uuid4()), "name_ar": "بناطيل", "name_en": "Pants", "image": "https://images.unsplash.com/photo-1473966968600-fa801b869a1a?w=200"},
+                {"id": str(uuid.uuid4()), "name_ar": "بدلات", "name_en": "Suits", "image": "https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=200"},
+                {"id": str(uuid.uuid4()), "name_ar": "تيشيرتات", "name_en": "T-Shirts", "image": "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=200"},
+            ]
+        },
+        {
+            "name_ar": "أحذية",
+            "name_en": "Shoes",
+            "slug": "shoes",
+            "icon": "Footprints",
+            "type": "main",
+            "subcategories": [
+                {"id": str(uuid.uuid4()), "name_ar": "أحذية رجالية", "name_en": "Men Shoes", "image": "https://images.unsplash.com/photo-1614252369475-531eba835eb1?w=200"},
+                {"id": str(uuid.uuid4()), "name_ar": "أحذية نسائية", "name_en": "Women Shoes", "image": "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=200"},
+                {"id": str(uuid.uuid4()), "name_ar": "أحذية رياضية", "name_en": "Sports", "image": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=200"},
+                {"id": str(uuid.uuid4()), "name_ar": "أحذية أطفال", "name_en": "Kids", "image": "https://images.unsplash.com/photo-1555274175-75f4056dfd05?w=200"},
+                {"id": str(uuid.uuid4()), "name_ar": "بوتات", "name_en": "Boots", "image": "https://images.unsplash.com/photo-1608256246200-53e635b5b65f?w=200"},
+            ]
+        },
+        {
+            "name_ar": "حقائب",
+            "name_en": "Bags",
+            "slug": "bags",
+            "icon": "ShoppingBag",
+            "type": "main",
+            "subcategories": [
+                {"id": str(uuid.uuid4()), "name_ar": "حقائب يد", "name_en": "Handbags", "image": "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=200"},
+                {"id": str(uuid.uuid4()), "name_ar": "حقائب ظهر", "name_en": "Backpacks", "image": "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=200"},
+                {"id": str(uuid.uuid4()), "name_ar": "حقائب سفر", "name_en": "Travel", "image": "https://images.unsplash.com/photo-1565026057447-bc90a3dceb87?w=200"},
+                {"id": str(uuid.uuid4()), "name_ar": "محافظ", "name_en": "Wallets", "image": "https://images.unsplash.com/photo-1627123424574-724758594e93?w=200"},
+            ]
+        },
+        {
+            "name_ar": "أساس المنزل",
+            "name_en": "Home Furniture",
+            "slug": "furniture",
+            "icon": "Sofa",
+            "type": "main",
+            "subcategories": [
+                {"id": str(uuid.uuid4()), "name_ar": "غرف نوم", "name_en": "Bedrooms", "image": "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=200"},
+                {"id": str(uuid.uuid4()), "name_ar": "غرف جلوس", "name_en": "Living", "image": "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=200"},
+                {"id": str(uuid.uuid4()), "name_ar": "طاولات", "name_en": "Tables", "image": "https://images.unsplash.com/photo-1530018607912-eff2daa1bac4?w=200"},
+                {"id": str(uuid.uuid4()), "name_ar": "مطبخ", "name_en": "Kitchen", "image": "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=200"},
+                {"id": str(uuid.uuid4()), "name_ar": "ديكور", "name_en": "Decor", "image": "https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?w=200"},
+            ]
+        },
+        {
+            "name_ar": "ماركات عالمية",
+            "name_en": "Brands",
+            "slug": "brands",
+            "icon": "Award",
+            "type": "main",
+            "subcategories": [
+                {"id": str(uuid.uuid4()), "name_ar": "Nike", "name_en": "Nike", "image": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=200"},
+                {"id": str(uuid.uuid4()), "name_ar": "Adidas", "name_en": "Adidas", "image": "https://images.unsplash.com/photo-1518002171953-a080ee817e1f?w=200"},
+                {"id": str(uuid.uuid4()), "name_ar": "Zara", "name_en": "Zara", "image": "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=200"},
+                {"id": str(uuid.uuid4()), "name_ar": "Samsung", "name_en": "Samsung", "image": "https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?w=200"},
+            ]
+        },
+        {
+            "name_ar": "مطاعم وطعام",
+            "name_en": "Food",
+            "slug": "food",
+            "icon": "UtensilsCrossed",
+            "type": "food",
+            "subcategories": [
+                {"id": str(uuid.uuid4()), "name_ar": "مطاعم", "name_en": "Restaurants", "image": "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=200"},
+                {"id": str(uuid.uuid4()), "name_ar": "وجبات سريعة", "name_en": "Fast Food", "image": "https://images.unsplash.com/photo-1561758033-d89a9ad46330?w=200"},
+                {"id": str(uuid.uuid4()), "name_ar": "حلويات", "name_en": "Desserts", "image": "https://images.unsplash.com/photo-1551024601-bec78aea704b?w=200"},
+                {"id": str(uuid.uuid4()), "name_ar": "مشروبات", "name_en": "Drinks", "image": "https://images.unsplash.com/photo-1544145945-f90425340c7e?w=200"},
+                {"id": str(uuid.uuid4()), "name_ar": "مخبوزات", "name_en": "Bakery", "image": "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=200"},
+            ]
+        },
+        {
+            "name_ar": "سوبرماركت",
+            "name_en": "Supermarket",
+            "slug": "market",
+            "icon": "ShoppingCart",
+            "type": "market",
+            "subcategories": [
+                {"id": str(uuid.uuid4()), "name_ar": "مواد غذائية", "name_en": "Groceries", "image": "https://images.unsplash.com/photo-1542838132-92c53300491e?w=200"},
+                {"id": str(uuid.uuid4()), "name_ar": "خضار وفواكه", "name_en": "Produce", "image": "https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=200"},
+                {"id": str(uuid.uuid4()), "name_ar": "ألبان وأجبان", "name_en": "Dairy", "image": "https://images.unsplash.com/photo-1628088062854-d1870b4553da?w=200"},
+                {"id": str(uuid.uuid4()), "name_ar": "لحوم ودواجن", "name_en": "Meat", "image": "https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?w=200"},
+                {"id": str(uuid.uuid4()), "name_ar": "سناكس وحلويات", "name_en": "Snacks", "image": "https://images.unsplash.com/photo-1621939514649-280e2ee25f60?w=200"},
+                {"id": str(uuid.uuid4()), "name_ar": "مشروبات", "name_en": "Drinks", "image": "https://images.unsplash.com/photo-1527960471264-932f39eb5846?w=200"},
+                {"id": str(uuid.uuid4()), "name_ar": "منظفات", "name_en": "Cleaning", "image": "https://images.unsplash.com/photo-1585421514738-01798e348b17?w=200"},
+            ]
+        },
+    ]
+    
+    # Delete old categories and insert new ones
+    await db.categories.delete_many({})
+    
+    for cat_data in categories_data:
+        cat_data["id"] = str(uuid.uuid4())
+        await db.categories.insert_one(cat_data)
+    
+    logger.info(f"Initialized {len(categories_data)} categories with subcategories")
+
+@app.on_event("startup")
+async def startup_event():
+    """Initialize data on startup"""
+    await initialize_categories()
+    logger.info("Server started and categories initialized")
+
 @app.on_event("shutdown")
 async def shutdown_db_client():
     client.close()
