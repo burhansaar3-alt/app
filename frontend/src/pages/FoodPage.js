@@ -131,12 +131,14 @@ const FoodPage = ({ user, logout }) => {
             <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
               <button
                 onClick={() => setSelectedSubcategory(null)}
-                className="flex flex-col items-center gap-2 min-w-[80px]"
+                className="flex flex-col items-center gap-2 min-w-[90px] group"
               >
-                <div className={`w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center text-2xl md:text-3xl transition-all ${
-                  !selectedSubcategory ? 'bg-orange-500 text-white shadow-lg' : 'bg-white border-2 border-orange-200 hover:border-orange-500'
+                <div className={`w-18 h-18 md:w-20 md:h-20 rounded-full overflow-hidden transition-all duration-300 ${
+                  !selectedSubcategory ? 'ring-4 ring-orange-500 shadow-xl scale-105' : 'ring-2 ring-orange-200 group-hover:ring-orange-400'
                 }`}>
-                  🍽️
+                  <div className="w-full h-full bg-gradient-to-br from-orange-500 to-orange-700 flex items-center justify-center">
+                    <span className="text-white text-xl font-bold">الكل</span>
+                  </div>
                 </div>
                 <span className={`text-xs md:text-sm font-medium ${!selectedSubcategory ? 'text-orange-600' : 'text-gray-700'}`}>الكل</span>
               </button>
@@ -145,12 +147,16 @@ const FoodPage = ({ user, logout }) => {
                 <button
                   key={sub.id}
                   onClick={() => setSelectedSubcategory(sub.id)}
-                  className="flex flex-col items-center gap-2 min-w-[80px]"
+                  className="flex flex-col items-center gap-2 min-w-[90px] group"
                 >
-                  <div className={`w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center text-2xl md:text-3xl transition-all ${
-                    selectedSubcategory === sub.id ? 'bg-orange-500 text-white shadow-lg' : 'bg-white border-2 border-orange-200 hover:border-orange-500'
+                  <div className={`w-18 h-18 md:w-20 md:h-20 rounded-full overflow-hidden transition-all duration-300 ${
+                    selectedSubcategory === sub.id ? 'ring-4 ring-orange-500 shadow-xl scale-105' : 'ring-2 ring-orange-200 group-hover:ring-orange-400'
                   }`}>
-                    {sub.icon}
+                    {sub.image ? (
+                      <img src={sub.image} alt={sub.name_ar} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full bg-orange-100 flex items-center justify-center text-3xl">{sub.icon}</div>
+                    )}
                   </div>
                   <span className={`text-xs md:text-sm font-medium ${selectedSubcategory === sub.id ? 'text-orange-600' : 'text-gray-700'}`}>
                     {sub.name_ar}
