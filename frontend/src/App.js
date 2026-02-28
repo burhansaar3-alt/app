@@ -94,6 +94,8 @@ function App() {
             path="/complaints" 
             element={user ? <ComplaintsPage user={user} /> : <Navigate to="/auth" />} 
           />
+          <Route path="/food" element={<FoodPage user={user} logout={logout} />} />
+          <Route path="/market" element={<MarketPage user={user} logout={logout} />} />
         </Routes>
       </BrowserRouter>
     </div>
