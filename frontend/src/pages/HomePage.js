@@ -365,48 +365,69 @@ const HomePage = ({ user, logout }) => {
             <p className="text-gray-500">لم يتم العثور على منتجات في هذا التصنيف</p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
             {filteredProducts.map((product) => (
               <div
                 key={product.id}
-                className="group bg-white rounded-xl overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer border border-gray-100"
+                data-testid={`product-card-${product.id}`}
+                className="group bg-white rounded-2xl overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-2xl hover:ring-2 hover:ring-emerald-500 hover:-translate-y-1"
                 onClick={() => navigate(`/product/${product.id}`)}
               >
-                {/* Badges */}
-                <div className="absolute top-2 left-2 right-2 z-10 flex justify-between items-start">
-                  {product.stock > 0 ? (
-                    <span className="bg-green-500 text-white px-2 py-0.5 rounded-full text-[10px] font-bold">متوفر</span>
-                  ) : (
-                    <span className="bg-red-500 text-white px-2 py-0.5 rounded-full text-[10px] font-bold">نفذ</span>
-                  )}
+                {/* Image Container */}
+                <div className="relative aspect-square bg-gray-100 overflow-hidden">
+                  {/* Stock Badge */}
+                  <div className="absolute top-3 right-3 z-10">
+                    {product.stock > 0 ? (
+                      <span className="bg-emerald-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
+                        متوفر
+                      </span>
+                    ) : (
+                      <span className="bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
+                        نفذ
+                      </span>
+                    )}
+                  </div>
+                  
+                  {/* Wishlist Button */}
                   {user && (
                     <button
                       onClick={(e) => { e.stopPropagation(); toggleWishlist(product.id); }}
-                      className="p-1.5 bg-white rounded-full shadow hover:scale-110 transition"
+                      className="absolute top-3 left-3 z-10 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110 hover:bg-emerald-50"
                     >
-                      <Heart className={`w-4 h-4 ${wishlistIds.includes(product.id) ? 'fill-emerald-600 text-emerald-600' : 'text-gray-400'}`} />
+                      <Heart className={`w-5 h-5 transition-colors ${wishlistIds.includes(product.id) ? 'fill-emerald-600 text-emerald-600' : 'text-gray-400'}`} />
                     </button>
                   )}
-                </div>
-
-                {/* Image */}
-                <div className="aspect-square bg-gray-100 overflow-hidden relative">
+                  
+                  {/* Product Image */}
                   <img
                     src={product.images?.[0] || '/placeholder.jpg'}
                     alt={product.name}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                     onError={(e) => { e.target.src = '/placeholder.jpg'; }}
                   />
                 </div>
 
-                {/* Info */}
-                <div className="p-3">
-                  <h3 className="text-sm font-medium text-gray-900 mb-2 line-clamp-2 min-h-[40px] group-hover:text-emerald-600">
+                {/* Product Info */}
+                <div className="p-4">
+                  <h3 className="text-sm font-semibold text-gray-900 mb-3 line-clamp-2 min-h-[40px] group-hover:text-emerald-600 transition-colors">
                     {product.name}
                   </h3>
-                  <div className="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-lg p-2 text-center">
-                    <span className="text-lg font-bold">{product.price?.toLocaleString()}</span>
-                    <span className="text-xs mr-1">ل.س</span>
+                  
+                  {/* Price Bar with Gradient */}
+                  <div className="bg-gradient-to-l from-emerald-600 via-emerald-700 to-gray-800 rounded-xl p-3 flex items-center justify-between transition-all duration-300 group-hover:shadow-lg group-hover:scale-[1.02]">
+                    <button 
+                      className="bg-emerald-500 hover:bg-emerald-400 text-white p-2 rounded-lg transition-all duration-300 hover:scale-110"
+                      onClick={(e) => { e.stopPropagation(); }}
+                    >
+                      <ShoppingCart className="w-5 h-5" />
+                    </button>
+                    <div className="text-right">
+                      <span className="text-[10px] text-emerald-200 block">السعر</span>
+                      <div className="flex items-baseline gap-1">
+                        <span className="text-white text-lg font-bold">{product.price?.toLocaleString()}</span>
+                        <span className="text-emerald-200 text-xs">ل.س</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
