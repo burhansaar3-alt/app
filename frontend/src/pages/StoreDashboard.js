@@ -139,7 +139,7 @@ const StoreDashboard = ({ user, logout }) => {
         const uploadedUrls = await handleImageUpload(selectedFiles);
         imageUrls = [...imageUrls, ...uploadedUrls];
       }
-      const data = { ...productData, price: parseFloat(productData.price), stock: parseInt(productData.stock), images: imageUrls };
+      const data = { ...productData, price: parseFloat(productData.price), stock: parseInt(productData.stock), images: imageUrls, subcategory_id: productData.subcategory_id || null };
       await api.post('/products', data);
       toast.success('تمت إضافة المنتج بنجاح');
       setShowProductDialog(false);
