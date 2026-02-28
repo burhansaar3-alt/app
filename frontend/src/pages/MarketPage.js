@@ -184,29 +184,35 @@ const MarketPage = ({ user, logout }) => {
             {filteredProducts.map((product) => (
               <div
                 key={product.id}
-                className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition cursor-pointer group"
+                className="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl hover:ring-2 hover:ring-blue-500 hover:-translate-y-1 transition-all duration-300 cursor-pointer group"
                 onClick={() => navigate(`/product/${product.id}`)}
               >
                 <div className="aspect-square bg-gray-100 overflow-hidden relative">
                   <img
                     src={product.images?.[0] || '/placeholder.jpg'}
                     alt={product.name}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                   />
                   {user && (
                     <button
                       onClick={(e) => { e.stopPropagation(); toggleWishlist(product.id); }}
-                      className="absolute top-2 right-2 p-2 bg-white rounded-full shadow"
+                      className="absolute top-3 left-3 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center hover:scale-110 transition"
                     >
-                      <Heart className={`w-4 h-4 ${wishlistIds.includes(product.id) ? 'fill-blue-500 text-blue-500' : 'text-gray-400'}`} />
+                      <Heart className={`w-5 h-5 ${wishlistIds.includes(product.id) ? 'fill-blue-500 text-blue-500' : 'text-gray-400'}`} />
                     </button>
                   )}
                 </div>
-                <div className="p-3">
-                  <h3 className="text-sm font-medium text-gray-900 mb-2 line-clamp-2">{product.name}</h3>
-                  <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg p-2 text-center">
-                    <span className="text-lg font-bold">{product.price?.toLocaleString()}</span>
-                    <span className="text-xs mr-1">ل.س</span>
+                <div className="p-4">
+                  <h3 className="text-sm font-semibold text-gray-900 mb-3 line-clamp-2 group-hover:text-blue-600 transition-colors">{product.name}</h3>
+                  <div className="bg-gradient-to-l from-blue-500 via-blue-600 to-gray-800 rounded-xl p-3 flex items-center justify-between group-hover:shadow-lg transition-all">
+                    <div className="bg-blue-400 p-2 rounded-lg">
+                      <ShoppingBasket className="w-5 h-5 text-white" />
+                    </div>
+                    <div className="text-right">
+                      <span className="text-[10px] text-blue-200 block">السعر</span>
+                      <span className="text-white text-lg font-bold">{product.price?.toLocaleString()}</span>
+                      <span className="text-blue-200 text-xs mr-1">ل.س</span>
+                    </div>
                   </div>
                 </div>
               </div>
