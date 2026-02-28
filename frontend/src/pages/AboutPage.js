@@ -138,14 +138,14 @@ const AboutPage = () => {
                   <MapPin className="w-6 h-6 text-emerald-600 flex-shrink-0 mt-1" />
                   <div>
                     <h3 className="font-bold text-gray-900 mb-2">العنوان الرئيسي</h3>
-                    <p className="text-gray-700">دمشق - المزة - شارع الجلاء</p>
+                    <p className="text-gray-700">اللاذقية - سوريا</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4 mb-4">
                   <Phone className="w-6 h-6 text-emerald-600 flex-shrink-0 mt-1" />
                   <div>
                     <h3 className="font-bold text-gray-900 mb-2">الهاتف</h3>
-                    <p className="text-gray-700 dir-ltr text-right">+963 11 1234567</p>
+                    <p className="text-gray-500 italic">سيتم إضافته قريباً</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
