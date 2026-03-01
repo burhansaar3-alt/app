@@ -168,6 +168,45 @@ const AuthPage = ({ setUser }) => {
           <p className="text-sm sm:text-base text-emerald-100">منصة التسوق الإلكتروني الأولى</p>
         </div>
 
+        {/* Email Verification Modal */}
+        {showVerification && (
+          <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-2xl p-6 max-w-sm w-full">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-bold text-gray-900">التحقق من البريد الإلكتروني</h3>
+                <button onClick={() => setShowVerification(false)} className="p-1 hover:bg-gray-100 rounded">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              <p className="text-gray-600 text-sm mb-4">
+                أدخل كود التحقق المرسل إلى: <strong>{verificationEmail}</strong>
+              </p>
+              {pendingVerificationCode && (
+                <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-3 mb-4">
+                  <p className="text-sm text-emerald-800">كود التحقق: <strong className="text-lg">{pendingVerificationCode}</strong></p>
+                </div>
+              )}
+              <form onSubmit={handleVerifyEmail}>
+                <Input
+                  type="text"
+                  placeholder="كود التحقق (6 أرقام)"
+                  value={verificationCode}
+                  onChange={(e) => setVerificationCode(e.target.value)}
+                  className="mb-4 text-center text-xl tracking-widest"
+                  maxLength={6}
+                  required
+                />
+                <Button type="submit" className="w-full bg-emerald-600 hover:bg-emerald-700 mb-2">
+                  تأكيد
+                </Button>
+                <Button type="button" variant="outline" className="w-full" onClick={handleResendCode}>
+                  إعادة إرسال الكود
+                </Button>
+              </form>
+            </div>
+          </div>
+        )}
+
         {/* Auth Form */}
         <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-2xl">
           {!showForgotPassword ? (
