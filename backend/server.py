@@ -266,11 +266,17 @@ async def register(user_data: UserRegister):
     if existing:
         raise HTTPException(status_code=400, detail="Email already registered")
     
+    # Generate 6-digit verification code
+    import random
+    verification_code = str(random.randint(100000, 999999))
+    
     user = User(
         email=user_data.email,
         name=user_data.name,
         phone=user_data.phone,
-        role=user_data.role
+        role=user_data.role,
+        email_verified=False,
+        verification_code=verification_code
     )
     
     doc = user.model_dump()
@@ -279,8 +285,59 @@ async def register(user_data: UserRegister):
     
     await db.users.insert_one(doc)
     
+    # Return verification code (in production, send via email)
+    # For now, return it so admin can verify or user can see it
     token = create_access_token({"user_id": user.id, "role": user.role})
-    return {"token": token, "user": user.model_dump()}
+    return {
+        "token": token, 
+        "user": user.model_dump(),
+        "verification_code": verification_code,
+        "message": "تم التسجيل بنجاح. يرجى التحقق من بريدك الإلكتروني"
+    }
+
+class VerifyEmail(BaseModel):
+    email: str
+    code: str
+
+@api_router.post("/auth/verify-email")
+async def verify_email(data: VerifyEmail):
+    """Verify email with code"""
+    user = await db.users.find_one({"email": data.email}, {"_id": 0})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    if user.get('email_verified'):
+        return {"message": "Email already verified", "verified": True}
+    
+    if user.get('verification_code') != data.code:
+        raise HTTPException(status_code=400, detail="Invalid verification code")
+    
+    await db.users.update_one(
+        {"email": data.email},
+        {"$set": {"email_verified": True, "verification_code": None}}
+    )
+    
+    return {"message": "Email verified successfully", "verified": True}
+
+@api_router.post("/auth/resend-verification")
+async def resend_verification(email: str):
+    """Resend verification code"""
+    user = await db.users.find_one({"email": email}, {"_id": 0})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    if user.get('email_verified'):
+        return {"message": "Email already verified"}
+    
+    import random
+    new_code = str(random.randint(100000, 999999))
+    
+    await db.users.update_one(
+        {"email": email},
+        {"$set": {"verification_code": new_code}}
+    )
+    
+    return {"message": "Verification code sent", "code": new_code}
 
 @api_router.post("/auth/login")
 async def login(credentials: UserLogin):
