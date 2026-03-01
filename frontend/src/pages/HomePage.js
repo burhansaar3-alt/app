@@ -189,6 +189,9 @@ const HomePage = ({ user, logout }) => {
 
               {user && (
                 <>
+                  <Link to="/complaints" className="p-2.5 rounded-lg hover:bg-gray-100 transition" title="الشكاوى">
+                    <AlertTriangle className="w-5 h-5 text-gray-700" />
+                  </Link>
                   <Link to="/orders" className="p-2.5 rounded-lg hover:bg-gray-100 transition" title="طلباتي">
                     <Package className="w-5 h-5 text-gray-700" />
                   </Link>
