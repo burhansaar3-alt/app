@@ -435,8 +435,12 @@ async def login(credentials: UserLogin):
     if not user or not verify_password(credentials.password, user.get('password_hash', '')):
         raise HTTPException(status_code=401, detail="البريد الإلكتروني أو كلمة المرور غير صحيحة")
     
-    # Check if email is verified (skip for admins)
-    if not user.get('email_verified', True) and user.get('role') != 'admin':
+    # Check if email is verified - allow login if:
+    # 1. email_verified is True
+    # 2. email_verified is None/missing (old users before verification system)
+    # 3. user is admin
+    email_verified = user.get('email_verified')
+    if email_verified is False and user.get('role') != 'admin':
         raise HTTPException(
             status_code=403, 
             detail="يرجى التحقق من بريدك الإلكتروني أولاً",
