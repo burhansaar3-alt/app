@@ -1,15 +1,19 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { api } from '../App';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
-import { ArrowRight, Package, MapPin, Phone, Truck, CheckCircle, Clock, XCircle } from 'lucide-react';
+import { Input } from '../components/ui/input';
+import { ArrowRight, Package, MapPin, Phone, Truck, CheckCircle, Clock, XCircle, AlertTriangle, X } from 'lucide-react';
 import { toast } from 'sonner';
 
 const MyOrders = ({ user, logout }) => {
   const navigate = useNavigate();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [cancelOrderId, setCancelOrderId] = useState(null);
+  const [cancelReason, setCancelReason] = useState('');
 
   useEffect(() => {
     fetchOrders();
@@ -24,6 +28,29 @@ const MyOrders = ({ user, logout }) => {
       toast.error('حدث خطأ في تحميل الطلبات');
       setLoading(false);
     }
+  };
+
+  const handleCancelOrder = async () => {
+    if (!cancelReason || cancelReason.trim().length < 5) {
+      toast.error('يرجى إدخال سبب الإلغاء (5 أحرف على الأقل)');
+      return;
+    }
+    
+    try {
+      await api.post(`/orders/${cancelOrderId}/cancel`, { reason: cancelReason });
+      toast.success('تم إلغاء الطلب بنجاح');
+      setShowCancelModal(false);
+      setCancelOrderId(null);
+      setCancelReason('');
+      fetchOrders();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'حدث خطأ في إلغاء الطلب');
+    }
+  };
+
+  const openCancelModal = (orderId) => {
+    setCancelOrderId(orderId);
+    setShowCancelModal(true);
   };
 
   const getStatusConfig = (status) => {
