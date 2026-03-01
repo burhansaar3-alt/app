@@ -1853,6 +1853,18 @@ async def initialize_admin_users():
                 {"$set": {"email_verified": True, "role": "admin"}}
             )
     
+    # Fix all existing users who have email_verified as None or missing
+    # This ensures old users can still login after the verification feature was added
+    fix_result = await db.users.update_many(
+        {"$or": [
+            {"email_verified": None},
+            {"email_verified": {"$exists": False}}
+        ]},
+        {"$set": {"email_verified": True}}
+    )
+    if fix_result.modified_count > 0:
+        logger.info(f"Fixed {fix_result.modified_count} users with missing email_verified field")
+    
     logger.info("Admin users initialized")
 
 @app.on_event("startup")
