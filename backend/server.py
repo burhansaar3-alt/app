@@ -144,6 +144,8 @@ class Order(BaseModel):
     shipping_address: str
     phone: str
     payment_method: str = "cash_on_delivery"  # cash_on_delivery, visa, cash
+    cancellation_reason: Optional[str] = None  # سبب الإلغاء
+    cancelled_at: Optional[datetime] = None
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class OrderCreate(BaseModel):
@@ -151,6 +153,9 @@ class OrderCreate(BaseModel):
     phone: str
     payment_method: str = "cash_on_delivery"
     coupon_code: Optional[str] = None
+
+class OrderCancel(BaseModel):
+    reason: str  # سبب الإلغاء (مطلوب)
 
 class Wishlist(BaseModel):
     model_config = ConfigDict(extra="ignore")
