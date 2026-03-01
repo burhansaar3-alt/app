@@ -40,6 +40,76 @@ SMTP_FROM_NAME = os.environ.get('SMTP_FROM_NAME', 'سوق سوريا')
 
 security = HTTPBearer()
 
+# ============= Email Sending Function =============
+def send_verification_email(to_email: str, verification_code: str, user_name: str = ""):
+    """Send verification code via email"""
+    if not SMTP_USER or not SMTP_PASSWORD:
+        logging.warning("SMTP not configured, skipping email send")
+        return False
+    
+    try:
+        # Create message
+        msg = MIMEMultipart('alternative')
+        msg['Subject'] = f'كود التحقق من سوق سوريا - {verification_code}'
+        msg['From'] = f'{SMTP_FROM_NAME} <{SMTP_FROM_EMAIL}>'
+        msg['To'] = to_email
+        
+        # HTML content
+        html_content = f"""
+        <!DOCTYPE html>
+        <html dir="rtl" lang="ar">
+        <head>
+            <meta charset="UTF-8">
+            <style>
+                body {{ font-family: 'Segoe UI', Tahoma, Arial, sans-serif; background-color: #f5f5f5; margin: 0; padding: 20px; }}
+                .container {{ max-width: 500px; margin: 0 auto; background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }}
+                .header {{ background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 30px; text-align: center; }}
+                .header h1 {{ color: white; margin: 0; font-size: 28px; }}
+                .content {{ padding: 30px; text-align: center; }}
+                .code-box {{ background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; font-size: 36px; font-weight: bold; letter-spacing: 8px; padding: 20px 40px; border-radius: 12px; display: inline-block; margin: 20px 0; }}
+                .message {{ color: #666; font-size: 16px; line-height: 1.8; }}
+                .footer {{ background: #f9fafb; padding: 20px; text-align: center; color: #888; font-size: 12px; }}
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="header">
+                    <h1>سوق سوريا</h1>
+                </div>
+                <div class="content">
+                    <p class="message">مرحبا {user_name if user_name else 'بك'}،</p>
+                    <p class="message">كود التحقق الخاص بك هو:</p>
+                    <div class="code-box">{verification_code}</div>
+                    <p class="message">أدخل هذا الكود لتفعيل حسابك.</p>
+                    <p class="message" style="color: #999; font-size: 14px;">الكود صالح لمدة 10 دقائق</p>
+                </div>
+                <div class="footer">
+                    <p>2025 سوق سوريا - منصة التسوق الإلكتروني الأولى</p>
+                </div>
+            </div>
+        </body>
+        </html>
+        """
+        
+        # Plain text fallback
+        text_content = f"سوق سوريا - كود التحقق: {verification_code}"
+        
+        msg.attach(MIMEText(text_content, 'plain', 'utf-8'))
+        msg.attach(MIMEText(html_content, 'html', 'utf-8'))
+        
+        # Send email
+        with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as server:
+            server.starttls()
+            server.login(SMTP_USER, SMTP_PASSWORD)
+            server.sendmail(SMTP_FROM_EMAIL, to_email, msg.as_string())
+        
+        logging.info(f"Verification email sent to {to_email}")
+        return True
+        
+    except Exception as e:
+        logging.error(f"Failed to send email to {to_email}: {str(e)}")
+        return False
+
 app = FastAPI()
 api_router = APIRouter()
 
