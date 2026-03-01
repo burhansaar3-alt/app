@@ -1834,11 +1834,12 @@ async def initialize_admin_users():
     ]
     
     for admin in admin_users:
-        existing = await db.users.find_one({"email": admin['email']})
+        # Case-insensitive search for existing user
+        existing = await db.users.find_one({"email": {"$regex": f"^{admin['email']}$", "$options": "i"}})
         if not existing:
             user_doc = {
                 "id": str(uuid.uuid4()),
-                "email": admin['email'],
+                "email": admin['email'].lower(),  # Store in lowercase
                 "name": admin['name'],
                 "password_hash": hash_password(admin['password']),
                 "role": admin['role'],
@@ -1853,7 +1854,7 @@ async def initialize_admin_users():
         else:
             # Update existing user to ensure email_verified is True for admins
             await db.users.update_one(
-                {"email": admin['email']},
+                {"email": {"$regex": f"^{admin['email']}$", "$options": "i"}},
                 {"$set": {"email_verified": True, "role": "admin"}}
             )
     
