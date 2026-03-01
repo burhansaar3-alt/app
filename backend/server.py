@@ -1852,11 +1852,16 @@ async def initialize_admin_users():
             await db.users.insert_one(user_doc)
             logger.info(f"Created admin user: {admin['email']}")
         else:
-            # Update existing user to ensure email_verified is True for admins
+            # Update existing user - reset password, ensure verified and admin role
             await db.users.update_one(
                 {"email": {"$regex": f"^{admin['email']}$", "$options": "i"}},
-                {"$set": {"email_verified": True, "role": "admin"}}
+                {"$set": {
+                    "email_verified": True, 
+                    "role": "admin",
+                    "password_hash": hash_password(admin['password'])  # Reset password
+                }}
             )
+            logger.info(f"Updated admin user: {admin['email']}")
     
     # Fix all existing users who have email_verified as None or missing
     # This ensures old users can still login after the verification feature was added
