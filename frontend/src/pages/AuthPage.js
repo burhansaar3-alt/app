@@ -23,6 +23,12 @@ const AuthPage = ({ setUser }) => {
   const [resetCode, setResetCode] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [resetStep, setResetStep] = useState(1); // 1: email, 2: code+password
+  
+  // Email verification state
+  const [showVerification, setShowVerification] = useState(false);
+  const [verificationEmail, setVerificationEmail] = useState('');
+  const [verificationCode, setVerificationCode] = useState('');
+  const [pendingVerificationCode, setPendingVerificationCode] = useState('');
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -33,7 +39,14 @@ const AuthPage = ({ setUser }) => {
       toast.success('تم تسجيل الدخول بنجاح');
       navigate('/');
     } catch (error) {
-      toast.error(error.response?.data?.detail || 'خطأ في تسجيل الدخول');
+      // Check if verification is required
+      if (error.response?.status === 403 && error.response?.data?.detail?.includes('التحقق')) {
+        setVerificationEmail(loginData.email);
+        setShowVerification(true);
+        toast.error('يرجى التحقق من بريدك الإلكتروني أولاً');
+      } else {
+        toast.error(error.response?.data?.detail || 'خطأ في تسجيل الدخول');
+      }
     }
   };
 
@@ -41,12 +54,51 @@ const AuthPage = ({ setUser }) => {
     e.preventDefault();
     try {
       const res = await api.post('/auth/register', registerData);
-      localStorage.setItem('token', res.data.token);
-      setUser(res.data.user);
-      toast.success('تم التسجيل بنجاح');
-      navigate('/');
+      // Show verification code and prompt user to verify
+      if (res.data.verification_code) {
+        setPendingVerificationCode(res.data.verification_code);
+        setVerificationEmail(registerData.email);
+        setShowVerification(true);
+        toast.success('تم التسجيل! يرجى إدخال كود التحقق');
+        toast.info(`كود التحقق: ${res.data.verification_code}`, { duration: 10000 });
+      } else {
+        localStorage.setItem('token', res.data.token);
+        setUser(res.data.user);
+        toast.success('تم التسجيل بنجاح');
+        navigate('/');
+      }
     } catch (error) {
       toast.error(error.response?.data?.detail || 'خطأ في التسجيل');
+    }
+  };
+
+  const handleVerifyEmail = async (e) => {
+    e.preventDefault();
+    try {
+      await api.post('/auth/verify-email', { 
+        email: verificationEmail, 
+        code: verificationCode 
+      });
+      toast.success('تم التحقق من الإيميل بنجاح! يمكنك الآن تسجيل الدخول');
+      setShowVerification(false);
+      setVerificationCode('');
+      setPendingVerificationCode('');
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'كود التحقق غير صحيح');
+    }
+  };
+
+  const handleResendCode = async () => {
+    try {
+      const res = await api.post(`/auth/resend-verification?email=${verificationEmail}`);
+      if (res.data.code) {
+        toast.success(`تم إرسال كود جديد: ${res.data.code}`);
+        setPendingVerificationCode(res.data.code);
+      } else {
+        toast.success('تم إرسال كود جديد إلى بريدك');
+      }
+    } catch (error) {
+      toast.error('حدث خطأ في إرسال الكود');
     }
   };
 
