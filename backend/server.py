@@ -962,6 +962,38 @@ async def update_order_status(order_id: str, status: str, current_user: dict = D
     
     return {"message": "Order status updated"}
 
+@api_router.post("/orders/{order_id}/cancel")
+async def cancel_order(order_id: str, cancel_data: OrderCancel, current_user: dict = Depends(get_current_user)):
+    """Cancel an order with a reason"""
+    order = await db.orders.find_one({"id": order_id}, {"_id": 0})
+    
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    
+    # Only the customer who made the order or admin can cancel
+    if order['customer_id'] != current_user['id'] and current_user['role'] != 'admin':
+        raise HTTPException(status_code=403, detail="لا يمكنك إلغاء هذا الطلب")
+    
+    # Check if order can be cancelled (only pending or confirmed)
+    if order['status'] not in ['pending', 'confirmed']:
+        raise HTTPException(status_code=400, detail="لا يمكن إلغاء هذا الطلب لأنه قيد الشحن أو تم تسليمه")
+    
+    # Validate cancellation reason
+    if not cancel_data.reason or len(cancel_data.reason.strip()) < 5:
+        raise HTTPException(status_code=400, detail="يرجى إدخال سبب الإلغاء (5 أحرف على الأقل)")
+    
+    await db.orders.update_one(
+        {"id": order_id},
+        {"$set": {
+            "status": "cancelled",
+            "cancellation_reason": cancel_data.reason,
+            "cancelled_at": datetime.now(timezone.utc).isoformat(),
+            "cancelled_by": current_user['id']
+        }}
+    )
+    
+    return {"message": "تم إلغاء الطلب بنجاح", "reason": cancel_data.reason}
+
 # ============= Wishlist Routes =============
 @api_router.get("/wishlist")
 async def get_wishlist(current_user: dict = Depends(get_current_user)):
