@@ -1258,7 +1258,47 @@ async def get_coupons(current_user: dict = Depends(get_current_user)):
 # Health check
 @api_router.get("/")
 async def root():
-    return {"message": "Marketplace API is running"}
+    return {"message": "Marketplace API is running", "version": "2.0-email-fix"}
+
+# System status check - shows if deployment worked
+@api_router.get("/status")
+async def system_status():
+    """Check system status and admin users"""
+    try:
+        # Count users
+        total_users = await db.users.count_documents({})
+        verified_users = await db.users.count_documents({"email_verified": True})
+        
+        # Check admin users
+        admin_emails = [
+            "burhan.saar@trendsyria.com",
+            "aya.manager@trendsyria.com", 
+            "trendsyria926@gmail.com"
+        ]
+        admins_status = []
+        for email in admin_emails:
+            user = await db.users.find_one(
+                {"email": {"$regex": f"^{email}$", "$options": "i"}},
+                {"_id": 0, "email": 1, "role": 1, "email_verified": 1}
+            )
+            admins_status.append({
+                "email": email,
+                "exists": user is not None,
+                "role": user.get("role") if user else None,
+                "verified": user.get("email_verified") if user else None
+            })
+        
+        return {
+            "status": "✅ النظام يعمل",
+            "version": "2.0-email-fix",
+            "deployment": "SUCCESS",
+            "total_users": total_users,
+            "verified_users": verified_users,
+            "admins": admins_status,
+            "message": "إذا رأيت هذه الرسالة، النشر تم بنجاح!"
+        }
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
 
 # ============= Stripe Payment Routes =============
 from emergentintegrations.payments.stripe.checkout import (
