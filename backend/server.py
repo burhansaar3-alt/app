@@ -342,11 +342,19 @@ async def resend_verification(email: str):
 @api_router.post("/auth/login")
 async def login(credentials: UserLogin):
     user = await db.users.find_one({"email": credentials.email}, {"_id": 0})
-    if not user or not verify_password(credentials.password, user['password_hash']):
-        raise HTTPException(status_code=401, detail="Invalid email or password")
+    if not user or not verify_password(credentials.password, user.get('password_hash', '')):
+        raise HTTPException(status_code=401, detail="البريد الإلكتروني أو كلمة المرور غير صحيحة")
+    
+    # Check if email is verified (skip for admins created before verification system)
+    if not user.get('email_verified', True) and user.get('role') != 'admin':
+        raise HTTPException(
+            status_code=403, 
+            detail="يرجى التحقق من بريدك الإلكتروني أولاً",
+            headers={"X-Verification-Required": "true"}
+        )
     
     token = create_access_token({"user_id": user['id'], "role": user['role']})
-    user_data = {k: v for k, v in user.items() if k != 'password_hash'}
+    user_data = {k: v for k, v in user.items() if k not in ['password_hash', 'verification_code']}
     return {"token": token, "user": user_data}
 
 @api_router.get("/auth/me")
