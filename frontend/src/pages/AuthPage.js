@@ -54,18 +54,13 @@ const AuthPage = ({ setUser }) => {
     e.preventDefault();
     try {
       const res = await api.post('/auth/register', registerData);
-      // Show verification code and prompt user to verify
-      if (res.data.verification_code) {
-        setPendingVerificationCode(res.data.verification_code);
-        setVerificationEmail(registerData.email);
-        setShowVerification(true);
-        toast.success('تم التسجيل! يرجى إدخال كود التحقق');
-        toast.info(`كود التحقق: ${res.data.verification_code}`, { duration: 10000 });
+      // Show verification screen - email was sent
+      setVerificationEmail(registerData.email);
+      setShowVerification(true);
+      if (res.data.email_sent) {
+        toast.success('تم التسجيل! تم إرسال كود التحقق إلى بريدك الإلكتروني');
       } else {
-        localStorage.setItem('token', res.data.token);
-        setUser(res.data.user);
-        toast.success('تم التسجيل بنجاح');
-        navigate('/');
+        toast.success('تم التسجيل! يرجى التحقق من بريدك الإلكتروني');
       }
     } catch (error) {
       toast.error(error.response?.data?.detail || 'خطأ في التسجيل');
