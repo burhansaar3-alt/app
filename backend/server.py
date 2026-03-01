@@ -427,11 +427,15 @@ async def resend_verification(email: str):
 
 @api_router.post("/auth/login")
 async def login(credentials: UserLogin):
-    user = await db.users.find_one({"email": credentials.email}, {"_id": 0})
+    # Case-insensitive email search
+    user = await db.users.find_one(
+        {"email": {"$regex": f"^{credentials.email}$", "$options": "i"}}, 
+        {"_id": 0}
+    )
     if not user or not verify_password(credentials.password, user.get('password_hash', '')):
         raise HTTPException(status_code=401, detail="البريد الإلكتروني أو كلمة المرور غير صحيحة")
     
-    # Check if email is verified (skip for admins created before verification system)
+    # Check if email is verified (skip for admins)
     if not user.get('email_verified', True) and user.get('role') != 'admin':
         raise HTTPException(
             status_code=403, 
