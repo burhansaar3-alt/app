@@ -257,6 +257,36 @@ const MyOrders = ({ user, logout }) => {
                         </div>
                       </div>
                     </div>
+
+                    {/* Cancellation Reason (if cancelled) */}
+                    {order.status === 'cancelled' && order.cancellation_reason && (
+                      <div className="mt-4 p-4 bg-red-50 rounded-lg border border-red-200">
+                        <p className="text-sm text-red-800">
+                          <strong>سبب الإلغاء:</strong> {order.cancellation_reason}
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Action Buttons */}
+                    <div className="mt-6 flex gap-3">
+                      {(order.status === 'pending' || order.status === 'confirmed') && (
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => openCancelModal(order.id)}
+                          className="flex items-center gap-2"
+                        >
+                          <XCircle className="w-4 h-4" />
+                          إلغاء الطلب
+                        </Button>
+                      )}
+                      <Link to="/complaints">
+                        <Button variant="outline" size="sm" className="flex items-center gap-2">
+                          <AlertTriangle className="w-4 h-4" />
+                          تقديم شكوى
+                        </Button>
+                      </Link>
+                    </div>
                   </div>
                 </div>
               );
@@ -264,6 +294,60 @@ const MyOrders = ({ user, logout }) => {
           </div>
         )}
       </div>
+
+      {/* Cancel Order Modal */}
+      {showCancelModal && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl p-6 max-w-md w-full">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-bold text-gray-900">إلغاء الطلب</h3>
+              <button onClick={() => { setShowCancelModal(false); setCancelReason(''); }} className="p-1 hover:bg-gray-100 rounded">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <p className="text-gray-600 mb-4">يرجى إدخال سبب إلغاء الطلب:</p>
+            <div className="space-y-3 mb-4">
+              {['غيرت رأيي', 'وجدت سعر أفضل', 'طلبت بالخطأ', 'التوصيل بطيء', 'سبب آخر'].map((reason) => (
+                <button
+                  key={reason}
+                  onClick={() => setCancelReason(reason)}
+                  className={`w-full text-right p-3 rounded-lg border transition ${
+                    cancelReason === reason 
+                      ? 'border-red-500 bg-red-50 text-red-700' 
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  {reason}
+                </button>
+              ))}
+            </div>
+            <Input
+              type="text"
+              placeholder="أو اكتب سبب آخر..."
+              value={cancelReason}
+              onChange={(e) => setCancelReason(e.target.value)}
+              className="mb-4"
+            />
+            <div className="flex gap-3">
+              <Button
+                variant="destructive"
+                className="flex-1"
+                onClick={handleCancelOrder}
+                disabled={!cancelReason || cancelReason.trim().length < 5}
+              >
+                تأكيد الإلغاء
+              </Button>
+              <Button
+                variant="outline"
+                className="flex-1"
+                onClick={() => { setShowCancelModal(false); setCancelReason(''); }}
+              >
+                تراجع
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
