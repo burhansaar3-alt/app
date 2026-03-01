@@ -60,6 +60,8 @@ class User(BaseModel):
     phone: Optional[str] = None
     role: str
     address: Optional[str] = None
+    email_verified: bool = False  # هل تم التحقق من الإيميل
+    verification_code: Optional[str] = None  # كود التحقق
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class Store(BaseModel):
