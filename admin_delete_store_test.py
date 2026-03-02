@@ -8,7 +8,7 @@ import json
 from datetime import datetime
 
 def test_admin_delete_store():
-    base_url = "https://marketplace-syria-1.preview.emergentagent.com/api"
+    base_url = "https://verify-code-app-1.preview.emergentagent.com/api"
     
     print("🧪 Testing Admin Delete Store Functionality")
     print("=" * 50)
