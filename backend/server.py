@@ -440,10 +440,13 @@ async def verify_email(data: VerifyEmail):
     
     return {"message": "Email verified successfully", "verified": True}
 
+class ResendVerification(BaseModel):
+    email: str
+
 @api_router.post("/auth/resend-verification")
-async def resend_verification(email: str):
+async def resend_verification(data: ResendVerification):
     """Resend verification code"""
-    user = await db.users.find_one({"email": email}, {"_id": 0})
+    user = await db.users.find_one({"email": data.email}, {"_id": 0})
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     
@@ -454,11 +457,17 @@ async def resend_verification(email: str):
     new_code = str(random.randint(100000, 999999))
     
     await db.users.update_one(
-        {"email": email},
+        {"email": data.email},
         {"$set": {"verification_code": new_code}}
     )
     
-    return {"message": "Verification code sent", "code": new_code}
+    # Send verification email
+    email_sent = send_verification_email(data.email, new_code, user.get('name', ''))
+    
+    if email_sent:
+        return {"message": "تم إرسال كود التحقق إلى بريدك الإلكتروني"}
+    else:
+        return {"message": "كود التحقق: " + new_code, "code": new_code}
 
 @api_router.post("/auth/login")
 async def login(credentials: UserLogin):
