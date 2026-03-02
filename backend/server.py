@@ -398,15 +398,23 @@ async def register(user_data: UserRegister):
     
     await db.users.insert_one(doc)
     
-    # Return verification code (in production, send via email)
-    # For now, return it so admin can verify or user can see it
+    # Send verification email
+    email_sent = send_verification_email(user_data.email, verification_code, user_data.name)
+    
     token = create_access_token({"user_id": user.id, "role": user.role})
-    return {
+    
+    response_data = {
         "token": token, 
         "user": user.model_dump(),
-        "verification_code": verification_code,
         "message": "تم التسجيل بنجاح. يرجى التحقق من بريدك الإلكتروني"
     }
+    
+    # Only include verification code if email was NOT sent (for testing)
+    if not email_sent:
+        response_data["verification_code"] = verification_code
+        response_data["message"] = "تم التسجيل بنجاح. كود التحقق: " + verification_code
+    
+    return response_data
 
 class VerifyEmail(BaseModel):
     email: str
