@@ -89,15 +89,10 @@ const AuthPage = ({ setUser }) => {
 
   const handleResendCode = async () => {
     try {
-      const res = await api.post(`/auth/resend-verification?email=${verificationEmail}`);
-      if (res.data.code) {
-        toast.success(`تم إرسال كود جديد: ${res.data.code}`);
-        setPendingVerificationCode(res.data.code);
-      } else {
-        toast.success('تم إرسال كود جديد إلى بريدك');
-      }
+      const res = await api.post('/auth/resend-verification', { email: verificationEmail });
+      toast.success('تم إرسال كود جديد إلى بريدك الإلكتروني');
     } catch (error) {
-      toast.error('حدث خطأ في إرسال الكود');
+      toast.error(error.response?.data?.detail || 'حدث خطأ في إرسال الكود');
     }
   };
 
