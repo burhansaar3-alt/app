@@ -1685,14 +1685,6 @@ async def delete_user(user_id: str, current_user: dict = Depends(get_current_use
 
 app.include_router(api_router, prefix="/api")
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_credentials=True,
-    allow_origins=os.environ.get('CORS_ORIGINS', '*').split(','),
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
