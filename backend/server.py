@@ -465,9 +465,9 @@ async def resend_verification(data: ResendVerification):
     email_sent = send_verification_email(data.email, new_code, user.get('name', ''))
     
     if email_sent:
-        return {"message": "تم إرسال كود التحقق إلى بريدك الإلكتروني"}
+        return {"message": "تم إرسال كود التحقق إلى بريدك الإلكتروني", "email_sent": True}
     else:
-        return {"message": "كود التحقق: " + new_code, "code": new_code}
+        raise HTTPException(status_code=500, detail="فشل إرسال البريد الإلكتروني. يرجى المحاولة مرة أخرى")
 
 @api_router.post("/auth/login")
 async def login(credentials: UserLogin):
