@@ -18,8 +18,8 @@ Multi-vendor e-commerce platform similar to "Trendyol" for the Syrian market wit
 
 ### Authentication
 - [x] JWT-based authentication
-- [x] User registration with email verification flow (UI ready)
-- [ ] Email verification via SMTP (IN PROGRESS - needs App Password)
+- [x] User registration with email verification
+- [x] **Email verification via Gmail SMTP** ✅ COMPLETED 2025-03-02
 - [x] Password reset functionality
 
 ### User Management
@@ -42,10 +42,11 @@ Multi-vendor e-commerce platform similar to "Trendyol" for the Syrian market wit
 
 ## What's Been Implemented
 
-### 2025-03-02 - CORS Fix
-- Fixed CORS middleware configuration for production domains
+### 2025-03-02 - CORS Fix + Email Verification
+- Fixed CORS middleware configuration for production domains (trend-syria.com)
 - Added support for trend-syria.com and www.trend-syria.com
-- Moved CORS middleware to correct position in app initialization
+- Completed Gmail SMTP integration for sending verification codes
+- Updated App Password for Gmail authentication
 
 ### Previous Session
 - Admin role management system
@@ -60,23 +61,21 @@ Multi-vendor e-commerce platform similar to "Trendyol" for the Syrian market wit
 ### Backend
 - FastAPI with MongoDB
 - JWT authentication
-- SMTP configuration (partial)
+- Gmail SMTP for email verification
 
 ### Frontend
 - React with Tailwind CSS
 - Shadcn UI components
 
 ## API Endpoints
-- `/api/auth/register` - User registration
+- `/api/auth/register` - User registration (sends verification email)
 - `/api/auth/login` - User login
 - `/api/auth/verify-email` - Email verification
+- `/api/auth/resend-verification` - Resend verification code
 - `/api/users/{id}/role` - Role management
 - `/api/orders/{id}/cancel` - Order cancellation
 
 ## Prioritized Backlog
-
-### P0 (Critical)
-- [ ] Complete SMTP email sending (requires Google App Password)
 
 ### P1 (High Priority)
 - [ ] Refactor backend/server.py (2000+ lines)
@@ -90,3 +89,9 @@ Multi-vendor e-commerce platform similar to "Trendyol" for the Syrian market wit
 ## Credentials
 - Admin: trendsyria926@gmail.com / admin123
 - Super Admin: burhan.saar@trendsyria.com / admin123
+
+## SMTP Configuration
+- Host: smtp.gmail.com
+- Port: 587
+- User: trendsyria926@gmail.com
+- App Password: Configured ✅
