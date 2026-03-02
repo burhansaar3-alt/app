@@ -403,16 +403,16 @@ async def register(user_data: UserRegister):
     
     token = create_access_token({"user_id": user.id, "role": user.role})
     
+    # Remove verification_code from user response
+    user_response = user.model_dump()
+    user_response.pop('verification_code', None)
+    
     response_data = {
         "token": token, 
-        "user": user.model_dump(),
-        "message": "تم التسجيل بنجاح. يرجى التحقق من بريدك الإلكتروني"
+        "user": user_response,
+        "message": "تم التسجيل بنجاح. تم إرسال كود التحقق إلى بريدك الإلكتروني",
+        "email_sent": email_sent
     }
-    
-    # Only include verification code if email was NOT sent (for testing)
-    if not email_sent:
-        response_data["verification_code"] = verification_code
-        response_data["message"] = "تم التسجيل بنجاح. كود التحقق: " + verification_code
     
     return response_data
 
