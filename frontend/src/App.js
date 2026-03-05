@@ -18,8 +18,9 @@ import FoodPage from './pages/FoodPage';
 import MarketPage from './pages/MarketPage';
 import { Toaster } from './components/ui/sonner';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || '';
+// Remove trailing /api if present to avoid duplication
+const API = BACKEND_URL.endsWith('/api') ? BACKEND_URL : `${BACKEND_URL}/api`;
 
 export const api = axios.create({
   baseURL: API,
