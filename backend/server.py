@@ -18,12 +18,18 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
 ROOT_DIR = Path(__file__).parent
-load_dotenv(ROOT_DIR / '.env')
+
+# Only load .env file if it exists (for local development)
+# In production, environment variables are set by the platform
+env_file = ROOT_DIR / '.env'
+if env_file.exists():
+    load_dotenv(env_file, override=False)  # Don't override existing env vars
 
 # MongoDB connection
-mongo_url = os.environ['MONGO_URL']
+mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
+db_name = os.environ.get('DB_NAME', 'test_database')
 client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ['DB_NAME']]
+db = client[db_name]
 
 # JWT Settings
 SECRET_KEY = os.environ.get('JWT_SECRET', 'your-secret-key-change-in-production')
