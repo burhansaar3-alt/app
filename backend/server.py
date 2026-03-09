@@ -1847,14 +1847,20 @@ async def initialize_categories():
         },
     ]
     
-    # Delete old categories and insert new ones
-    await db.categories.delete_many({})
+    # Check if categories already exist - if yes, skip initialization
+    existing_count = await db.categories.count_documents({})
+    if existing_count > 0:
+        logger.info(f"Categories already exist ({existing_count} found), skipping initialization")
+        return
     
-    for cat_data in categories_data:
-        cat_data["id"] = str(uuid.uuid4())
-        await db.categories.insert_one(cat_data)
-    
-    logger.info(f"Initialized {len(categories_data)} categories with subcategories")
+    # Insert categories only if none exist (first time setup)
+    try:
+        for cat_data in categories_data:
+            cat_data["id"] = str(uuid.uuid4())
+            await db.categories.insert_one(cat_data)
+        logger.info(f"Initialized {len(categories_data)} categories with subcategories")
+    except Exception as e:
+        logger.warning(f"Could not initialize categories: {e}")
 
 async def initialize_admin_users():
     """Initialize admin users on startup"""
