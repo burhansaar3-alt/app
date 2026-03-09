@@ -1871,31 +1871,28 @@ async def initialize_admin_users():
         {"email": "trendsyria926@gmail.com", "name": "Admin", "password": "admin123", "role": "admin"},
     ]
     
-    for admin in admin_users:
-        existing = await db.users.find_one({"email": admin['email']})
-        if not existing:
-            user_doc = {
-                "id": str(uuid.uuid4()),
-                "email": admin['email'],
-                "name": admin['name'],
-                "password_hash": hash_password(admin['password']),
-                "role": admin['role'],
-                "phone": None,
-                "address": None,
-                "email_verified": True,  # Admin accounts are pre-verified
-                "verification_code": None,
-                "created_at": datetime.now(timezone.utc).isoformat()
-            }
-            await db.users.insert_one(user_doc)
-            logger.info(f"Created admin user: {admin['email']}")
-        else:
-            # Update existing user to ensure email_verified is True for admins
-            await db.users.update_one(
-                {"email": admin['email']},
-                {"$set": {"email_verified": True, "role": "admin"}}
-            )
-    
-    logger.info("Admin users initialized")
+    try:
+        for admin in admin_users:
+            existing = await db.users.find_one({"email": admin['email']})
+            if not existing:
+                user_doc = {
+                    "id": str(uuid.uuid4()),
+                    "email": admin['email'],
+                    "name": admin['name'],
+                    "password_hash": hash_password(admin['password']),
+                    "role": admin['role'],
+                    "phone": None,
+                    "address": None,
+                    "email_verified": True,
+                    "verification_code": None,
+                    "created_at": datetime.now(timezone.utc).isoformat()
+                }
+                await db.users.insert_one(user_doc)
+                logger.info(f"Created admin user: {admin['email']}")
+        
+        logger.info("Admin users initialized")
+    except Exception as e:
+        logger.warning(f"Could not initialize admin users: {e}")
 
 @app.on_event("startup")
 async def startup_event():
