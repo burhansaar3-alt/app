@@ -113,36 +113,49 @@ def send_verification_email(to_email: str, verification_code: str, user_name: st
 app = FastAPI()
 
 # CORS Configuration - MUST be added immediately after app creation
-cors_origins = [
-    "https://trend-syria.com",
-    "https://www.trend-syria.com",
-    "http://trend-syria.com",
-    "http://www.trend-syria.com",
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-]
+env_origins = os.environ.get('CORS_ORIGINS', '*')
 
-# Add any additional origins from environment
-env_origins = os.environ.get('CORS_ORIGINS', '')
-if env_origins and env_origins != '*':
-    for origin in env_origins.split(','):
-        origin = origin.strip()
-        if origin and origin not in cors_origins:
-            cors_origins.append(origin)
-
-# Also add the preview URL if present
-preview_url = os.environ.get('REACT_APP_BACKEND_URL', '')
-if preview_url:
-    cors_origins.append(preview_url.rstrip('/'))
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=cors_origins,
-    allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
-    allow_headers=["*"],
-    expose_headers=["*"],
-)
+# If CORS_ORIGINS is '*', allow all origins
+if env_origins == '*':
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=True,
+        allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+        allow_headers=["*"],
+        expose_headers=["*"],
+    )
+else:
+    # Use specific origins
+    cors_origins = [
+        "https://trend-syria.com",
+        "https://www.trend-syria.com",
+        "http://trend-syria.com",
+        "http://www.trend-syria.com",
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+    ]
+    
+    # Add any additional origins from environment
+    if env_origins:
+        for origin in env_origins.split(','):
+            origin = origin.strip()
+            if origin and origin not in cors_origins:
+                cors_origins.append(origin)
+    
+    # Also add the preview URL if present
+    preview_url = os.environ.get('REACT_APP_BACKEND_URL', '')
+    if preview_url:
+        cors_origins.append(preview_url.rstrip('/'))
+    
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=cors_origins,
+        allow_credentials=True,
+        allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+        allow_headers=["*"],
+        expose_headers=["*"],
+    )
 api_router = APIRouter()
 
 # ============= Models =============
