@@ -19,8 +19,25 @@ import MarketPage from './pages/MarketPage';
 import { Toaster } from './components/ui/sonner';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || '';
-// Remove trailing /api if present to avoid duplication
-const API = BACKEND_URL.endsWith('/api') ? BACKEND_URL : `${BACKEND_URL}/api`;
+
+// Determine the API base URL
+// If running on production domain (trend-syria.com), use relative URL
+// Otherwise use the environment variable
+const getApiUrl = () => {
+  // Check if we're on the production domain
+  if (typeof window !== 'undefined') {
+    const hostname = window.location.hostname;
+    // If on production domain, use relative URL
+    if (hostname === 'trend-syria.com' || hostname === 'www.trend-syria.com') {
+      return '/api';
+    }
+  }
+  // For preview/development, use environment variable
+  if (!BACKEND_URL) return '/api';
+  return BACKEND_URL.endsWith('/api') ? BACKEND_URL : `${BACKEND_URL}/api`;
+};
+
+const API = getApiUrl();
 
 export const api = axios.create({
   baseURL: API,
